@@ -65,3 +65,38 @@ This file records accepted product and architecture decisions. Accepted decision
 **Decision:** Users can export readable Markdown folders and ZIP packages that remain useful independently of OXZI.
 
 **Consequences:** Exported project context cannot depend on continued SaaS access. The six-file package remains suitable for coding agents, local folders, and Obsidian-compatible workflows.
+
+## ADR-009 — Canonical Project Runtime Contract
+
+**Status:** Accepted — Phase 3
+
+**Decision:** Canonical project state is validated at runtime with strict Zod schemas and represented with strict TypeScript types under `src/domain/project/`. Stored values are JSON-safe data with branded, prefixed identifiers, ISO timestamp strings, field-level provenance and approval metadata, and stable recursively key-sorted serialization. The `architecture_ready` lifecycle state is formally placed between `understanding_review` and `bible_generated` so the existing readiness invariant has an enforceable transition boundary.
+
+**Consequences:** Untrusted project input must pass `canonicalProjectSchema` or `parseCanonicalProject()` before domain use. Architecture-ready and later states reject unresolved critical fields, blocking conflicts, and high-impact proposed assumptions. Approved versions reject placeholders. Persistence, discovery scoring, mutation APIs, and Markdown rendering remain separate later boundaries.
+
+## ADR-010 — Deterministic Completeness and Question Ranking
+
+**Status:** Accepted — Phase 3
+
+**Decision:** Completeness and discovery-question selection are provider-neutral deterministic domain operations under `src/domain/discovery/`. Relevance is evaluated from project type, lifecycle, field criticality, explicit dependency/activation rules, and safe-default availability. Weight and rule tables are exported and reviewable; AI output cannot set or alter them at runtime.
+
+Completeness field weights are blocking `100`, high `70`, medium `35`, and low `10`. Approved and confirmed fields receive resolution ratio `1.0`. An accepted assumption receives `1.0` only where assumptions are permitted. A permitted safe default receives `1.0` and is reported visibly without mutating canonical state. Unapproved inference receives at most `0.5`, an unsafe default receives `0.75`, and missing or conflicted state receives `0`. Section, critical, and overall completeness are weighted averages rounded to one decimal place.
+
+Question rank is:
+
+```text
+criticality weight
+× architecture-impact multiplier
+× uncertainty multiplier
+× lifecycle multiplier
+× answerability multiplier
++ downstream dependency bonus
+− typing-cost penalty
+− conditional-default penalty
+```
+
+Architecture multipliers are foundational `1.30`, structural `1.20`, local `1.08`, and cosmetic `1.00`. Missing and conflicted uncertainty multipliers are `1.25` and `1.35`; inference scales from `1.05` to `1.25` as confidence falls, and unsafe defaults use `1.05`. First-relevant-phase questions use `1.15`, later phases `1.05`. Selectable or boolean answers use `1.08`–`1.10`, short text `1.03`, and long text `1.00`. Each relevant downstream dependency adds `5`, capped at `25`. Typing penalties are none `0`, low `4`, medium `10`, and high `18`; an inapplicable conditional default subtracts `12`.
+
+The interview is skipped only when critical completeness is at least `90`, blocking gaps and blocking conflicts are both zero, and no required approval remains. Typical interviews target two to five questions, urgent complex cases are capped at eight, known or safely defaulted values are never asked, and low-criticality details are deferred. Candidates remain one decision per question; related fields are not merged unless a future explicit answer-to-field contract proves that one answer can safely resolve every merged field.
+
+**Consequences:** The same validated canonical state always produces the same scores, ordering, and interview decision. Every candidate exposes its score factors, answer mode, options, and typing effort for auditability. Extraction, natural-language question generation, answer merging, UI, and persistence remain separate later boundaries.

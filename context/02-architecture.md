@@ -23,9 +23,11 @@ The canonical structured project state is the source of truth. The six Markdown 
 
 - `app/` — routes and page composition
 - `components/` — reusable UI only
+- `domain/project/` — canonical project types, runtime validation, fixtures, and deterministic serialization
+- `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
 - `features/project-intake/` — input, import, and source parsing
-- `features/discovery/` — completeness analysis and question selection
-- `features/project-schema/` — canonical state types, validation, and mutations
+- `features/discovery/` — future discovery UI and workflow orchestration
+- `features/project-schema/` — future application workflows and validated canonical-state mutations
 - `features/generation/` — six-file rendering and export generation
 - `features/projects/` — project workspace, approval, and versions
 - `lib/ai/` — provider-neutral AI gateway and structured output handling
@@ -56,7 +58,7 @@ Input or imported material
 → extraction result
 → field-level evidence
 → canonical project state
-→ completeness and risk analysis
+→ deterministic completeness and ranked critical gaps
 → minimal discovery
 → approved canonical state
 → six Markdown renderers
@@ -109,6 +111,7 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 6. AI output is untrusted until validated against the canonical schema.
 7. Failed generation cannot overwrite the latest approved project version.
 8. Long-running AI work must not execute inside a request handler without job tracking.
+9. Completeness and question priority are computed from versioned deterministic policy, never from provider-generated weights.
 
 ## Initial Status Lifecycle
 
@@ -117,6 +120,7 @@ draft
 → analyzing
 → discovery_required | discovery_skipped
 → understanding_review
+→ architecture_ready
 → bible_generated
 → approved
 → in_build

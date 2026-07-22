@@ -74,6 +74,36 @@ Suggested weights:
 - Medium: 35
 - Low: 10
 
+### Phase 3 Deterministic Runtime Contract
+
+The implementation uses those criticality values as both completeness weights and the base question-rank weights. All weights are static, exported, and provider-neutral.
+
+Resolution ratios are:
+
+- Approved or confirmed field: `1.0`
+- Accepted assumption where the field permits assumptions: `1.0`
+- Safe default where the field and project type permit it: `1.0`
+- Unapproved inference: confidence-scaled, capped at `0.5`
+- Default without an approved safe-default rule: `0.75`
+- Missing or conflicted field: `0`
+
+Critical completeness includes relevant blocking and high fields. Overall completeness includes every relevant field. Section completeness applies the same weighted-average formula within each canonical section. Scores are rounded to one decimal place.
+
+Runtime question rank is:
+
+```text
+criticality weight
+× architecture-impact multiplier
+× uncertainty multiplier
+× lifecycle multiplier
+× answerability multiplier
++ downstream dependency bonus
+− typing-cost penalty
+− conditional-default penalty
+```
+
+The exact multiplier and penalty tables are exported from `src/domain/discovery/rules.ts` and formally recorded in ADR-010. Ties sort by canonical field path so output ordering remains deterministic.
+
 ## Interview Skip Rule
 
 Skip the interview when all conditions are met:

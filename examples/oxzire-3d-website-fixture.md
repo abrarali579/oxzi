@@ -1,14 +1,33 @@
 # Validation Fixture — Oxzire 3D Website
 
-Use this project later to test:
+The executable canonical fixture is `src/domain/project/fixtures.ts` as `oxzire3dWebsiteFixture`. It is validated when imported and contains field-level evidence, confidence, criticality, approval, lifecycle, version, assumption, and decision metadata.
 
-- Detailed master prompt extraction
-- Minimal or zero-question discovery
-- Mobile-first requirements
-- English and Bahasa Indonesia localization
-- Dark/light mode
-- 3D hero asset and performance fallback
-- Video portfolio playback
-- Editable CMS content
-- Visual avoid list
-- AI-ready architecture and Codex export
+## Structured Scenario
+
+```yaml
+identity:
+  name: Oxzire 3D Website
+  project_type: website
+business:
+  primary_goal: Generate qualified creative-production enquiries
+  target_users:
+    - Brand and agency producers
+    - Creative directors
+product:
+  core_flows:
+    - Portfolio to enquiry
+    - Localized case-study publishing
+  required_capabilities:
+    - Adaptive 3D hero with static fallback
+    - Captioned video case studies
+    - Localized CMS content
+quality:
+  localization: [English, Bahasa Indonesia]
+  performance: LCP at or below 2.5 seconds at p75
+  accessibility: WCAG 2.2 AA with reduced-motion support
+technical:
+  architecture: Server-rendered content with isolated progressive 3D enhancement
+  deployment: Vercel with CMS-hosted content and optimized media
+```
+
+This scenario exercises complete-master-prompt handling, mobile and media fallbacks, bilingual content, dark/light presentation, CMS ownership, visual exclusions, and zero-question eligibility without replacing the executable fixture.

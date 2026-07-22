@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 2 — Repository Bootstrap and UX Prototype: In Progress
+Phase 3 — Canonical Domain and Discovery Foundations: In Progress
 
 ## Current Goal
 
-Establish a production-quality application foundation before implementing the canonical project schema and product workflows.
+Establish deterministic, validated project and discovery domains before connecting extraction, persistence, or UI workflows.
 
 ## Completed
 
@@ -269,20 +269,137 @@ Completed on 2026-07-22.
 - Environment validation intentionally covers only the current optional public URL and runtime mode.
 - npm continues to report the existing three transitive advisories and deferred install scripts for `fsevents`, `sharp`, and `unrs-resolver`.
 
-## Next Phase
+## Phase 3 Unit 1 — Canonical Project Schema Implementation
 
-Phase 2 — Repository Bootstrap and UX Prototype
+Completed on 2026-07-22.
 
-Recommended first implementation units:
+### Files Created
 
-1. Initialize Next.js TypeScript project. — Complete
-2. Align root project and decision documentation. — Complete
-3. Add the local review-engine foundation. — Complete
-4. Add formatting, test runner, environment validation, and CI. — Complete
-5. Implement canonical Zod schemas and fixtures.
-6. Implement deterministic completeness scoring and question ranking.
-7. Build static New Project and Understanding Review flows.
-8. Add mocked zero-question and minimal-question scenarios.
+- `src/domain/project/enums.ts`
+- `src/domain/project/fixtures.ts`
+- `src/domain/project/identifiers.ts`
+- `src/domain/project/index.ts`
+- `src/domain/project/schema.test.ts`
+- `src/domain/project/schema.ts`
+
+### Files Modified
+
+- `README.md`
+- `PROJECT.md`
+- `DECISIONS.md`
+- `context/02-architecture.md`
+- `context/06-progress-tracker.md`
+- `examples/oxzire-3d-website-fixture.md`
+- `examples/news-automation-2026-fixture.md`
+
+### Completed Work
+
+- Added branded project, workspace, field, evidence, assumption, decision, conflict, and version identifiers.
+- Added strict enums and Zod schemas for field state, provenance, criticality, approvals, assumptions, conflicts, lifecycle, metadata records, and the complete canonical project shape.
+- Added generic `ProjectField<T>` metadata for values, status, confidence, criticality, source precedence, evidence, timestamps, assumptions, approvals, and conflicts.
+- Enforced evidence and metadata references, unique identifiers, approval/conflict rules, accepted-assumption rationale, readiness blockers, approved-version placeholder rejection, lifecycle transitions, chronological lifecycle events, and public-environment secret boundaries.
+- Added validated parse and deterministic recursively key-sorted JSON serialization APIs.
+- Added realistic, executable canonical fixtures for Oxzire 3D Website and News Website Automation Systems 2026.
+- Formalized `architecture_ready` between `understanding_review` and `bible_generated` in ADR-009 and the architecture lifecycle.
+- Added 12 focused canonical-domain tests, bringing the application suite to 15 tests across 3 files.
+
+### Verification Results
+
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 3 files and 15 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed with typecheck, lint, and build captured as passing after rerunning outside the restricted sandbox
+- `git diff --check` — passed
+
+The first sandboxed `npm run review` generated its package but exited nonzero because Turbopack could not bind the local IPC port while creating its CSS worker. The directly requested build had already passed. Rerunning the same Review Engine command with the required sandbox permission passed all three captured validations; no project or Review Engine change was needed.
+
+### Deferred Work and Open Schema Questions
+
+- Completeness metrics are validated for shape and bounds but are not yet derived from fields; deterministic scoring belongs to the next unit.
+- Source precedence is represented and ranked, but merge and mutation behavior is not implemented in this unit.
+- Persistence mappings, schema migrations, and version-storage policy remain deferred.
+- Reopening maintained projects and other backward lifecycle transitions need an explicit product decision before mutation APIs are introduced.
+
+## Phase 3 Unit 2 — Deterministic Completeness and Critical Question Ranking
+
+Completed on 2026-07-22.
+
+### Files Created
+
+- `src/domain/discovery/engine.ts`
+- `src/domain/discovery/engine.test.ts`
+- `src/domain/discovery/index.ts`
+- `src/domain/discovery/rules.ts`
+- `src/domain/discovery/types.ts`
+
+### Files Modified
+
+- `README.md`
+- `PROJECT.md`
+- `DECISIONS.md`
+- `context/02-architecture.md`
+- `context/06-progress-tracker.md`
+- `specs/02-discovery-engine.md`
+
+### Completed Work
+
+- Added deterministic field relevance using project type, lifecycle stage, criticality, explicit dependencies and activation rules, and safe-default availability.
+- Added blocking/high/medium/low completeness weights of `100`/`70`/`35`/`10` with explicit resolution ratios for approvals, confirmations, accepted assumptions, safe defaults, inference, unsafe defaults, missing fields, and conflicts.
+- Added critical, overall, and per-section completeness plus blocking gaps, open conflicts, accepted assumptions, required approvals, and visible safe-default reporting.
+- Added the exact auditable question-rank formula and per-candidate factor breakdown for criticality, lifecycle, architecture impact, downstream dependencies, uncertainty, default safety, typing cost, and answerability.
+- Added deterministic interview skipping at the locked `90%` threshold with zero blocking gaps, zero blocking conflicts, and zero required approvals.
+- Added selectable answer metadata, free-text necessity, typing effort, stable tie ordering, the typical two-to-five target, and the hard eight-question cap.
+- Kept the engine pure, provider-neutral, AI-free, and non-mutating.
+- Recorded the runtime contract in ADR-010 and aligned the discovery specification and architecture boundary.
+
+### Test Coverage
+
+- Complete Master Prompt with zero questions
+- Simple project with three critical questions
+- Complex unclear project capped at eight questions
+- Blocking conflict preventing interview skip
+- Safe defaults avoiding questions
+- Critical field outranking a cosmetic field
+- Selectable low-typing-cost question preference
+- Lifecycle-dependent relevance
+- Accepted assumption resolution
+- Unresolved inference and required approval handling
+- Deterministic output ordering
+- Oxzire 3D Website fixture
+- News Website Automation Systems 2026 fixture
+
+### Verification Results
+
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 4 files and 28 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed; typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+### Deferred Work and Open Questions
+
+- The engine reports safe defaults but intentionally does not mutate canonical state; validated mutations belong to the next unit.
+- Related questions are not merged without a field-specific answer-to-mutation contract proving that one answer resolves every field safely.
+- Natural-language extraction, dynamic phrasing, answer application, persistence, and interview UI remain deferred.
+- New canonical fields must receive reviewed relevance and question policy; generic deterministic fallbacks prevent runtime failure but do not replace policy review.
+
+## Current Phase
+
+Phase 3 — Canonical Domain and Discovery Foundations
+
+Implementation sequence:
+
+1. Implement canonical Zod schemas and fixtures. — Complete
+2. Implement deterministic completeness scoring and question ranking. — Complete
+3. Define validated discovery-answer and canonical merge contracts.
+4. Build static New Project and Understanding Review flows.
+5. Add mocked zero-question and minimal-question scenarios.
 
 ## Open Decisions for Later
 
@@ -292,8 +409,8 @@ Recommended first implementation units:
 - Final OXZI brand identity
 - Deployment domain
 
-These decisions do not block Phase 2 bootstrap.
+These decisions do not block the current canonical-domain or discovery-foundation work.
 
 ## Session Resume Context
 
-The next smallest unit is Phase 2 Unit 5: read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas before connecting a real AI provider. Expand the Oxzire 3D Website and News Automation fixtures into concrete canonical-state validation data during that unit.
+The next smallest unit is Phase 3 Unit 3: define validated discovery-answer structures and deterministic canonical merge/mutation rules before building the interview UI.

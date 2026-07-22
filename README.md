@@ -2,7 +2,7 @@
 
 OXZI turns a plain-language project idea, existing brief, or complete master prompt into a structured, AI-ready project operating system.
 
-Phase 1 established the locked product and architecture contracts. Phase 2 application implementation uses Next.js, strict TypeScript, and Tailwind CSS.
+Phase 1 established the locked product and architecture contracts. Phase 2 established the application and developer-tooling foundation. Phase 3 implements the canonical project domain in strict TypeScript and Zod.
 
 ## Local Development
 
@@ -57,6 +57,34 @@ Empty values are treated as unset. Zod validates environment input when Next.js 
 7. `npm run build`
 
 Run `npm run ci` for the same validation sequence locally after dependencies are installed.
+
+## Canonical Project Domain
+
+The public project-domain API is exported from `src/domain/project`. It includes branded identifiers, Zod schemas, canonical project types, deterministic serialization, and the two approved validation fixtures.
+
+```ts
+import {
+  parseCanonicalProject,
+  serializeCanonicalProject,
+  type CanonicalProject,
+} from "@/domain/project";
+```
+
+`parseCanonicalProject()` validates untrusted input and returns JSON-safe canonical state. `serializeCanonicalProject()` validates first and then emits stable, recursively key-sorted JSON. Stored state uses strings for ISO timestamps and contains no functions, `Date` instances, or classes.
+
+## Discovery Decision Engine
+
+The provider-neutral decision engine is exported from `src/domain/discovery`:
+
+```ts
+import { analyzeDiscovery } from "@/domain/discovery";
+
+const analysis = analyzeDiscovery(canonicalProject);
+```
+
+The result contains field relevance and resolution assessments, critical/overall/section completeness, blocker and conflict counts, visible safe defaults, the interview-skip decision, all ranked candidates, and the budgeted question list. Every ranking candidate includes its complete score-factor breakdown. The engine performs no LLM calls, prompts, persistence, or state mutation.
+
+Completeness uses explicit field weights: blocking `100`, high `70`, medium `35`, and low `10`. Approved, confirmed, permitted accepted-assumption, and permitted safe-default values receive full credit. Unapproved inference receives at most half credit, unsafe defaults receive `0.75`, and missing or conflicted fields receive none. ADR-010 records the full deterministic ranking formula and interview limits.
 
 ## Local Review Package
 
@@ -140,4 +168,4 @@ Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance and update `context/06-
 
 ## Project Status
 
-Phase 1 is complete. Phase 2 application bootstrap is complete; see `context/06-progress-tracker.md` for the current implementation state.
+Phases 1 and 2 are complete. Phase 3 canonical-domain implementation is in progress; see `context/06-progress-tracker.md` for the current implementation state.

@@ -28,9 +28,9 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Current Phase
 
-Phase 2 — Repository Bootstrap, Tooling Foundation, and UX Prototype is in progress.
+Phase 3 — Canonical Domain and Discovery Foundations is in progress.
 
-The Next.js application foundation, local review-package generator, formatting, project-wide test runner, environment validation, and CI workflow are complete. Canonical project-schema implementation is the next smallest unit. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
+The Next.js and developer-tooling foundation is complete. The canonical project state now has a strict TypeScript and Zod runtime contract, deterministic serialization, and concrete validation fixtures. Deterministic completeness scoring, interview skipping, and critical-question ranking are implemented without an AI dependency. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
 
 ## Locked Stack
 
