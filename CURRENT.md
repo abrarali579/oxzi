@@ -6,14 +6,15 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Phase: deterministic foundations plus Specification Governance runtime
 - Active unit: none
-- Last completed: Specification Governance Runtime Foundation hardening
-- Next: Technical Plan and Implementation Slice Runtime Foundation
+- Last completed: Technical Plan and Implementation Slice Runtime Foundation
+- Next: Task Card Compiler Runtime Foundation
 
 ## Implemented
 
 - Next.js/tooling/CI and hardened Review Engine
 - Canonical state, discovery/ranking, extraction, and Temporal Knowledge Graph `2.0.0`
 - Deterministic Constitution resolution/compliance, Specification normalization, structural/clarification/consistency/traceability/testability/freshness analysis, categorical health, readiness recommendations, controlled-living validation, and normalized Governance Reports
+- Deterministic Technical Plan normalization/governance, dependency-safe Implementation Slice derivation, plan/slice validation, traceability, categorical health, readiness recommendations, immutable version checks, and normalized reports
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -23,7 +24,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Specified, Runtime Deferred
 
-- Constitution canonical storage; plans/slices; context compiler/renderers
+- Constitution canonical storage; Task Card and context compiler/renderers
 - Prompt registries/optimization/evaluation, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; parsers/repository graph/structural execution
 - Divergence, review/convergence, agent control, persistence, UI, auth/providers

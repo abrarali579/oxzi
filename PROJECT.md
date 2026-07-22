@@ -33,9 +33,9 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Current Phase
 
-Wave 2 — Specification Governance Runtime Foundation is complete.
+Wave 2 — Specification Governance and Planning Runtime Foundation is complete.
 
-The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification normalization/analysis, categorical health, readiness-recommendation, and controlled-living validation foundations are implemented without AI. Workflow, Task Card/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Planning, slicing, parsers, context compilation, agent delivery, persistence, and UI remain future work.
+The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification governance, Technical Plan governance, and independently verifiable Implementation Slice foundations are implemented without AI. Workflow, Task Card/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Task Card compilation, parsers, context compilation, agent delivery, persistence, and UI remain future work.
 
 ## Locked Stack
 
@@ -66,7 +66,7 @@ Status vocabulary: `implemented`, `implemented foundation only`, `approved and s
 
 - Wave 0 Lean Agent Context — `implemented`
 - Wave 1 Unified Contracts and Temporal Graph — `implemented`; workflow/execution schemas are `implemented foundation only`
-- Wave 2 Specification Governance — deterministic runtime `implemented`; canonical Constitution storage and planning integration remain `planned`
+- Wave 2 Specification Governance and Planning — deterministic governance, Technical Plan, and Implementation Slice runtimes `implemented`; canonical Constitution storage remains `planned`
 - Wave 3 Repository Intelligence — parser/structural contracts `implemented foundation only`; runtimes `approved and specified`
 - Wave 4 Context Intelligence — `approved and specified`
 - Wave 5 Prompt and Handoff — Prompt Program/Typed AI contracts `implemented foundation only`; compilers/runtime `approved and specified`; connected delivery `deferred`

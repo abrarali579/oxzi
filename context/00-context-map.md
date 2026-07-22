@@ -20,7 +20,7 @@ Route from the task; follow dependencies and record widening.
 | Review/audit | `specs/08-review-audit-analyzer.md`; `.review/` contract |
 | Visual architecture | `specs/09-visual-master-architecture-generator.md` |
 | Constitution/health | `specs/11-project-constitution.md`; `specs/12-specification-health-engine.md` |
-| Specs/plans/slices/convergence | `specs/13-controlled-specifications-convergence.md` |
+| Specs/plans/slices/convergence | `specs/13-controlled-specifications-convergence.md`; `src/domain/planning/` |
 | Workflow/skills/repair | `specs/14-workflow-policy-skill-registry.md` |
 | Passport/artifacts/ledger/adapters | `specs/15-execution-passport.md` |
 | Temporal memory/Episodes | `specs/16-temporal-project-memory.md`; `src/domain/knowledge-graph/` |

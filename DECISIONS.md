@@ -640,3 +640,11 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** Context compilation uses explicit seeds, structural definitions, direct relationships, interfaces, tests, rules, and relevant changes before whole files.
 
 **Consequences:** Every structural inclusion exposes reason/freshness and cannot displace mandatory project context or safety rules.
+
+## ADR-078 — Deterministic Requirement-Backed Implementation Slices
+
+**Status:** Accepted — Technical Plan and Implementation Slice runtime foundation
+
+**Decision:** The initial deterministic planner derives one stable Implementation Slice for each included Specification requirement, orders Slices by explicit requirement dependencies and stable IDs, and carries exact Specification, Constitution, Governance Report, and Technical Plan fingerprints. An implementation constraint may become a foundation Slice only with explicit justification. Parallel grouping remains unset unless disjoint boundaries or an explicit merge contract prove safe independence.
+
+**Consequences:** Slice derivation is reproducible and cannot invent product scope, silently broaden a parent artifact, or infer unsafe parallelism. Approved or used Plan and Slice versions are immutable; changes create a new version with exact parent linkage. Readiness remains a recommendation requiring external approval, and future planners may refine grouping only through a versioned policy change with regression tests.

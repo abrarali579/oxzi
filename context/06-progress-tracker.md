@@ -1136,3 +1136,61 @@ Implement the Technical Plan and Independent Implementation Slice Runtime Founda
 ### Next Smallest Unit
 
 Implement the Technical Plan and Independent Implementation Slice Runtime Foundation over a healthy, approved, current Governance Report. Preserve exact parent fingerprints and keep Task Card compilation, execution, persistence, providers, parsers, convergence, and UI outside that unit.
+
+## Technical Plan and Implementation Slice Runtime Foundation
+
+### Completed Work
+
+- Added strict Technical Plan, Plan version, Slice version, normalization, categorical health/readiness, and Plan/Slice Governance Report schemas while upgrading the authoritative existing Implementation Slice contract in place.
+- Implemented pure Plan and Slice normalization with deterministic collection handling, content-derived fingerprints, stable serialization, explicit normalization actions, and fingerprint mismatch blockers.
+- Implemented deterministic one-Slice-per-included-requirement derivation with stable IDs, dependency-safe ordering, acceptance/validation traceability, rollback, evidence, protected/editable scope, and explicit foundation justification.
+- Implemented Plan/Slice structural validation, no-broadening consistency checks, exact-parent traceability, broken-reference detection, categorical six-dimension health, and readiness recommendations that never approve artifacts.
+- Implemented approved/used Plan and Slice immutability plus exact parent linkage for amendments.
+- Added normalized semantic Plan and Slice Governance Reports whose semantic fingerprints exclude evaluation timestamps.
+- Added ADR-078 for deterministic requirement-backed Slice derivation and conservative parallelism.
+- Added eight fixture scenarios and 26 focused tests covering happy paths, every requested blocker class, immutability, stable fingerprints/serialization, deterministic order, and input immutability.
+
+### Files Created
+
+- `src/domain/planning/schemas.ts`
+- `src/domain/planning/utils.ts`
+- `src/domain/planning/normalization.ts`
+- `src/domain/planning/derivation.ts`
+- `src/domain/planning/validation.ts`
+- `src/domain/planning/analysis.ts`
+- `src/domain/planning/health.ts`
+- `src/domain/planning/evaluate.ts`
+- `src/domain/planning/fixtures.ts`
+- `src/domain/planning/planning.test.ts`
+- `src/domain/planning/index.ts`
+
+### Files Modified
+
+- `src/domain/governance/schemas.ts`
+- `CURRENT.md`, `PROJECT.md`, and `DECISIONS.md`
+- `context/00-context-map.md`, `context/02-architecture.md`, and this tracker
+- `specs/13-controlled-specifications-convergence.md`
+
+### Validation Results
+
+- Focused planning run — passed; 1 file and 26 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 16 files and 244 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed
+- `npm run ci` — passed outside the restricted sandbox
+- `npm run review` — passed outside the restricted sandbox; captured checks and generated-output secret scan passed
+- `git diff --check` — passed
+
+### Remaining Limits
+
+- Slice derivation is deliberately one included requirement per Slice; future aggregation requires a versioned, evidence-backed policy change.
+- Parallel groups remain unset unless safe disjointness is explicit; this runtime does not infer repository mutation boundaries.
+- Technical architecture references, components, commands, risks, and evidence are supplied normalized inputs; no parser, database, or provider resolves them.
+- Task Card compilation, Context Compilation, Execution Passports, persistence, UI, convergence, providers, and execution remain deferred.
+
+### Next Smallest Unit
+
+Implement the Task Card Compiler Runtime Foundation over one healthy, approved, current Implementation Slice and its exact Plan/Specification/Constitution fingerprints. Keep context compilation, prompt rendering, Execution Passport certification, connected delivery, persistence, providers, and UI outside that unit.

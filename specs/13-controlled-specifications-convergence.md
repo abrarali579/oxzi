@@ -2,7 +2,7 @@
 
 ## Status and Purpose
 
-**Status:** Controlled-living validation foundation implemented; planning, slicing, and convergence runtimes deferred.
+**Status:** Controlled-living, Technical Plan, and Implementation Slice runtime foundations implemented; convergence runtime deferred.
 
 This specification separates requirement truth, technical planning, executable work, controlled change, independent implementation slicing, and long-lived spec-to-code convergence.
 
@@ -24,7 +24,7 @@ Specification, Technical Plan, and Task Card are distinct normalized, versioned 
 
 ## Independent Implementation Slice Planner
 
-The future planner emits the smallest vertical slices that can be implemented and validated independently. Every slice contains stable ID, goal, parent plan/spec references, prerequisites, owned files or boundaries, protected areas, acceptance criteria, validation, artifact outputs, risk, and completion state.
+The implemented deterministic planner emits the smallest requirement-backed vertical or explicitly justified foundation slices that can be implemented and validated independently. Every slice contains stable ID, version, goal, exact parent plan/spec/Constitution fingerprints, prerequisites, owned or editable boundaries, protected areas, acceptance criteria, validation, artifact outputs, risks, evidence, rollback, approval, lifecycle, and content fingerprint.
 
 A valid slice:
 
@@ -37,6 +37,8 @@ A valid slice:
 - records why a horizontal foundation slice is unavoidable when no safe vertical slice exists.
 
 Ordering is deterministic from blockers, dependencies, Constitution rules, specification priority, risk, context size, affected modules, testing boundaries, lifecycle relevance, and value. Parallel eligibility requires disjoint mutation boundaries or an explicit merge contract.
+
+The runtime currently creates one stable Slice per included requirement, orders it by requirement dependencies and stable IDs, and maps every linked acceptance criterion and verification reference. Implementation constraints become foundation slices only with an explicit justification. Parallel groups remain unset unless safe independence is explicit; the runtime never guesses parallel safety. Plans and Slices expose normalization, structural, consistency, traceability, categorical health, readiness recommendation, controlled-living amendment, serialization, and semantic-report contracts.
 
 ## Controlled Living Specification Flows
 
@@ -85,7 +87,7 @@ Future graph vocabulary includes specification, acceptance criterion, technical 
 ## Non-Goals
 
 - Repository AST ingestion or source graph construction
-- Runtime planners, convergence analyzers, UI, persistence, or providers
+- Convergence analyzers, UI, persistence, providers, Task Card compilation, or execution
 - Automatic approval or code execution
 - Treating generated Markdown as the authoritative specification record
 

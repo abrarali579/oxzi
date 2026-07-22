@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { approvalStatusSchema, projectIdSchema, versionIdSchema } from "../project";
+import {
+  approvalStatusSchema,
+  projectIdSchema,
+  timestampSchema,
+  versionIdSchema,
+} from "../project";
 import {
   contentFingerprintSchema,
   graphNodeIdSchema,
@@ -105,17 +110,60 @@ export const technicalPlanReferenceSchema = z
 export const implementationSliceSchema = z
   .object({
     id: implementationSliceIdSchema,
+    version: z.number().int().positive(),
     specificationId: specificationIdSchema,
+    specificationVersion: z.number().int().positive(),
+    specificationFingerprint: contentFingerprintSchema,
     technicalPlanId: technicalPlanIdSchema,
+    technicalPlanVersion: z.number().int().positive(),
+    technicalPlanFingerprint: contentFingerprintSchema,
+    constitutionFingerprint: contentFingerprintSchema,
     goal: z.string().trim().min(1),
+    order: z.number().int().nonnegative(),
+    kind: z.enum(["vertical", "foundation"]),
     prerequisiteSliceIds: z.array(implementationSliceIdSchema),
     acceptanceCriterionIds: z.array(acceptanceCriterionIdSchema).min(1),
+    scope: referenceList.min(1),
+    exclusions: referenceList,
+    riskRefs: referenceList,
+    evidenceRefs: referenceList.min(1),
     validationCommands: referenceList.min(1),
+    artifactOutputRefs: referenceList,
     editableScope: referenceList,
     protectedScope: referenceList,
+    rollbackStrategy: z.string().trim().min(1),
     foundationJustification: z.string().trim().min(1).nullable(),
+    parallelGroup: z.string().trim().min(1).nullable(),
+    approvalStatus: approvalStatusSchema,
+    lifecycle: z.enum(["draft", "approved", "used", "completed", "superseded"]),
+    parentSliceVersion: z.number().int().positive().nullable(),
+    parentSliceFingerprint: contentFingerprintSchema.nullable(),
+    createdAt: timestampSchema,
+    approvedAt: timestampSchema.nullable(),
+    usedAt: timestampSchema.nullable(),
+    fingerprint: contentFingerprintSchema,
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (value.kind === "foundation" && !value.foundationJustification)
+      context.addIssue({
+        code: "custom",
+        path: ["foundationJustification"],
+        message: "Foundation slices require an explicit justification",
+      });
+    if (["approved", "used"].includes(value.lifecycle) && value.approvalStatus !== "approved")
+      context.addIssue({
+        code: "custom",
+        path: ["approvalStatus"],
+        message: "Approved slices require approved status",
+      });
+    if (value.lifecycle === "used" && !value.usedAt)
+      context.addIssue({
+        code: "custom",
+        path: ["usedAt"],
+        message: "Used slices require a used timestamp",
+      });
+  });
 
 export const specificationHealthResultSchema = z
   .object({

@@ -28,6 +28,7 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
 - `domain/knowledge-graph/` — implemented temporal typed projection, Episodes, indexes, traversal/path, impact, task subgraphs, integrity, serialization, and fingerprints
 - `domain/governance/` — implemented deterministic Specification Governance runtime: normalization, Constitution resolution/compliance, structure, clarification, consistency, lifecycle-aware traceability, testability, temporal freshness, categorical health, readiness recommendation, controlled-living checks, normalized reporting, and fixtures
+- `domain/planning/` — implemented deterministic Technical Plan normalization/governance, dependency-safe Slice derivation, plan/slice structure and consistency checks, exact-parent traceability, categorical health/readiness, immutable-version validation, reporting, and fixtures
 - `domain/workflow/` — implemented policy/skill/activation/escalation schemas only
 - `domain/execution/` — implemented Task Card, Passport, profile, status, event, artifact, receipt, and Token Ledger schemas only
 - `domain/evaluation/` — implemented assertion, suite/scenario, trust, certification, dataset, optimization, renderer, and release schemas; runtime deferred
@@ -38,8 +39,8 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - `domain/repository-intelligence/` — implemented parser/snapshot/file/symbol/query/rule/preview/update contracts; parsers and graph runtime deferred
 - Unified Evidence View — future query-time join; never persisted as product truth
 - `domain/project-constitution/` — implemented inside `domain/governance/` over explicit versioned rule snapshots; canonical rule storage and persistence remain future
-- `domain/specification-health/` — implemented inside `domain/governance/` as deterministic categorical requirement-readiness gates; planning integration remains future
-- `domain/specification/` — future normalized Specifications, Technical Plans, controlled change, slices, and convergence findings
+- `domain/specification-health/` — implemented inside `domain/governance/` as deterministic categorical requirement-readiness gates; `domain/planning/` consumes only healthy, current readiness recommendations
+- `domain/specification/` — Specification governance and Technical Plan/Slice runtime live in `domain/governance/` and `domain/planning/`; convergence findings remain future
 - `domain/context-compiler/` — future quality-gated smallest-sufficient context selection
 - `domain/task-card/` — future normalized Task Card and deterministic style renderers
 - `domain/workflow-policy/` — future explainable policy selection, selective skills, and repair escalation
