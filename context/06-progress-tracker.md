@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 1 — Product Foundation: Complete
+Phase 2 — Repository Bootstrap and UX Prototype: In Progress
 
 ## Current Goal
 
-Prepare the OXZI repository for implementation using a locked product definition, canonical schema, discovery rules, six living files, and Codex handoff instructions.
+Establish a production-quality application foundation before implementing the canonical project schema and product workflows.
 
 ## Completed
 
@@ -23,6 +23,52 @@ Prepare the OXZI repository for implementation using a locked product definition
 - Security and engineering invariants defined
 - Two validation projects selected
 - Codex local-folder handoff guide created
+- Phase 2 Unit 1: Next.js application bootstrap completed
+- Next.js 16.2.11 App Router configured with strict TypeScript and `src/`
+- Tailwind CSS 4 styling baseline configured
+- Next.js ESLint flat configuration added
+- Responsive OXZI placeholder homepage added
+- npm development, build, start, lint, and typecheck scripts added
+- Local installation and development commands documented
+
+## Phase 2 Unit 1 — Repository Bootstrap
+
+Completed on 2026-07-22.
+
+### Files Created
+
+- `.gitignore`
+- `eslint.config.mjs`
+- `next-env.d.ts` (framework-generated and gitignored)
+- `next.config.ts`
+- `package.json`
+- `package-lock.json`
+- `postcss.config.mjs`
+- `src/app/globals.css`
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `tsconfig.json`
+
+### Files Modified
+
+- `README.md`
+- `context/06-progress-tracker.md`
+
+### Verification Results
+
+- `npm install --prefer-offline` — passed; 359 packages audited
+- `npm run typecheck` — passed
+- `npm run lint` — passed
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- Development-server smoke check — passed; `HEAD /` returned HTTP 200
+- `git diff --check` — passed
+
+The first sandboxed production build could not bind Turbopack's internal local port. The same build passed outside the sandbox; this was an execution-environment restriction rather than an application failure.
+
+### Warnings
+
+- npm reports three transitive dependency advisories: one moderate PostCSS advisory and two high-severity paths involving Next.js/Sharp. npm does not currently offer a non-breaking upgrade for the pinned latest stable Next.js release.
+- npm deferred install scripts for optional/transitive `sharp@0.34.5` and `unrs-resolver@1.12.2`. Type checking, linting, production build, and the development smoke check still completed successfully.
 
 ## Locked Architecture Decisions
 
@@ -52,8 +98,8 @@ Phase 2 — Repository Bootstrap and UX Prototype
 
 Recommended first implementation units:
 
-1. Initialize Next.js TypeScript project.
-2. Add linting, formatting, test runner, and environment validation.
+1. Initialize Next.js TypeScript project. — Complete
+2. Add formatting, test runner, and environment validation.
 3. Implement canonical Zod schemas and fixtures.
 4. Implement deterministic completeness scoring and question ranking.
 5. Build static New Project and Understanding Review flows.
@@ -71,4 +117,4 @@ These decisions do not block Phase 2 bootstrap.
 
 ## Session Resume Context
 
-Start with `specs/01-canonical-project-schema.md` and implement runtime Zod schemas before connecting a real AI provider. Use fixtures for the Oxzire 3D Website and News Automation validation projects.
+The next smallest unit is Phase 2 Unit 2: add formatting, a test runner, and environment validation without implementing product-domain logic. After that, read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas before connecting a real AI provider. Use fixtures for the Oxzire 3D Website and News Automation validation projects.

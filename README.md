@@ -1,8 +1,36 @@
-# OXZI Phase 1 — Agent-Ready Foundation
+# OXZI
 
-This package is the locked foundation for starting OXZI with Codex or another coding agent inside a local repository.
+OXZI turns a plain-language project idea, existing brief, or complete master prompt into a structured, AI-ready project operating system.
 
-## Start Here
+Phase 1 established the locked product and architecture contracts. Phase 2 application implementation uses Next.js, strict TypeScript, and Tailwind CSS.
+
+## Local Development
+
+Requirements:
+
+- Node.js 20.9 or newer
+- npm
+
+Install dependencies and start the development server:
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+Available commands:
+
+```bash
+npm run dev        # Start the development server
+npm run build      # Create a production build
+npm run start      # Serve the production build
+npm run lint       # Run ESLint
+npm run typecheck  # Check TypeScript without emitting files
+```
+
+## Agent Start
 
 1. Read `AGENTS.md`.
 2. Follow `CODEX_LOCAL_SETUP.md`.
@@ -21,6 +49,6 @@ This package is the locked foundation for starting OXZI with Codex or another co
 - `examples/` — Oxzire 3D Website and News Automation validation fixtures
 - `CODEX_LOCAL_SETUP.md` — local VS Code and Codex instructions
 
-## Current Status
+## Project Status
 
-Phase 1 is complete. Phase 2 begins with repository bootstrap and the UX/application foundation.
+Phase 1 is complete. Phase 2 application bootstrap is complete; see `context/06-progress-tracker.md` for the current implementation state.
