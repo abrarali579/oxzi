@@ -30,6 +30,61 @@ npm run lint       # Run ESLint
 npm run typecheck  # Check TypeScript without emitting files
 ```
 
+## Local Review Package
+
+Generate an auditable handoff for another reviewer:
+
+```bash
+npm run review
+```
+
+The command records the current branch and latest commit, captures working-tree changes and a sanitized diff, and runs type checking, linting, and the production build. It writes:
+
+- `.review/summary.md`
+- `.review/changed-files.md`
+- `.review/validation-results.md`
+- `.review/architecture-impact.md`
+- `.review/codex-report.md`
+- `.review/git.diff`
+
+Generated review outputs are local and ignored by Git. Commit only `.review/.gitkeep`.
+
+### Comparison behavior
+
+- Normal repositories compare the latest commit plus staged, unstaged, and safe untracked changes against `HEAD~1`.
+- A root-commit repository compares against Git's empty tree and labels that base explicitly.
+- An unborn repository generates a package from safe working-tree files, states that no commit exists, and does not fail merely because the repository has no commit.
+
+### Exclusions and redaction
+
+- `.env` files, local credentials, private keys, local databases, `node_modules`, `.next`, and generated `.review` outputs are excluded.
+- Cookie, Set-Cookie, Authorization, common credential fields, recognized provider tokens, private keys, and credential-key high-entropy values are redacted from diffs, metadata, and validation output.
+- Lockfiles are never copied into the raw diff. Reports include only the filename, added/removed line counts, and whether the lockfile changed.
+- Ordinary commit SHAs, UUIDs, integrity hashes, and harmless identifiers are preserved.
+
+Redaction is defense in depth, not permission to commit secrets. Novel secret formats can evade heuristic detection, so repository policy must remain the primary protection.
+
+### Exit behavior
+
+All three validation commands are attempted when safe. Their exit codes, signals, spawn errors, and timeout details are written to `validation-results.md`.
+
+`npm run review` exits nonzero when any validation fails, recursion is detected, a recognized secret remains after sanitization, or package generation is incomplete. Validation failures still produce the safest complete review package possible. Fatal Git or filesystem failures can prevent package completion and also exit nonzero.
+
+An environment guard and `.review/.active-run` sentinel block indirect recursion. The sentinel is removed after success, failure, timeout, and handled interruption. An uncatchable termination such as `SIGKILL` can leave a stale sentinel; after confirming no review is running, remove `.review/.active-run` manually.
+
+### Platform requirements
+
+- Node.js 20.9 or newer, npm, and Git are required.
+- macOS is supported without GNU-only shell utilities.
+- Windows path handling uses `npm.cmd` and `NUL`, but Windows execution is not yet verified in CI.
+- Validation commands have a ten-minute timeout and captured output is bounded.
+
+Run the focused generator tests with:
+
+```bash
+npm run test:review
+```
+
 ## Agent Start
 
 1. Read `AGENTS.md`.

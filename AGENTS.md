@@ -49,7 +49,9 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
   - update `context/06-progress-tracker.md`
   - report changed files
   - report actual validation results
+  - run `npm run review` when the review generator is available
   - provide a recommended commit message
+- Treat `.review/` outputs as local generated evidence; commit only `.review/.gitkeep` by default.
 - Never commit `.env`, API keys, credentials, tokens, generated secrets, or local database files.
 - Keep `main` stable and buildable.
 

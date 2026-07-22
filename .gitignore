@@ -28,3 +28,7 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# Generated local review package
+.review/*
+!.review/.gitkeep

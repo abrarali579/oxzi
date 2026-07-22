@@ -32,6 +32,7 @@ Establish a production-quality application foundation before implementing the ca
 - Local installation and development commands documented
 - Root project brief and formal decision register added
 - Agent reading order aligned across repository guidance
+- Phase 2 Unit 3: local review-engine foundation completed
 
 ## Phase 2 Unit 1 — Repository Bootstrap
 
@@ -109,6 +110,97 @@ Completed on 2026-07-22.
 
 The formal accepted-decision register is maintained in root `DECISIONS.md`. Decisions cannot be changed silently.
 
+## Phase 2 Unit 3 — Review Engine Foundation
+
+Completed on 2026-07-22. This user-directed unit was executed before the still-deferred Unit 2 tooling unit.
+
+### Files Created
+
+- `.review/.gitkeep`
+- `scripts/generate-review.mjs`
+- `scripts/generate-review.test.mjs`
+
+### Files Modified
+
+- `.gitignore`
+- `package.json`
+- `README.md`
+- `AGENTS.md`
+- `PROJECT.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Added `npm run review` to generate a local six-file review package plus a sanitized full Git diff.
+- Added branch, latest-commit, `HEAD~1`, changed-file, diff-stat, and safe untracked-file collection.
+- Added sensitive-path exclusion, recognized credential redaction, and symlink-safe generated-file writes.
+- Added structured architecture-impact and Codex handoff reports.
+- Added focused tests using the Node.js built-in test runner without a new dependency.
+- Ignored generated `.review/` outputs while retaining `.review/.gitkeep`.
+
+### Generated Review Outputs
+
+- `.review/summary.md`
+- `.review/changed-files.md`
+- `.review/validation-results.md`
+- `.review/architecture-impact.md`
+- `.review/codex-report.md`
+- `.review/git.diff`
+
+### Verification Results
+
+- `npm run test:review` — passed; 4 tests
+- `npm run review` — passed; generated all required outputs and captured 3 passing checks
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `git diff --check` — passed
+
+### Limitations
+
+- Architecture and semantic-impact classification is path-based and requires human review.
+- The required `HEAD~1` comparison includes the latest commit plus current working-tree changes, not only the current uncommitted unit.
+
+## Review Engine Safety Hardening
+
+Completed on 2026-07-22 following the Review Engine audit.
+
+### Files Modified
+
+- `scripts/generate-review.mjs`
+- `scripts/generate-review.test.mjs`
+- `README.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Added Cookie, Set-Cookie, all Authorization-scheme, Docker auth, credential-field, and credential-scoped high-entropy redaction.
+- Preserved ordinary SHAs, UUIDs, dependency integrity hashes, and harmless identifiers.
+- Replaced raw lockfile diffs with filename, added/removed line counts, and dependency-change summaries.
+- Added environment and sentinel recursion guards with cleanup after success, failure, timeout, or handled interruption.
+- Added spawn-error, timeout, signal, command-not-found, and exit-code details to validation reporting.
+- Preserved sequential validation so later checks still run after a safe failure.
+- Added complete review generation for unborn repositories while preserving root-commit empty-tree comparison.
+- Expanded focused coverage from 4 to 14 tests.
+
+### Verification Results
+
+- `npm run test:review` — passed; 14 tests
+- `npm run review` — passed; generated the complete package and captured 3 passing validations
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `git diff --check` — passed
+
+The first hardened self-scan correctly exited nonzero after detecting a non-idempotent redaction marker in the generator's own test diff. The marker handling was corrected, an idempotence assertion was added, and the final review run passed.
+
+### Remaining Security and Portability Limits
+
+- Secret detection is heuristic and cannot guarantee recognition of every novel secret format; secrets remain prohibited in tracked files.
+- An uncatchable termination such as `SIGKILL` can leave `.review/.active-run`; a later run blocks rather than overwriting it.
+- Lockfile dependency impact is conservatively reported as changed whenever the lockfile changes; semantic package-level interpretation is intentionally omitted.
+- macOS execution is supported; Windows-specific `npm.cmd` and `NUL` handling is implemented but not yet verified in CI.
+
 ## Next Phase
 
 Phase 2 — Repository Bootstrap and UX Prototype
@@ -117,10 +209,11 @@ Recommended first implementation units:
 
 1. Initialize Next.js TypeScript project. — Complete
 2. Add formatting, test runner, and environment validation.
-3. Implement canonical Zod schemas and fixtures.
-4. Implement deterministic completeness scoring and question ranking.
-5. Build static New Project and Understanding Review flows.
-6. Add mocked zero-question and minimal-question scenarios.
+3. Add the local review-engine foundation. — Complete
+4. Implement canonical Zod schemas and fixtures.
+5. Implement deterministic completeness scoring and question ranking.
+6. Build static New Project and Understanding Review flows.
+7. Add mocked zero-question and minimal-question scenarios.
 
 ## Open Decisions for Later
 
@@ -134,4 +227,4 @@ These decisions do not block Phase 2 bootstrap.
 
 ## Session Resume Context
 
-The next smallest unit is Phase 2 Unit 2: add formatting, a test runner, and environment validation without implementing product-domain logic. After that, read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas before connecting a real AI provider. Use fixtures for the Oxzire 3D Website and News Automation validation projects.
+The next smallest unit is the deferred Phase 2 Unit 2: add formatting, a project-wide test command, and environment validation without implementing product-domain logic. After that, read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas as Unit 4 before connecting a real AI provider. Use fixtures for the Oxzire 3D Website and News Automation validation projects.

@@ -28,9 +28,9 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Current Phase
 
-Phase 2 — Repository Bootstrap and UX Prototype is in progress.
+Phase 2 — Repository Bootstrap, Review Foundation, and UX Prototype is in progress.
 
-The Next.js application foundation is complete. The next planned unit is baseline development tooling: formatting, a test runner, and environment validation. Product-domain schema and workflow implementation follow that tooling unit. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
+The Next.js application foundation and local review-package generator are complete. The baseline development-tooling unit—formatting, project-wide testing, and environment validation—remains deferred and is the next smallest unit. Product-domain schema and workflow implementation follow that tooling unit. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
 
 ## Locked Stack
 
