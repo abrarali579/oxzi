@@ -21,6 +21,8 @@ The Review/Audit Analyzer consumes the existing local Review Engine package, ver
 
 The Review Engine remains responsible for safe evidence collection and redaction. The analyzer treats all narrative fields as claims to verify against available evidence.
 
+Future AI-produced findings use a versioned Typed AI Contract and remain untrusted until schema and evidence validation pass. Trace IDs may connect findings to exact Prompt Program, context, repository operation, and evaluation versions, but traces do not replace Review Engine evidence.
+
 ## Normalized Finding
 
 Each finding contains a stable ID, category, severity, evidence references, affected files/graph nodes, acceptance-criterion reference when applicable, status, recommended remedy, and confidence. Unsupported claims are marked unverified rather than accepted.

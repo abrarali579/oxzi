@@ -8,6 +8,8 @@ The AI Task Card Prompt Compiler normalizes one approved unit of work, verifies 
 
 Normalization and rendering are separate deterministic stages. The Task Card owns bounded work meaning; the renderer owns presentation. The future Execution Passport wraps and certifies a Task Card for delivery and does not replace either stage.
 
+A Prompt Program is the versioned executable configuration that binds the Task Card schema, Context Package policy, renderer, examples, workflow, target compatibility, and evaluation suite. It does not replace the Task Card or renderer. Every rendered execution records a Prompt Program version, and changing program configuration must preserve the normalized Task Card meaning fingerprint. See `specs/21-prompt-programs-optimization.md`.
+
 ## Inputs
 
 - User task request
@@ -35,6 +37,7 @@ Exactly one primary type is selected:
 - `test`
 - `migration`
 - `clarification_required`
+- `decision`
 
 Failed required checks, security findings, incomplete approved scope, or blockers default the next Task Card to `repair` or `clarification_required`, never unrelated feature development.
 
@@ -157,11 +160,19 @@ When the safe result cannot fit a requested limit, the renderer returns a contin
 
 Before a rendered prompt or Passport is ready, deterministic gates evaluate specification health, Constitution coverage, context sufficiency, scope clarity, dependencies, blockers, security, acceptance criteria, validation commands, output contract, target/edit-format compatibility, token-budget safety, project/graph/repository freshness, conflicts, and approval. Visible outcomes are `certified`, `certified_with_warnings`, `review_required`, `insufficient_context`, `blocked`, `stale`, or `incompatible`. Scores are forbidden until supported by a published evaluation dataset.
 
+Prompt Certification follows `specs/19-prompt-evaluation-certification-optimization.md` and remains separate from post-execution certification. Renderers record both the normalized meaning fingerprint and rendered meaning fingerprint; mismatch is a hard failure.
+
+## Decision Task Cards
+
+The compiler chooses direct, plan-first, clarification, investigation, divergent-reasoning, architecture-decision, or repair output from workflow policy. Divergent work receives a normalized Decision Task Card containing the decision, constraints, accepted facts, prohibited options, evaluation criteria, uncertainty, relevant graph context, frame policy, budget, and final decision format. Open ideation and final implementation instructions are never mixed in one uncontrolled prompt.
+
 ## Prompt Performance Dataset Direction
 
 A future private-by-default dataset may record user goal, normalized Task Card, rendered style, target agent, token estimate, agent output, audit findings, rework, acceptance/rejection, and user feedback. Derived metrics are preferred over raw prompt or project content. Users can keep all performance data private. Private data cannot support global model training without explicit consent, and optimization cannot alter approved requirements merely to improve token metrics.
 
 No telemetry is implemented by this specification.
+
+Important compiler or renderer outputs cross the Typed AI Contract System when AI is used. Provider prose is parsed, validated, and optionally repaired through the bounded contract in `specs/22-typed-ai-contracts-repair.md`; it cannot silently become a Task Card.
 
 ## Acceptance Criteria
 

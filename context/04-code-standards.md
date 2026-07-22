@@ -75,6 +75,15 @@
 - Temporal records use explicit effective and ingestion fields; never overload one timestamp.
 - Repository parsers and optional enrichment remain adapters outside canonical project state.
 - Exact file content outranks stale chat; edit formats must match agent capability and read-only/generated boundaries.
+- Evaluation schemas expose hard gates, evidence, evaluator, version, and trust; no fabricated scores or hidden semantic defaults.
+- Renderer records must preserve normalized meaning fingerprints.
+- Divergence generators cannot contain critic fields or sibling references; cross-artifact IDs and cost arithmetic are validated.
+- Prompt Program versions used by executions are immutable and preserve normalized Task Card meaning across renderer/example/optimization changes.
+- AI domain code accepts typed validated results, not raw provider payloads; deterministic normalization uses only approved aliases and never invents required fields.
+- Metadata-only traces reject raw-content references; datasets preserve provenance, consent, immutable versions, and training/validation separation.
+- DAILY skill status requires fresh repository evidence; repeated identical failed recovery requires escalation.
+- Parser adapters expose versions/capabilities; parsed records retain errors/freshness, and stale parser/grammar/content fingerprints invalidate reuse.
+- Structural findings are evidence, not automatic defects; transformation records remain non-applying previews until separate authorization.
 
 ## Database
 
@@ -103,6 +112,7 @@ Required layers:
 - Golden-file tests for generated Markdown
 - Contract tests for graph projection, context sufficiency, Task Card render equivalence, audit classification, and graph-derived visual view models as those units are implemented
 - Determinism tests for byte-stable graph serialization, stable identities, cap/hub behavior, cycle safety, traceability, and fingerprint invalidation
+- Contract tests for Prompt Program meaning/immutability, typed-output repair limits, trace privacy/version lineage, skill evidence/diagnostics, and structural repository evidence
 
 ## Critical Test Cases
 
@@ -123,6 +133,12 @@ Required layers:
 15. Compliance and quality gates independently block acceptance.
 16. Repeated repair failures reach a durable escalation outcome.
 17. Adapter rendering preserves normalized Passport and Task Card meaning.
+18. Used Prompt Program versions cannot mutate and promotion requires unseen validation, hard gates, security, meaning, and approval.
+19. Partial or invalid AI output cannot certify; repair cannot invent missing meaning.
+20. Metadata-only traces contain no raw content and experiments preserve exact versions and partition separation.
+21. DAILY skills require current repository evidence and repeated failed recovery escalates.
+22. Stale parser/grammar/content records cannot be reused; deletions prune repository-graph evidence.
+23. Structural matches retain parser/range evidence and cannot apply code transformations.
 
 ## File Organization
 
@@ -144,7 +160,7 @@ src/
 └── tests/
 ```
 
-Implemented domain modules also include `src/domain/project/`, `src/domain/discovery/`, `src/domain/extraction/`, and `src/domain/knowledge-graph/`. New deterministic intelligence belongs beside these domains rather than inside route handlers.
+Implemented domain modules also include `src/domain/project/`, `discovery/`, `extraction/`, `knowledge-graph/`, `governance/`, `workflow/`, `execution/`, `evaluation/`, `divergence/`, `prompt-programs/`, `ai-contracts/`, `observability/`, and `repository-intelligence/`. New deterministic intelligence belongs beside these domains rather than inside route handlers.
 
 ## Documentation Rule
 

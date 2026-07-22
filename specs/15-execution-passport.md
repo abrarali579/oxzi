@@ -27,6 +27,7 @@ Every Passport contains:
 - relevant Knowledge Graph subgraph reference
 - compiled context package reference and mandatory-coverage result
 - selected workflow policy and activated skill IDs/versions
+- Prompt Program, examples, renderer, and Typed AI Contract IDs/versions
 - target agent capability-profile and adapter reference
 - relevant interfaces and estimated token budget
 - allowed tools and explicit prohibited operations
@@ -38,6 +39,7 @@ Every Passport contains:
 - approval policy and existing approvals
 - freshness timestamps and dependency fingerprints
 - token/overhead measurement references
+- observability privacy/retention policy and trace destination references
 - expiration, invalidation, and re-certification reasons
 
 Passport lifecycle statuses are `draft`, `ready_for_review`, `certified`, `stale`, `executing`, and `closed`; readiness outcomes are `certified`, `certified_with_warnings`, `review_required`, `insufficient_context`, `blocked`, `stale`, or `incompatible`. Only a currently certified outcome may be delivered for execution. Any referenced semantic version/fingerprint change makes the Passport stale until re-certified. No fabricated confidence percentage is permitted.
@@ -53,6 +55,8 @@ Messages return bounded receipts instead of repeatedly copying intermediate arti
 ## Task Execution Ledger
 
 The durable future ledger records task/Passport/run IDs, agent and capability profile, prompt renderer/version, start/end state, specification/graph versions, repository base/resulting revisions, commands/tool calls, changed files, artifacts, validation results, compliance/quality reviews, audit findings, accepted/rejected state, repairs, token-ledger references, user decision, blockers, and next action. Entries are append-only, ordered, evidence-backed, and fingerprinted. Conversation memory is never the sole completion record; agent narration remains a claim until corroborated.
+
+Where enabled, provider-neutral traces reference the ledger and exact Passport lineage without becoming the ledger or canonical truth. Metadata-only tracing is the default direction; raw content requires a stronger explicit privacy mode.
 
 ## Integration Adapters
 

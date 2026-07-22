@@ -227,23 +227,23 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 ## ADR-026 — Project Constitution as Derived Enforceable Governance
 
-**Status:** Accepted — Specification Governance Expansion
+**Status:** Accepted — Specification Governance runtime foundation implemented
 
-**Decision:** A future canonical-schema version stores approved constitutional rules with stable IDs, evidence, applicability, severity, approval, version, and supersession metadata. The Project Constitution is a deterministic projection of those rules, not a competing source of truth.
+**Decision:** A future canonical-schema version stores approved constitutional rules with stable IDs, evidence, applicability, severity, approval, version, and supersession metadata. Until that migration, the deterministic runtime resolves an explicit, versioned snapshot of those records beside canonical state. The Project Constitution remains a read-only projection, not a competing source of truth.
 
-**Consequences:** ADRs continue to explain rationale while the Constitution supplies queryable execution constraints. Downstream specifications, plans, Task Cards, Passports, and reviews cite its version/fingerprint. Runtime enforcement requires a later explicit canonical migration.
+**Consequences:** ADRs continue to explain rationale while the Constitution supplies queryable execution constraints. Downstream artifacts cite its exact version/fingerprint. The runtime can block or recommend readiness from the supplied snapshot, but it cannot persist rules, mutate canonical truth, approve a Specification, or authorize implementation; canonical storage migration remains deferred.
 
 ## ADR-027 — Specification, Technical Plan, and Task Separation
 
-**Status:** Accepted — Specification Governance Expansion
+**Status:** Accepted — Specification Governance runtime foundation implemented
 
 **Decision:** Specifications own approved behavior and acceptance criteria, Technical Plans own implementation design and slice structure, and Task Cards own one bounded execution unit. Each is a separately versioned normalized artifact with explicit parent references.
 
-**Consequences:** A Task Card may narrow but cannot broaden its parents. Prompt rendering cannot recompute planning or requirement meaning. Health and approval gates precede downstream compilation.
+**Consequences:** A Task Card may narrow but cannot broaden its parents. Prompt rendering cannot recompute planning or requirement meaning. The implemented categorical health gate exposes structural, clarification, constitutional, consistency, traceability, testability, approval, and freshness results without hidden weighting; planning and Task Card compilation remain deferred.
 
 ## ADR-028 — Controlled Living Specifications and Reverse Proposals
 
-**Status:** Accepted — Specification Governance Expansion
+**Status:** Accepted — controlled-living validation foundation implemented
 
 **Decision:** Approved requirement changes, implementation discoveries, and progress-only updates use distinct versioned flows. Implementation discoveries produce evidence-backed reverse proposals; code or agent narration never silently becomes requirement truth.
 
@@ -368,3 +368,275 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** Prompt/workflow improvements require versioned evaluation, meaning preservation, regression evidence, and approval. Private project data never trains a global system without explicit consent.
 
 **Consequences:** Derived metrics are preferred; private/local performance memory is supported. Token wins cannot override failed quality, security, scope, or rework outcomes.
+
+## ADR-044 — Prompts as Versioned Evaluated Artifacts
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Rendered prompts are versioned artifacts connected to Task Card meaning, context, renderer, target profile, scenarios, executions, and outcomes.
+
+**Consequences:** Prompt prose is never the source of task meaning, and optimization claims require traceable evidence.
+
+## ADR-045 — Normalized Meaning Separate from Renderer Wording
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Renderer candidates preserve a normalized Task Card meaning fingerprint while changing presentation only.
+
+**Consequences:** Goal, scope, boundaries, criteria, security, and decisions cannot change through style optimization; mismatch blocks certification.
+
+## ADR-046 — Deterministic Evaluation Before Model Judging
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Deterministic assertions run first. Approved qualitative judging is optional only where deterministic evidence cannot decide.
+
+**Consequences:** Model grades cannot override hard deterministic failures and remain visibly identified evidence.
+
+## ADR-047 — Prompt and Execution Certification Are Separate
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Prompt Certification gates pre-execution packages; Execution Certification evaluates actual repository, trajectory, validation, security, and scope evidence afterward.
+
+**Consequences:** A good prompt does not prove execution, and correct-looking output reached unsafely cannot pass overall certification.
+
+## ADR-048 — Dataset-Driven Optimization with Validation Promotion Gates
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Renderer changes require measurable hypotheses, separated training/unseen validation, security and meaning regression, approval, and rollback.
+
+**Consequences:** Training-only wins do not ship; evaluation partitions prevent leakage and global data use requires consent.
+
+## ADR-049 — Explicit Trust Boundaries for Imported Content
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Repository text, uploads, comments, tool descriptions, conversations, proposals, and agent claims retain explicit trust levels and remain delimited data.
+
+**Consequences:** Untrusted content cannot override Constitution, canonical state, Task Cards, or approval rules; suspicious instructions are reported.
+
+## ADR-050 — Risk-Based Task Red-Team Evaluation
+
+**Status:** Accepted — Prompt Evaluation Expansion
+
+**Decision:** Red-team suites are selected by risk, security, ambiguity, scope, and expected value rather than run universally.
+
+**Consequences:** High-risk Passports test injection, poisoning, exfiltration, destructive actions, scope, structured formats, audits, and evaluator manipulation without taxing mechanical work.
+
+## ADR-051 — Isolated Divergence for Selected Decisions
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Open-ended high-impact decisions may use mechanically isolated branches with identical normalized problems, minimal shared context, and distinct selected frames.
+
+**Consequences:** One conversation listing alternatives is not treated as isolation; low-risk or net-negative tasks use direct reasoning.
+
+## ADR-052 — Mechanical Generator and Critic Separation
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Generation, criticism, clustering, trap detection, deepening, and decision support have separate contracts and phases.
+
+**Consequences:** Generators cannot see sibling output or scores. Different profiles may reduce correlation but do not guarantee independence.
+
+## ADR-053 — Cognitive Frames as Vantage Operators
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Versioned cognitive frames are task-selected vantage operators, not fictional personas; concise discovery metadata remains separate from full instructions.
+
+**Consequences:** Every frame is not loaded. Selection uses domain, risk, desired diversity, evaluation history, benefit, and overhead.
+
+## ADR-054 — Trap Detection as a First-Class Result
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Attractive but unsafe, costly, premature, irreversible, non-scalable, or irrelevant options produce explicit evidence-backed Trap Findings.
+
+**Consequences:** Hard traps cannot be averaged away by novelty or preference scores.
+
+## ADR-055 — Cost-Gated Adaptive Divergence
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Divergence activation accounts for repeated per-branch context, output, critic, clustering, deepening, orchestration, model cost, latency, and decision value.
+
+**Consequences:** Branch counts are adaptive; insufficient or net-negative budgets block activation, and Deep mode normally requires approval.
+
+## ADR-056 — Artifact-First Branch Results
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Branches, candidates, scores, clusters, traps, and reports are versioned artifacts with bounded receipts rather than repeated conversation transcripts.
+
+**Consequences:** The Token Ledger includes every branch and reintegration cost, while the main context stays bounded.
+
+## ADR-057 — Generated Ideas Remain Proposals
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Divergence outputs cannot become canonical or specification truth until configured review and approval.
+
+**Consequences:** Novelty never bypasses source priority, safety gates, or controlled living specification flows.
+
+## ADR-058 — Evidence-Gated Divergence Promotion
+
+**Status:** Accepted — Divergent Reasoning Expansion
+
+**Decision:** Baseline single-answer, shared-prompt alternatives, isolated divergence, and divergence-plus-critic are compared on unseen suites before workflow promotion.
+
+**Consequences:** OXZI learns which task classes, frames, branch counts, and budgets benefit; divergence is not presumed universally superior.
+
+## ADR-059 — Prompt Programs as Versioned Executable Artifacts
+
+**Status:** Accepted — Prompt Intelligence Expansion
+
+**Decision:** A Prompt Program version binds typed inputs/outputs, Task Card schema, context policy, renderer, examples, workflow, compatibility, evaluation, approval, and release state.
+
+**Consequences:** Used versions are immutable; aliases point to versions, and a prompt string alone is not an executable contract.
+
+## ADR-060 — Meaning Separate from Program Optimization
+
+**Status:** Accepted — Prompt Intelligence Expansion
+
+**Decision:** Task Card meaning remains separate from Prompt Program configuration, rendering, examples, target profiles, optimization, and evaluation.
+
+**Consequences:** Optimization candidates must preserve the normalized meaning fingerprint and cannot change scope, rules, security, criteria, or validation.
+
+## ADR-061 — Typed AI Boundaries Before Trust Elevation
+
+**Status:** Accepted — Typed AI Contracts Expansion
+
+**Decision:** Important AI interactions cross versioned input/output schemas and validation before entering a trusted workflow.
+
+**Consequences:** Malformed prose is not success, raw provider payloads stay in adapters/artifacts, and typed results remain proposals unless separately approved.
+
+## ADR-062 — Bounded Structured-Output Repair
+
+**Status:** Accepted — Typed AI Contracts Expansion
+
+**Decision:** Repair is versioned, bounded, revalidated, and forbidden from inventing required meaning, approvals, evidence, criteria, conflicts, or IDs.
+
+**Consequences:** Exhausted or repeated invalid output escalates; partial output cannot certify.
+
+## ADR-063 — Deterministic Validation Before Model-Assisted Repair
+
+**Status:** Accepted — Typed AI Contracts Expansion
+
+**Decision:** Exact parsing, schema validation, known normalization, and unambiguous deterministic repair precede any optional model-assisted repair.
+
+**Consequences:** Provider quirks remain adapter-local and model repair cannot override deterministic failure evidence.
+
+## ADR-064 — Traces and Experiments as Derived Evidence
+
+**Status:** Accepted — Observability Expansion
+
+**Decision:** Traces, spans, generations, observations, datasets, and experiments are versioned operational evidence, not canonical project truth.
+
+**Consequences:** Every claim remains tied to artifacts and versions; conversation or telemetry cannot silently mutate requirements.
+
+## ADR-065 — Privacy-First Observability
+
+**Status:** Accepted — Observability Expansion
+
+**Decision:** Metadata-only, redacted, private, local, organization, and explicitly consented modes govern capture and retention; raw project content is not globally collected by default.
+
+**Consequences:** Metadata-only traces reject raw content, secrets are redacted before storage, and global use requires provenance, consent, and anonymization.
+
+## ADR-066 — Immutable Prompt and Evaluation Versions
+
+**Status:** Accepted — Observability Expansion
+
+**Decision:** Executions record exact immutable Prompt Program, renderer, example, context, profile, suite, parser, and contract versions.
+
+**Consequences:** Mutable release aliases resolve to immutable versions and reproducibility never depends on a moving label.
+
+## ADR-067 — Training and Validation Separation for Optimization
+
+**Status:** Accepted — Prompt Intelligence Expansion
+
+**Decision:** Prompt experiments separate training, unseen validation, regression, red-team, benchmark, private, organization, and consented-global partitions.
+
+**Consequences:** Leakage and success-only reporting are prohibited; training improvement alone cannot promote a default.
+
+## ADR-068 — Selective DAILY and LIBRARY Skill Surfaces
+
+**Status:** Accepted — Agent Reliability Expansion
+
+**Decision:** Frequently relevant, low-overhead skills may be DAILY; other discoverable capabilities remain LIBRARY and load only after activation.
+
+**Consequences:** Full catalogs are not always loaded, LIBRARY does not mean deleted, and simple tasks retain a no-skill path.
+
+## ADR-069 — Repository-Evidence-Backed Skill Activation
+
+**Status:** Accepted — Agent Reliability Expansion
+
+**Decision:** DAILY classification and activation use current repository stack/workflow evidence, compatibility, task relevance, results, and overhead rather than model preference.
+
+**Consequences:** Off-stack skills cannot become DAILY without evidence, and classifications are invalidated when repository evidence changes.
+
+## ADR-070 — Agent Self-Diagnostics Before Blind Retry
+
+**Status:** Accepted — Agent Reliability Expansion
+
+**Decision:** Repeated failures trigger captured evidence, root-cause classification, one discriminating check, contained recovery, verification, and escalation.
+
+**Consequences:** Unchanged retries and unsupported auto-healing claims are prohibited; preventive insights remain proposals until reviewed.
+
+## ADR-071 — Parser-Neutral Repository Intelligence
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Multi-language repository parsing uses versioned adapters; domain contracts do not depend directly on one parser or grammar library.
+
+**Consequences:** Parser capabilities, errors, versions, evidence, and fallbacks remain explicit and replaceable.
+
+## ADR-072 — Incremental Parsing and Changed-Range Updates
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Repository refresh reuses valid unchanged parses and updates affected files/subgraphs from content, parser, grammar, extraction, rule, and graph fingerprints.
+
+**Consequences:** Deletions prune evidence, stale caches fail closed, and full rescans occur only for justified invalidation.
+
+## ADR-073 — Structural Search Is a Distinct Signal
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Exact text, structural patterns, symbols, repository-graph traversal, and optional semantic retrieval remain separate evidence signals.
+
+**Consequences:** Structural search neither replaces graph traversal nor pretends a textual fallback is parsed evidence.
+
+## ADR-074 — Detection Separate from Transformation Permission
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** A structural match or rule finding authorizes detection only; rewriting requires a separate scoped permission and risk gate.
+
+**Consequences:** Matches are evidence, not confirmed defects or automatic edits.
+
+## ADR-075 — Syntax-Aware Transformation with Preview and Validation
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Future transformations must be syntax-aware, previewed, overlap-checked, scope-controlled, isolated, reparsed, validated, evidence-backed, and reversible.
+
+**Consequences:** Restricted/generated files remain protected and uncertain semantic changes require review.
+
+## ADR-076 — Layered Repository Evidence Strength
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Evidence strength progresses from text to parsed structure, symbol relationship, repository graph, validated runtime/tests, and human-approved project truth.
+
+**Consequences:** Agents cite the strongest available level; no lower level silently becomes approved truth.
+
+## ADR-077 — Structural Evidence Feeds Task Context Selection
+
+**Status:** Accepted — Repository Intelligence Expansion
+
+**Decision:** Context compilation uses explicit seeds, structural definitions, direct relationships, interfaces, tests, rules, and relevant changes before whole files.
+
+**Consequences:** Every structural inclusion exposes reason/freshness and cannot displace mandatory project context or safety rules.

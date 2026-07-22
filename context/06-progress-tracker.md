@@ -886,3 +886,206 @@ These decisions do not block the implemented deterministic domains or the next s
 ## Session Resume Context
 
 The next smallest unit is Specification Governance Runtime Foundation: integrate constitutional-rule records into canonical state and implement deterministic Constitution projection/querying plus Specification Health evaluation. Do not include planning automation, Repository Intelligence, context compilation, agent delivery, persistence, providers, or UI.
+
+## Prompt Evaluation and Divergent Reasoning Architecture Expansion
+
+### Completed Work
+
+- Added provider-neutral, JSON-safe Zod contracts for evaluation assertions, suites, scenarios, prompt certification, execution certification, renderer candidates, performance datasets, optimization hypotheses, and release decisions.
+- Added deterministic hard-gate validation, risk-based minimum-suite selection, trust-boundary enforcement, meaning-preservation checks, dataset partition checks, and deterministic serialization helpers.
+- Added provider-neutral contracts for cognitive-frame metadata, isolated candidate ideas, critic results, clusters, trap findings, deepened candidates, cost estimates, activation decisions, and divergence reports.
+- Added cross-record checks for candidate references, hard-constraint failures, generator/critic separation, repeated branch-context cost accounting, shortlist safety, deterministic ordering, and proposal-only approval state.
+- Added binding specifications for Prompt Evaluation, Certification, and Optimization and for the Divergent Reasoning Engine.
+- Added ADR-044 through ADR-058 for versioned prompt evaluation, renderer meaning preservation, deterministic-first evaluation, separate prompt/execution certification, dataset and release gates, content trust, risk-based red teams, isolated divergence, generator/critic separation, cognitive frames, traps, cost gating, artifact-first branches, proposal status, and evidence-gated promotion.
+- Updated the relevant graph, Task Card, efficiency ledger, workflow/skill, agent-control, architecture, workflow, project, product, startup, and navigation contracts without changing application UI or adding runtime AI/provider behavior.
+
+### Files Created
+
+- `specs/19-prompt-evaluation-certification-optimization.md`
+- `specs/20-divergent-reasoning-engine.md`
+- `src/domain/evaluation/schemas.ts`
+- `src/domain/evaluation/index.ts`
+- `src/domain/evaluation/evaluation.test.ts`
+- `src/domain/divergence/schemas.ts`
+- `src/domain/divergence/index.ts`
+- `src/domain/divergence/divergence.test.ts`
+
+### Files Modified
+
+- `CURRENT.md`
+- `DECISIONS.md`
+- `OXZI.md`
+- `PROJECT.md`
+- `context/00-context-map.md`
+- `context/01-project-overview.md`
+- `context/02-architecture.md`
+- `context/04-code-standards.md`
+- `context/05-ai-workflow-rules.md`
+- `context/06-progress-tracker.md`
+- `specs/05-knowledge-graph-engine.md`
+- `specs/07-ai-task-card-prompt-compiler.md`
+- `specs/10-efficiency-ledger.md`
+- `specs/14-workflow-policy-skill-registry.md`
+- `specs/18-agent-control-evidence-evaluation.md`
+
+### Verification Results
+
+- Focused evaluation/divergence run — passed; 2 files and 23 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 9 files and 115 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan all passed
+- `git diff --check` — passed
+- Startup context — `AGENTS.md` 3,157 characters (~789 estimated tokens), `CURRENT.md` 1,915 (~479), and `context/00-context-map.md` 2,770 (~693); combined 7,842 characters (~1,961)
+
+The complete sandboxed `npm run ci` sequence passed formatting, type checking, linting, application tests, and Review Engine tests. Its final Turbopack build could not bind a required local IPC port (`Operation not permitted`); the approved out-of-sandbox `npm run build` rerun passed. The required Review Engine rerun also passed outside the restricted sandbox.
+
+### Deferred Limits
+
+- No model judge, evaluator runtime, red-team runtime, optimizer, provider call, parallel branch orchestration, or connected execution exists in this unit.
+- Meaning fingerprints are validated as contract inputs; a future compiler must calculate them from normalized Task Cards and rendered prompts.
+- Minimum-suite selection is deterministic and deliberately narrow. Runtime risk classification and overhead-aware execution remain deferred.
+- Generator/critic isolation and imported-content trust are enforceable record boundaries, not proof of process isolation or automatic injection detection.
+- Divergence cost contracts account for token components but do not integrate provider prices, billing, cache telemetry, or actual Token Ledger measurements.
+- Cross-reference checks are local to the supplied report or dataset because no persistence registry exists.
+
+### Next Smallest Unit
+
+Specification Governance Runtime Foundation remains the next smallest unit: integrate constitutional-rule records into canonical state and implement deterministic Constitution projection/querying plus Specification Health evaluation. Prompt-evaluation execution, divergent branch orchestration, providers, persistence, UI, and connected agents remain outside that unit.
+
+## Prompt Intelligence, Typed AI, Observability, Skills, and Repository Intelligence Expansion
+
+### Completed Work
+
+- Implemented strict provider-neutral Prompt Program, immutable version, Example Registry/selection, optimization candidate/experiment, promotion, rollback-reference, deterministic serialization, and used-version update contracts.
+- Implemented Typed AI definition/invocation, parse/error, bounded repair, partial completion, typed result, escalation, deterministic known-alias normalization, and serialization contracts.
+- Implemented privacy-aware trace/span/generation/observation/evaluation-link, exact execution-version lineage, retention, dataset/item, experiment/run, hierarchy, partition, and serialization contracts.
+- Extended Workflow with repository-evidence-backed DAILY/LIBRARY skill surfaces, activation plans, failure capture, diagnostic hypotheses, contained recovery, repeated-action escalation, and introspection contracts.
+- Implemented parser-neutral adapter/snapshot/parsed-file/range/error/symbol/relationship/query/match/rule/finding/transformation-preview/update contracts plus deterministic parsed-file fingerprints and cache-freshness checks.
+- Added focused specifications `21` through `25`, ADR-059 through ADR-077, and reconciled affected project, graph, context, Task Card, review, ledger, convergence, workflow, Passport, evaluation, divergence, and repository contracts.
+- Added 38 focused tests, increasing the application suite from 115 to 153 tests.
+
+### Roadmap Reconciliation
+
+- Prompt Program Registry, Example Registry, Promotion Decision, and Renderer Rollback — `implemented contracts only`; registries/managers `planned`.
+- Optimization Candidate Generator and Training/Validation Evaluator — `planned`; candidate/experiment schemas `implemented contracts only`.
+- Typed AI Contract Registry, Structured Parser, Repair Pipeline, Partial/Streaming handling — `implemented contracts only`; Deterministic Normalizer for known aliases — `implemented foundation only`; provider adapters `deferred`.
+- Trace/Span Runtime, version tracking, token/cost/latency capture, Dataset Registry, Evaluation Links, and Privacy Controls — `implemented contracts only`; capture/storage runtime `planned`; Experiment Runner and Trace Viewer `planned`.
+- DAILY/LIBRARY Skill Surface Auditor, Skill Router, Agent Self-Diagnostic Runtime, Loop Detection, and Preventive Insight Proposal — `planned`; evidence, overhead, activation, failure, recovery, and report contracts `implemented contracts only`.
+- Language Detection, Parser Adapter Registry, initial compatible adapter, incremental parsing, symbol/import/export/call extraction, repository graph, structural query/policy scanners, refresh, and lines-of-interest extraction — `planned`; adapter metadata, parsed records, rules, previews, invalidation, and deterministic cache helpers `implemented foundation only`.
+- Automatic structural rewriting, production trace persistence/upload, model-assisted repair, prompt optimization, provider SDKs, databases, and UI — `deferred`.
+- Prompt-program regression, typed-output reliability, parser/rule fixtures, context-selection quality, and token-versus-quality benchmark runtimes — `planned`; contract fixtures in this unit are `implemented`.
+
+### Files Created
+
+- `specs/21-prompt-programs-optimization.md`
+- `specs/22-typed-ai-contracts-repair.md`
+- `specs/23-observability-datasets-experiments.md`
+- `specs/24-selective-skills-agent-diagnostics.md`
+- `specs/25-repository-parsing-structural-intelligence.md`
+- `src/domain/prompt-programs/` — schemas, exports, and tests
+- `src/domain/ai-contracts/` — schemas, exports, and tests
+- `src/domain/observability/` — schemas, exports, and tests
+- `src/domain/repository-intelligence/` — schemas, exports, and tests
+- `src/domain/workflow/intelligence.ts`
+- `src/domain/workflow/workflow-intelligence.test.ts`
+
+### Files Modified
+
+- `CURRENT.md`, `DECISIONS.md`, `OXZI.md`, and `PROJECT.md`
+- `context/00-context-map.md`, `context/01-project-overview.md`, `context/02-architecture.md`, `context/04-code-standards.md`, `context/05-ai-workflow-rules.md`, and this tracker
+- `specs/05-knowledge-graph-engine.md`, `06-context-compiler.md`, `07-ai-task-card-prompt-compiler.md`, `08-review-audit-analyzer.md`, `10-efficiency-ledger.md`, `13-controlled-specifications-convergence.md`, `14-workflow-policy-skill-registry.md`, `15-execution-passport.md`, `17-repository-intelligence.md`, `18-agent-control-evidence-evaluation.md`, `19-prompt-evaluation-certification-optimization.md`, and `20-divergent-reasoning-engine.md`
+- `src/domain/workflow/index.ts` and `src/domain/workflow/schemas.ts`
+
+### Verification Results
+
+- Focused new-domain run — passed; 5 files and 38 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 14 files and 153 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+- Startup context — `AGENTS.md` 3,157 characters (~789 estimated tokens), `CURRENT.md` 1,971 (~493), and `context/00-context-map.md` 2,603 (~651); combined 7,731 characters (~1,933)
+- No dependency or lockfile change; no UI, canonical-state, provider, parser-runtime, persistence, or external telemetry change
+
+### Remaining Risks and Limits
+
+- Schema references are versioned strings; a future registry must resolve them, prove compatibility, and prevent identifier reuse.
+- Known normalization is intentionally shallow and alias-based. It does not parse arbitrary malformed model output or perform model-assisted repair.
+- Trace hierarchy validates references but no runtime captures, persists, deletes, or enforces organization retention.
+- Prompt meaning fingerprints and raw-content redaction are caller-supplied contract evidence until the compiler/security runtimes calculate and verify them.
+- DAILY classification contracts require evidence but no auditor currently discovers or refreshes that evidence.
+- Parser metadata and structural records do not parse code. Parser isolation, grammar security, error recovery quality, graph projection, and structural rule precision require runtime fixtures.
+- Transformation previews cannot apply changes; overlap analysis, isolated workspaces, approvals, validation, and rollback execution remain future work.
+
+### Next Smallest Unit
+
+Specification Governance Runtime Foundation remains next: integrate constitutional-rule records into canonical state and implement deterministic Constitution projection/querying plus Specification Health evaluation. Do not add the deferred Prompt Program, provider/repair, trace, parser, structural transformation, persistence, or UI runtimes to that unit.
+
+## Specification Governance Runtime Foundation
+
+### Completed Work
+
+- Added strict governance runtime records for normalized requirements, versioned Constitution snapshots and exceptions, compliance evidence, revision/lifecycle metadata, traceability links, deterministic findings, clarification needs, categorical health, readiness recommendations, and versioned reports.
+- Implemented the deterministic pipeline: normalization, Constitution resolution, structural validation, clarification analysis, rule compliance, consistency analysis, traceability analysis, health calculation, readiness recommendation, and report compilation.
+- Kept Constitution input as an explicit versioned snapshot beside canonical state. The runtime never mutates canonical state, approves Specifications, or treats the snapshot as a second project source of truth; canonical Constitution storage remains deferred.
+- Implemented authority-conflict detection, version-specific approved exceptions, mandatory-evidence unknown states, lifecycle-aware traceability, dependency-cycle and contradiction checks, immutable approved-version validation, amendment ancestry, and stale-report detection.
+- Added eight unweighted categorical health dimensions: structural completeness, clarification completeness, constitutional compliance, internal consistency, traceability, testability, approval completeness, and freshness.
+- Added deterministic semantic report fingerprints that exclude the evaluation timestamp while retaining timestamped provenance in the report.
+- Added 12 concrete governance fixtures and 41 focused tests covering ready, incomplete, ambiguous, violating, unknown-evidence, contradictory, broken-traceability, stale, unauthorized-exception, amendment, unverifiable, and nonblocking-warning states.
+- Reconciled the Constitution, Specification Health, controlled-living, architecture, workflow, project, decision, startup, and progress documents with the implemented boundary.
+
+### Files Created
+
+- `src/domain/governance/clarification.ts`
+- `src/domain/governance/consistency.ts`
+- `src/domain/governance/constitution.ts`
+- `src/domain/governance/controlled-living.ts`
+- `src/domain/governance/evaluate.ts`
+- `src/domain/governance/fixtures.ts`
+- `src/domain/governance/governance-runtime.test.ts`
+- `src/domain/governance/health.ts`
+- `src/domain/governance/normalizer.ts`
+- `src/domain/governance/runtime-schemas.ts`
+- `src/domain/governance/runtime-utils.ts`
+- `src/domain/governance/structure.ts`
+- `src/domain/governance/traceability.ts`
+
+### Files Modified for This Unit
+
+- `src/domain/governance/index.ts`
+- `CURRENT.md`, `DECISIONS.md`, `OXZI.md`, and `PROJECT.md`
+- `context/02-architecture.md`, `context/05-ai-workflow-rules.md`, and this tracker
+- `specs/11-project-constitution.md`, `specs/12-specification-health-engine.md`, and `specs/13-controlled-specifications-convergence.md`
+
+### Verification Results
+
+- Focused governance run — passed; 1 file and 41 tests
+- `npm run format:check` — passed after formatting the new governance sources
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings after removing two unused test imports
+- `npm run test` — passed; 15 files and 194 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+The first sandboxed Review Engine run correctly recorded its nested Turbopack build failure (`Operation not permitted` while binding a local IPC port). The approved out-of-sandbox rerun passed all captured checks. The direct production build passed in the sandbox. No application or Review Engine change was required.
+
+### Deferred Limits
+
+- Constitution rules are supplied as an explicit versioned governance snapshot; canonical schema storage, authoring, persistence, and registry lookup remain deferred.
+- The requirement envelope adds runtime governance metadata around the existing Specification contract; migrating those records into canonical state remains a separate explicit decision.
+- Readiness is a deterministic recommendation. Human/workflow approval, Technical Plan generation, slice planning, Task Card compilation, and execution authorization remain deferred.
+- Traceability checks operate on supplied durable references; repository parser/runtime evidence, database resolution, and convergence execution remain deferred.
+- No provider, LLM, database, persistence, UI, parser runtime, or application feature was added.
+
+### Next Smallest Unit
+
+Implement the Technical Plan and Independent Implementation Slice Runtime Foundation over healthy, approved Specification Governance reports. Keep planning deterministic and read-only, preserve parent Constitution/Specification/report fingerprints, and defer Task Card compilation, provider calls, persistence, repository parsers, convergence, and UI.

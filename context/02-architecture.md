@@ -27,13 +27,18 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
 - `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
 - `domain/knowledge-graph/` — implemented temporal typed projection, Episodes, indexes, traversal/path, impact, task subgraphs, integrity, serialization, and fingerprints
-- `domain/governance/` — implemented contract schemas only; governance engines remain future
+- `domain/governance/` — implemented deterministic Specification Governance runtime: normalization, Constitution resolution/compliance, structure, clarification, consistency, traceability, categorical health, readiness recommendation, controlled-living checks, reporting, and fixtures
 - `domain/workflow/` — implemented policy/skill/activation/escalation schemas only
 - `domain/execution/` — implemented Task Card, Passport, profile, status, event, artifact, receipt, and Token Ledger schemas only
-- `domain/repository-intelligence/` — future separate repository-evidence projection
+- `domain/evaluation/` — implemented assertion, suite/scenario, trust, certification, dataset, optimization, renderer, and release schemas; runtime deferred
+- `domain/divergence/` — implemented frame, request, candidate/critic/cluster/trap, cost/activation, and report schemas; orchestration deferred
+- `domain/prompt-programs/` — implemented version/example/optimization/experiment/promotion contracts; registry and optimizer deferred
+- `domain/ai-contracts/` — implemented typed invocation/parse/repair/partial-result contracts and known normalization; provider runtime deferred
+- `domain/observability/` — implemented privacy-aware trace/span/generation/dataset/experiment contracts; capture and persistence deferred
+- `domain/repository-intelligence/` — implemented parser/snapshot/file/symbol/query/rule/preview/update contracts; parsers and graph runtime deferred
 - Unified Evidence View — future query-time join; never persisted as product truth
-- `domain/project-constitution/` — future canonical-rule projection, applicability, supersession, and enforcement queries
-- `domain/specification-health/` — future deterministic requirement-readiness and planning gates
+- `domain/project-constitution/` — implemented inside `domain/governance/` over explicit versioned rule snapshots; canonical rule storage and persistence remain future
+- `domain/specification-health/` — implemented inside `domain/governance/` as deterministic categorical requirement-readiness gates; planning integration remains future
 - `domain/specification/` — future normalized Specifications, Technical Plans, controlled change, slices, and convergence findings
 - `domain/context-compiler/` — future quality-gated smallest-sufficient context selection
 - `domain/task-card/` — future normalized Task Card and deterministic style renderers
@@ -79,6 +84,10 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - WorkflowPolicy and AgentSkill
 - ExecutionPassport, ArtifactReference, and TaskExecutionRecord
 - ComplianceReview, QualityReview, and ConvergenceFinding
+- PromptProgram, PromptProgramVersion, ExampleRecord, and OptimizationExperiment
+- AIContractDefinition, TypedCompletionResult, and RepairAttempt
+- Trace, Span, GenerationRecord, Dataset, and ExperimentRun
+- ParserAdapter, ParsedFileRecord, StructuralRule, RuleFinding, and TransformationPreview
 
 ## Canonical Data Flow
 
@@ -97,7 +106,9 @@ Input or imported material
 → query-first task subgraph with mandatory coverage and truncation evidence
 → smallest-sufficient context package or explicit insufficiency
 → normalized Task Card and selected Workflow Policy
+→ Prompt Program and typed-output contract selection
 → certified Execution Passport and one selected prompt/adapter rendering
+→ privacy-controlled trace and repository-operation evidence
 → six Markdown renderers
 → visual graph views and export package
 → implementation review evidence
@@ -171,10 +182,20 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 24. Effective/event time and ingestion/system time remain distinct; superseded graph facts are preserved.
 25. Project intent and repository implementation remain separate derived projections.
 26. Conversation, execution, and runtime statuses are separate state machines.
+27. Task Card meaning, context, renderer wording, target profile, evaluation scenario, execution, and outcome retain separate identities.
+28. Deterministic failures outrank model judging; Prompt and Execution Certification remain separate.
+29. Divergent branches require runtime isolation, and hard safety failures cannot win through aggregate scoring.
+30. Imported/repository/generated content remains explicitly trusted or untrusted data, never implicit instruction authority.
+31. Task Card meaning, Prompt Program configuration, rendered request, provider response, parsed result, execution, and outcome remain separate versioned artifacts.
+32. AI output crosses a typed validated boundary before trust elevation; repair cannot invent required meaning or approval.
+33. Metadata-only observability cannot retain raw prompts, code, or model output; traces never become canonical truth.
+34. DAILY skills require current repository evidence; LIBRARY skills remain discoverable and unloaded until selected.
+35. Repository text, parsed structure, symbols, repository-graph relationships, tests, and human approval remain distinct evidence levels.
+36. Structural detection never grants transformation permission; transformation previews are non-applying until separately authorized.
 
 ## Deterministic Intelligence Flow
 
-The implemented Knowledge Graph is a versioned, byte-stable projection, not persistence. Its deterministic indexes and traversals provide impact sets and task subgraphs with explicit cap, hub, omission, confidence, and coverage metadata. Repository AST/code evidence and incremental graph updates remain deferred.
+The implemented Knowledge Graph is a versioned, byte-stable project-intent projection, not persistence. Its indexes and traversals provide impact sets and task subgraphs with explicit cap, hub, omission, confidence, and coverage metadata. Repository parser, structural-query, rule, update, and preview contracts now exist separately; AST parsing, repository graph construction, and transformations remain deferred.
 
 The future Token-Saving Context Compiler queries this graph before reading broad raw context, widens whenever mandatory coverage or relationship confidence is insufficient, accounts for optimization overhead, and returns explicit insufficiency for an unsafe budget. The AI Task Card Prompt Compiler consumes that safe package and renders only the selected style. The Review/Audit Analyzer consumes Review Engine evidence and recommends accept, repair, clarify, focused re-audit, proceed, or stop. Visual Master Architecture views render the same graph at audience-specific detail levels.
 

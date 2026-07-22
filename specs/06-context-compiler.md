@@ -82,6 +82,7 @@ This protection also covers relevant acceptance criteria, required tests, and pr
 3. Traverse direct dependency, blocker/conflict, accepted-decision, security, test, acceptance, and documentation relationships.
 4. Suppress generic high-degree hub expansion unless directly justified.
 5. Read raw files only when graph evidence, missing traceability, or execution requires them.
+   Repository selection prefers explicit file/symbol seeds, current parsed definitions, direct imports/calls/references, interfaces/types, tests, applicable structural rules, and recent relevant changes before whole files.
 6. Record why any scope expansion occurred.
 7. Add interfaces, risks, and evidence needed to understand or verify the task.
 8. Deduplicate semantically identical versioned facts using deterministic identifiers.
@@ -142,6 +143,8 @@ Token values use `measured`, `tokenizer-estimated`, `character-estimated`, or `u
 The compiler consumes task seeds from the normalized Task Card and Constitution/specification/plan closure from the Knowledge Graph. It emits a versioned Context Package; it does not own those artifacts. The future Execution Passport references a sufficient package and certifies delivery compatibility. A stale parent version, unreadable artifact reference, missing mandatory constitutional rule, or unhealthy specification returns `insufficient` or `blocked` rather than an execution-ready package.
 
 Convergence analysis may use package inclusion/omission evidence to diagnose stale or missing context. It cannot treat deliberate, justified omission of irrelevant material as drift.
+
+Structural evidence includes its parser/query/rule version, freshness, evidence level, and inclusion reason. A structural match supplements exact text and repository-graph traversal; it cannot displace mandatory Constitution, requirement, security, acceptance, or validation context. Stale parsed evidence widens to current raw content or returns insufficiency.
 
 ## Acceptance Criteria
 

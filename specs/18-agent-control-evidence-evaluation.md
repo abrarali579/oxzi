@@ -12,6 +12,8 @@ High-impact work defaults to a reviewable Architect stage defining boundaries, i
 
 Versioned agent profiles reference separate model, tool, MCP, workflow, prompt, quality, and approval profiles. Capabilities cover instruction files, formats, context/tokenizer/cost/cache, planning/coding/review, edits, read-only context, plan/session/compaction, tools/MCP/skills/hooks/artifacts, delivery/monitoring/pause/cancel/sub-agents, and sandbox requirements.
 
+Prompt Program compatibility, Typed AI Contract support, parser/repository capabilities, trace privacy, and skill-surface versions remain separate referenced profiles rather than branded assumptions.
+
 Adapters are instruction-file, CLI, API, plugin, session-hook, agent-protocol, artifact-exchange, or manual copy/export. They disclose launch/send/status/pause/resume/cancel/event/artifact/report support. Connected delivery is optional and explicit-approval-only.
 
 ## Control Plane States
@@ -31,3 +33,7 @@ Future local process/container, remote container, VM, organization, or cloud run
 ## Evaluation Program
 
 Future OXZI Bench compares baseline, Plain English, Agent Optimized, graph-guided, and full Passport workflows across completion, criteria/hidden tests, scope/security, repair, input/output/net tokens, cost, latency, and user outcome. Prompt changes are versioned, evaluated, meaning-preserving, regression-tested, and approved. Private project data never trains a global system without consent; private/local performance memory remains supported.
+
+Prompt Certification evaluates a rendered package before execution. Execution Certification evaluates actual diff, scope, commands, trajectory, criteria, security, and evidence afterward. They use distinct IDs and schemas; neither substitutes for the other. Assertion/evaluation contracts live in `specs/19-prompt-evaluation-certification-optimization.md`, while divergent branches remain artifact-backed future child executions.
+
+Future traces connect exact Task Card, Passport, Prompt Program, context, agent/model, repository-operation, artifact, evaluation, and repair versions. Observability is derived evidence governed by `specs/23-observability-datasets-experiments.md`; raw sensitive content is not captured by default.

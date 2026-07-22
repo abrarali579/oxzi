@@ -2,7 +2,7 @@
 
 ## Status and Purpose
 
-**Status:** Approved and specified; not implemented.
+**Status:** Controlled-living validation foundation implemented; planning, slicing, and convergence runtimes deferred.
 
 This specification separates requirement truth, technical planning, executable work, controlled change, independent implementation slicing, and long-lived spec-to-code convergence.
 
@@ -50,6 +50,8 @@ Change-proposal statuses are `proposed`, `awaiting_review`, `accepted`, `rejecte
 
 Every change records initiator, reason, prior/new version, affected graph IDs, evidence, approval, and invalidated artifacts. Historical versions remain immutable and readable.
 
+The implemented governance foundation validates approved-version immutability, requires amendments to create a new version with parent fingerprint and amendment reason, validates lifecycle transitions, and detects stale governance reports after authoritative version changes. It does not persist versions, accept proposals, generate plans, or perform convergence analysis.
+
 ## Spec-to-Code Convergence Engine
 
 The future deterministic engine compares versioned Specifications, Technical Plans, Task Cards, Constitution rules, repository evidence, execution artifacts, and reviews. It reports normalized findings, not automatic mutations.
@@ -69,6 +71,8 @@ Finding classes include:
 - conflicting evidence, repair required, blocked, or human decision required
 
 Each finding includes stable ID, requirement/rule ID, direction, severity, affected graph nodes, expected and observed state, involved versions, evidence, confidence, freshness, recommended action, approval requirement, and status. Evidence may be file-, symbol-, test-, artifact-, documentation-, progress-, or review-level. Required validations and repository evidence outrank agent completion claims.
+
+Repository evidence exposes its level—text, parsed structure, symbol, repository graph, runtime/test, or human approval—plus parser/query/rule version and freshness. AI-produced convergence findings cross a Typed AI Contract and remain proposals; neither a trace nor structural match can approve a specification change.
 
 ## Boundary from Review/Audit
 

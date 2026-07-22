@@ -113,6 +113,14 @@ The ledger tracks each category independently:
 - Execution Passport certification and adapter translation
 - compliance-review, quality-review, and validation-pass overhead
 - convergence-analysis overhead and artifact retrieval
+- prompt assertion, certification, red-team, and benchmark overhead
+- divergent branch repeated context and output
+- critic, clustering, trap-detection, and deepening overhead
+- Prompt Program selection, example retrieval, candidate generation, and experiment overhead
+- typed-output parsing, normalization, repair, retry, and escalation overhead
+- trace/tool/repository observability schemas and captured outputs
+- repository parsing, structural query/rule evaluation, and incremental refresh overhead
+- skill-surface auditing and self-diagnostic recovery overhead
 
 Every value has one status:
 

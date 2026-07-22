@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { measurementStatusSchema } from "../knowledge-graph";
 
-const workflowPolicyIdSchema = z
+export const workflowPolicyIdSchema = z
   .string()
   .regex(/^workflow_[a-z0-9]+(?:_[a-z0-9]+)*$/)
   .brand<"WorkflowPolicyId">();
-const agentSkillIdSchema = z
+export const agentSkillIdSchema = z
   .string()
   .regex(/^skill_[a-z0-9]+(?:_[a-z0-9]+)*$/)
   .brand<"AgentSkillId">();

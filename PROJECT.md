@@ -33,9 +33,9 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Current Phase
 
-Wave 1 — Unified Contracts and Temporal Graph Foundation is complete.
+Wave 2 — Specification Governance Runtime Foundation is complete.
 
-The deterministic canonical, discovery, extraction, and Temporal Knowledge Graph foundations are implemented without AI. Governance, workflow, Task Card/Passport, agent-profile, event/artifact, and Token Ledger schemas are implemented as contracts only. Their engines, Repository Intelligence, context compilation, agent delivery, persistence, and UI remain future work.
+The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification normalization/analysis, categorical health, readiness-recommendation, and controlled-living validation foundations are implemented without AI. Workflow, Task Card/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Planning, slicing, parsers, context compilation, agent delivery, persistence, and UI remain future work.
 
 ## Locked Stack
 
@@ -65,16 +65,16 @@ OXZI does not execute project code. The initial product excludes autonomous full
 Status vocabulary: `implemented`, `implemented foundation only`, `approved and specified`, `planned`, or `deferred`.
 
 - Wave 0 Lean Agent Context — `implemented`
-- Wave 1 Unified Contracts and Temporal Graph — `implemented`; governance/workflow/execution schemas are `implemented foundation only`
-- Wave 2 Specification Governance — `approved and specified`
-- Wave 3 Repository Intelligence — `approved and specified`
+- Wave 1 Unified Contracts and Temporal Graph — `implemented`; workflow/execution schemas are `implemented foundation only`
+- Wave 2 Specification Governance — deterministic runtime `implemented`; canonical Constitution storage and planning integration remain `planned`
+- Wave 3 Repository Intelligence — parser/structural contracts `implemented foundation only`; runtimes `approved and specified`
 - Wave 4 Context Intelligence — `approved and specified`
-- Wave 5 Prompt and Handoff — `approved and specified`; connected delivery `deferred`
+- Wave 5 Prompt and Handoff — Prompt Program/Typed AI contracts `implemented foundation only`; compilers/runtime `approved and specified`; connected delivery `deferred`
 - Wave 6 Review and Convergence — `approved and specified`
-- Wave 7 Agent Control Plane — contracts `implemented foundation only`; runtime `planned`
+- Wave 7 Agent Control Plane — execution/observability/skill-diagnostic contracts `implemented foundation only`; runtime `planned`
 - Wave 8 Product Experience — `planned`
 - Wave 9 SaaS Infrastructure — `planned`
-- Wave 10 Evaluation and Launch — `approved and specified`; execution `planned`
+- Wave 10 Evaluation and Launch — evaluation/divergence/experiment contracts `implemented foundation only`; Assertion Registry, suites, certifications, optimization/release, red-team/Bench, trace viewer, divergence runtime, benchmarks, and UI are `approved and specified` or `planned`
 
 The complete unit sequence and status vocabulary are maintained in [context/06-progress-tracker.md](context/06-progress-tracker.md).
 
@@ -96,5 +96,12 @@ The complete unit sequence and status vocabulary are maintained in [context/06-p
 - [Temporal Project Memory](specs/16-temporal-project-memory.md) — bitemporal facts, Episodes, history, and Project Time Machine
 - [Repository Intelligence](specs/17-repository-intelligence.md) — static repository graph, ranking, maps, and hybrid retrieval
 - [Agent control, evidence, and evaluation](specs/18-agent-control-evidence-evaluation.md) — profiles, adapters, runtime states, events, artifacts, and evaluation
+- [Prompt evaluation and certification](specs/19-prompt-evaluation-certification-optimization.md) — assertions, suites, trust, certification, datasets, Lab, red-team, and Bench
+- [Divergent Reasoning](specs/20-divergent-reasoning-engine.md) — isolated branches, frames, critic, traps, adaptive cost, and decision reports
+- [Prompt Programs and optimization](specs/21-prompt-programs-optimization.md) — versioned programs, examples, candidates, experiments, promotion, and rollback
+- [Typed AI Contracts](specs/22-typed-ai-contracts-repair.md) — structured parsing, validation, bounded repair, partial results, and escalation
+- [Observability and experiments](specs/23-observability-datasets-experiments.md) — privacy-aware traces, versions, datasets, and reproducible experiments
+- [Selective skills and diagnostics](specs/24-selective-skills-agent-diagnostics.md) — DAILY/LIBRARY evidence and agent self-diagnostics
+- [Repository structural intelligence](specs/25-repository-parsing-structural-intelligence.md) — parser adapters, incremental records, queries, rules, and safe previews
 
 Formal accepted decisions are recorded in [DECISIONS.md](DECISIONS.md). Implementation contracts live under [`specs/`](specs/).

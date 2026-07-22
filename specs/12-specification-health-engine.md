@@ -2,7 +2,7 @@
 
 ## Status and Purpose
 
-**Status:** Approved and specified; not implemented.
+**Status:** Deterministic runtime foundation implemented; planning integration and UI deferred.
 
 The Specification Health Engine deterministically decides whether a normalized requirement or specification is ready for technical planning. It does not discover project facts and does not assign an AI-generated quality percentage.
 
@@ -53,6 +53,8 @@ The engine returns:
 
 No aggregate percentage may hide a failed blocking check. If a future UI shows a summary score, the score is secondary and derived only from published deterministic weights.
 
+The implemented foundation uses eight categorical dimensions with no hidden weights: structural completeness, clarification completeness, constitutional compliance, internal consistency, traceability, testability, approval completeness, and freshness. Every dimension reports `pass`, `warning`, `fail`, or `unknown` plus exact calculation inputs and check/finding IDs. The aggregate health and readiness class are deterministic gates, not quality percentages.
+
 ## Planning Gate
 
 Technical planning may proceed only when:
@@ -65,13 +67,19 @@ Technical planning may proceed only when:
 
 Clarification output points to the minimum facts needed to repair health. It may feed Discovery or a clarification Task Card, but it cannot invent answers.
 
+The runtime returns `readiness_recommended`, `not_ready`, `human_review_required`, or `stale`. `readiness_recommended` is evidence for the configured approval workflow; it does not itself approve a specification or authorize implementation.
+
+## Implemented Pipeline
+
+The public governance evaluator performs normalization, Constitution resolution, structural validation, clarification analysis, constitutional compliance, consistency analysis, traceability analysis, categorical health calculation, readiness recommendation, and report compilation. Reports include authoritative versions/fingerprints, evaluator versions, findings, evidence references, temporal metadata, and a semantic fingerprint. Approved Specifications remain immutable inputs.
+
 ## Non-Goals
 
 - Natural-language extraction
 - Interview generation
-- Technical-plan generation
 - Code review or convergence analysis
 - Provider calls, persistence, or UI
+- Technical-plan generation, Task Card compilation, or execution authorization
 
 ## Acceptance Criteria for Implementation
 

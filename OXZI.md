@@ -51,6 +51,16 @@ Permanent priority: project quality → safety/security → correctness → requ
 31. Report requirement correctness, implementation correctness, security compliance, validation completeness, and token efficiency as separate dimensions; success in one cannot hide failure in another.
 32. Preserve effective-time and ingestion-time history; superseded facts remain traceable through immutable Episodes.
 33. Keep project-intent and repository-evidence graphs separate and join them only in derived query views.
+34. Evaluate prompt, context, workflow, target agent, reasoning strategy, execution, and user outcome as separate evidence-linked artifacts.
+35. Use isolated divergence only when risk-adjusted decision value exceeds repeated-context and orchestration cost; generated ideas remain proposals.
+36. Optimize versioned Prompt Programs against measurable outcomes while preserving normalized Task Card meaning.
+37. Require typed, validated AI results before trust elevation; malformed or partial prose cannot silently enter project workflows.
+38. Keep observability privacy-first and version-complete; traces and experiments are derived evidence, not project truth.
+39. Classify skills as evidence-backed DAILY or discoverable LIBRARY and diagnose repeated failures before blind retry.
+40. Begin repository understanding with parser-neutral structural evidence, incremental freshness, and explicit evidence levels.
+41. Keep structural detection separate from permission to transform code; future edits require preview, scope, validation, and rollback.
+
+Future positioning: OXZI is not merely a prompt generator. It is designed for Typed Agent Reliability, measurable Prompt Programs, privacy-aware end-to-end traceability, selective agent intelligence, incremental structural repository understanding, evidence-gated divergence, and safe previewable transformations. These remain unavailable where `CURRENT.md` marks only contracts or planned runtimes.
 
 ## Agent Entry Point
 
@@ -68,4 +78,4 @@ Full-project context remains available for cross-cutting work or when targeted r
 
 ## Current Build Boundary
 
-Phase 1 defines the original product contracts and Phase 2 established the application/tooling foundation. Phase 3 has implemented canonical, discovery, extraction, and Knowledge Graph foundations; Constitution and Specification Health foundations are approved next. Later phases add controlled context/planning outputs, certified agent workflow, product experience, SaaS infrastructure, and launch validation.
+Phase 1 defines the original product contracts and Phase 2 established the application/tooling foundation. Phase 3 has implemented canonical, discovery, extraction, Knowledge Graph, Constitution resolution, and Specification Health foundations. Later phases add controlled planning/slicing and context outputs, certified agent workflow, product experience, SaaS infrastructure, and launch validation.

@@ -129,6 +129,10 @@ The `2.0.0` schemas accept the following types, while the canonical projector cr
 
 The existing generic `task` type remains valid for current canonical execution fields. A future migration must define compatibility and cannot silently reinterpret existing node IDs. Every new record will preserve source/evidence references, confidence, lifecycle/version metadata, freshness, deterministic ordering, and fingerprints. Repository-derived file or symbol evidence remains a separate validated ingestion boundary.
 
+Future graph versions may add assertion, evaluation suite/scenario, prompt certification, execution certification, renderer candidate, cognitive frame, divergence request, candidate/cluster/score/trap, and decision-report nodes. Relationships must preserve proposal/approval state and may not turn generated candidates or evaluator claims into canonical truth.
+
+Prompt Programs, typed completions, traces, experiments, skill diagnostics, parser records, structural rules/findings, and transformation previews are future graph evidence types. Repository-derived nodes remain in a separate Repository Intelligence Graph; only a derived evidence view may join them to project intent. Trace, AI, optimization, or structural evidence cannot become canonical truth through projection.
+
 ## Non-Goals of the Implemented Foundation
 
 - Repository AST or code graph

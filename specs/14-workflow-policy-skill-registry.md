@@ -16,6 +16,7 @@ Supported normalized policies are:
 - `investigation`, `refactor`, `security_review`, and `migration`
 - `documentation`, `verification`, and `specification_compliance_review`
 - `code_quality_review`, `repair`, and `escalation`
+- `divergent_reasoning`
 
 Policies define required preconditions, artifact inputs, ordered stages, review gates, repair limits, validation classes, output contract, and completion evidence. A policy may compose named stages but cannot silently waive a Constitution rule or Passport gate.
 
@@ -26,6 +27,8 @@ Selection inputs include task type, requirement clarity, risk, security sensitiv
 Selection returns chosen policy/version, considered alternatives, matched rules, rejected-policy reasons, required skill IDs, risk class, and whether user clarification or approval is required. User choice may select among eligible policies but cannot select an unsafe policy. Ties resolve by explicit priority and stable policy ID.
 
 A mechanical fix does not activate brainstorming. High-risk cross-cutting work cannot skip planning. Test-driven implementation is selected only when technically appropriate, but every policy requires an explicit validation strategy. Security-sensitive or destructive work requires stronger review and approval. Selection balances relevance, criticality, risk, expected benefit, and workflow overhead.
+
+`divergent_reasoning` is eligible only for open-ended, high-impact choices with multiple viable approaches and meaningful cost of premature convergence. Selection considers ambiguity, budget, target isolation capability, prior evaluation, and expected decision value. It may precede architecture/specification choices, slicing, renderer redesign, threat modeling, or repeated repair escalation. It is never added to every Task Card; expensive Deep mode requires configured approval.
 
 ## Selective Skill Registry
 
@@ -40,11 +43,17 @@ Only concise relevance metadata is loaded initially; it describes activation rat
 - disclose activation and estimated overhead; and
 - support a no-skill path for simple tasks.
 
+Skill availability is `DAILY` or `LIBRARY`. DAILY requires current repository evidence, broad task relevance, compatibility, and acceptable overhead. LIBRARY remains searchable and available on demand; it is not deleted. A future Skill Surface Auditor reclassifies from language/framework/package/test/build/deployment/hook/agent/task and usage evidence whenever the repository stack changes.
+
+Divergence skill activation records expected value, overhead, selected frame IDs, generator/critic profile revisions, evaluation suite, and approval requirement. Concise metadata excludes full frame or methodology instructions.
+
 ## Repair Escalation
 
 Every repair attempt records attempt ID, triggering finding, hypothesis, evidence, change, validations, result, remaining uncertainty, newly introduced findings, agent/profile, cost/token ledger references, and artifacts.
 
 The default maximum is three materially failed attempts for the same unresolved failure class, configurable by risk and policy. Escalation occurs earlier for security regressions, expanding scope, destructive uncertainty, repeated loops, or inadequate evidence. Repeating substantially the same fix without new evidence is prohibited. Outcomes include `repaired`, `focused_reaudit`, `architecture_review`, `requirement_clarification`, `environment_investigation`, `dependency_investigation`, `security_review`, `manual_intervention`, or `blocked`. Retry counts never reset through cosmetic rewording.
+
+Before blind retry, Agent Self-Diagnostic captures the exact failure, classifies root cause, selects the smallest discriminating check, performs reversible contained recovery, verifies evidence, and emits an Introspection Report. Repeating an identical failed action escalates. Contract schemas are implemented in `src/domain/workflow/intelligence.ts`; detection/routing/recovery runtimes remain future work.
 
 ## Efficiency and Safety
 

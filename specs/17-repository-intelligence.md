@@ -2,7 +2,7 @@
 
 ## Status and Boundary
 
-**Status:** Approved and specified; not implemented. No AST parser, embedding, repository scanner, or persistence is added by this unit.
+**Status:** Normalized parser/snapshot/file/symbol/relationship/query/rule/preview/update contracts and deterministic fingerprint/cache helpers are implemented. No AST parser, grammar, scanner, query executor, rewrite runtime, embedding, or persistence is installed.
 
 The Repository Intelligence Graph derives actual implementation evidence—tracked files, language, symbols, imports/exports, references/calls, interfaces, routes, schemas, tests, configuration, documentation, ownership, and fingerprints. It remains separate from the Temporal Project Knowledge Graph. A Unified Evidence View joins both at query time and is never a source of truth.
 
@@ -25,3 +25,5 @@ Provider-neutral policies include `exact_first`, `task_dependency`, `current_tru
 ## Acceptance Direction
 
 Future implementation must support multiple languages through versioned adapters, incremental correctness, task-seed preservation, deterministic fitting, freshness, and repository evidence without AI enrichment.
+
+The complete parser-neutral adapter, structural query/rule, transformation-safety, evidence-level, invalidation, and context-selection contracts live in `specs/25-repository-parsing-structural-intelligence.md`. Exact text, parsed structure, symbol resolution, repository graph traversal, and optional semantic retrieval remain separate signals.

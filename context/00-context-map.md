@@ -1,6 +1,6 @@
 # OXZI — Context Map
 
-Navigation only. Start from the task, follow direct dependencies, and record why context widens.
+Route from the task; follow dependencies and record widening.
 
 | Task area | Read next |
 |---|---|
@@ -24,17 +24,12 @@ Navigation only. Start from the task, follow direct dependencies, and record why
 | Workflow/skills/repair | `specs/14-workflow-policy-skill-registry.md` |
 | Passport/artifacts/ledger/adapters | `specs/15-execution-passport.md` |
 | Temporal memory/Episodes | `specs/16-temporal-project-memory.md`; `src/domain/knowledge-graph/` |
-| Repository evidence/retrieval | `specs/17-repository-intelligence.md` |
-| Agent control/evidence/evaluation | `specs/18-agent-control-evidence-evaluation.md`; `src/domain/execution/` |
+| Repository parse/search/rules | `specs/17-*`, `specs/25-*`; `src/domain/repository-intelligence/` |
+| Agent control/traces/experiments | `specs/18-*`, `specs/23-*`; `src/domain/execution/`, `observability/` |
+| Prompt evaluation/programs/typed AI | `specs/19-*`, `specs/21-*`, `specs/22-*`; corresponding domains |
+| Divergent decisions/frames/cost | `specs/20-*`; `src/domain/divergence/` |
+| Skill surfaces/diagnostics | `specs/14-*`, `specs/24-*`; `src/domain/workflow/` |
 | Decisions | Search `DECISIONS.md` for the relevant ADR |
 | Fixtures | Relevant `examples/` file and domain fixture/test |
 
-## Reading Rules
-
-- Read the task, then search headings, ADRs, symbols, paths, and tests.
-- Read affected code/tests and justified dependency/consumer closure.
-- Do not load the whole repository or Project Bible by default.
-- Never skip relevant context to save tokens; widen when uncertain and record why.
-- Full reads are justified for cross-cutting audits/refactors, roadmap reconciliation, source migration, global policy changes, explicit requests, or unresolved sufficiency.
-
-Update when an authoritative domain, specification, or route changes.
+Search relevant headings/ADRs/symbols first, then read affected code/tests and justified closure. Widen when uncertain; full reads are for cross-cutting audits, migrations, global policy, explicit requests, or unresolved sufficiency. Update this index when routes change.

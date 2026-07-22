@@ -115,11 +115,11 @@ OXZI maintains one structured project truth and renders it into six living files
 
 ## Planned Differentiators
 
-Quality-Protected Token Saving, Project Time Machine, Spec-to-Code Convergence, Task Card compilation, Execution Passports, task-aware Repository Intelligence, an approval-controlled Agent Control Tower, evidence-based completion, visual project intelligence, Controlled Living Specifications, selective workflow intelligence, and pre-delivery certification are approved directions. Only capabilities explicitly marked implemented in `CURRENT.md` are available today.
+Quality-Protected Token Saving, Project Time Machine, Spec-to-Code Convergence, Task Card compilation, Execution Passports, typed AI boundaries, measurable Prompt Programs, privacy-aware traceability, evidence-backed DAILY/LIBRARY skills, agent self-diagnostics, incremental structural Repository Intelligence, safe transformation previews, an approval-controlled Agent Control Tower, OXZI Bench, and Evidence-Gated Divergent Decision Intelligence are approved directions. Only capabilities explicitly marked implemented in `CURRENT.md` are available today.
 
 ## Prompt Performance and Privacy Direction
 
-A future Prompt Performance Dataset may relate user goal, normalized Task Card, rendered style, target agent, token estimate, output, audit findings, rework, acceptance, and user feedback. Analytics should prefer derived metrics over raw project or prompt content. Users must be able to keep all performance data private, and private data cannot be reused for global model training without explicit consent. Optimization cannot alter approved requirements merely to improve token metrics.
+A future Prompt Performance Dataset may relate user goal, normalized Task Card, Prompt Program and renderer versions, target profiles, typed result, trace, repository/test evidence, token/cost/latency, rework, acceptance, and user feedback. Analytics prefer derived metrics over raw project or prompt content. Users can keep data private/local, and private data cannot support global improvement without explicit consent. Optimization cannot alter approved requirements merely to improve token metrics.
 
 ## Validation Projects
 
