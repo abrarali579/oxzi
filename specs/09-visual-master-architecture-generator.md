@@ -18,6 +18,9 @@ The Visual Master Architecture Generator creates traceable visual views over one
 - Dependency/impact map
 - Security boundary map
 - Project status infographic
+- Project Constitution and specification-to-code maps
+- Temporal decision and execution/audit timelines
+- Repository structure and Project Time Machine views
 
 ## View Input
 
@@ -39,6 +42,9 @@ The Visual Master Architecture Generator creates traceable visual views over one
 6. Security-boundary views cannot omit a relevant trust boundary merely for visual simplicity.
 7. Audience/detail filters may reduce explanation but cannot misrepresent scope, blockers, or relationship direction.
 8. Visual edits emit proposed canonical or graph changes for validation and approval; they never silently edit the source graph.
+9. Current/historical modes expose freshness, uncertain relationships, search, paths, impact highlighting, progressive disclosure, and aggregated cross-layer edges without graph hairballs.
+
+Future modes are Overview, Product, Technical, Security, Implementation, Historical, and Deep Dive. Tours support executive, product, developer onboarding, security, current task, change impact, and project history audiences.
 
 ## Future Exports
 
@@ -74,4 +80,3 @@ All exports carry canonical and graph version references. Graph JSON is a derive
 - Tests cover audience/detail filtering without invariant or blocker loss.
 - Visual-change proposals require validation and approval.
 - Export adapters cannot invent nodes or relationships absent from the view model.
-

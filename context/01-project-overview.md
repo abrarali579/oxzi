@@ -33,6 +33,7 @@ OXZI maintains one structured project truth and renders it into six living files
 10. User approves, edits, copies, or exports the package and prompt.
 11. A coding agent implements one scoped unit; OXZI itself does not execute project code.
 12. Review evidence gates repair or next-task recommendations while progress and decisions remain synchronized.
+13. Controlled specifications, plans, tasks, implementation evidence, and reviews remain convergent through evidence-backed proposals rather than silent edits.
 
 ## MVP Capabilities
 
@@ -68,6 +69,10 @@ OXZI maintains one structured project truth and renders it into six living files
 - Normalized AI Task Cards rendered in one selected prompt style
 - Review/Audit Analyzer with repair-first blocker handling
 - Visual Master Architecture views derived from the same graph
+- Project Constitution and deterministic Specification Health gate before planning
+- Versioned Technical Plans and independently verifiable implementation slices
+- Workflow Policy, selective skills, and certified Execution Passports
+- Artifact-first handoff, durable execution ledger, dual review, and convergence findings
 
 ### Export
 
@@ -105,6 +110,12 @@ OXZI maintains one structured project truth and renders it into six living files
 7. Task context preserves 100% of relevant mandatory context, dependencies, and blockers in every token mode.
 8. Failed checks or security findings produce repair or stop recommendations before unrelated roadmap work.
 9. Prompt styles preserve one normalized Task Card meaning and only the selected style is generated initially.
+10. Unhealthy specifications cannot enter planning, and stale or uncertified Passports cannot enter execution delivery.
+11. Requirement changes, implementation discoveries, and progress-only updates remain visibly distinct and versioned.
+
+## Planned Differentiators
+
+Quality-Protected Token Saving, Project Time Machine, Spec-to-Code Convergence, Task Card compilation, Execution Passports, task-aware Repository Intelligence, an approval-controlled Agent Control Tower, evidence-based completion, visual project intelligence, Controlled Living Specifications, selective workflow intelligence, and pre-delivery certification are approved directions. Only capabilities explicitly marked implemented in `CURRENT.md` are available today.
 
 ## Prompt Performance and Privacy Direction
 

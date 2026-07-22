@@ -119,7 +119,7 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 **Decision:** OXZI optimizes for the smallest sufficient, evidence-backed context, not the smallest possible context. Quality, safety, and correctness outrank token reduction. Critical constraints, security and privacy rules, blocking conflicts, accepted decisions, direct dependencies, required tests, relevant acceptance criteria, and ambiguity warnings cannot be removed merely to meet a token target.
 
-**Consequences:** All context modes share mandatory sufficiency gates. If coverage or relationship confidence is inadequate, the context package widens and reports why. Token counts are estimates unless produced by the selected agent/model tokenizer, and unsafe custom budgets produce a warning instead of silent meaning loss.
+**Consequences:** All context modes share mandatory sufficiency gates. If coverage or relationship confidence is inadequate, the context package widens and reports why. Token counts expose their measurement status, and unsafe custom budgets produce explicit insufficiency with a minimum-safe estimate instead of silent meaning loss.
 
 ## ADR-013 — Knowledge Graph as a Derived Typed Projection
 
@@ -133,7 +133,7 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 **Status:** Accepted — Architecture Expansion
 
-**Decision:** AI work instructions are represented first as one normalized, validated Task Card. Plain English, Agent Optimized, YAML, JSON, and eligible Compact Command outputs are deterministic renderers over the same meaning; Custom Template support is deferred. Prompt preferences remain outside canonical project state.
+**Decision:** AI work instructions are represented first as one normalized, validated Task Card. Plain English, Agent Optimized, YAML, JSON, eligible Compact Command, and agent-specific XML outputs are deterministic renderers over the same meaning; Custom Template support is deferred. XML is an agent renderer option rather than a universal prompt format. Prompt preferences remain outside canonical project state.
 
 **Consequences:** Style changes do not recompute unrelated project analysis or invent requirements. Every renderer preserves task goal, boundaries, invariants, dependencies, acceptance criteria, validation, risks, expected outputs, documentation updates, and context sufficiency metadata.
 
@@ -141,7 +141,7 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 **Status:** Accepted — Architecture Expansion
 
-**Decision:** OXZI initially generates only the user's selected prompt style. The default is Agent Optimized with Balanced Quality context and manual review required. Alternate styles are generated only on request; Compact Command is disabled for tasks whose risk or context complexity exceeds its eligibility policy.
+**Decision:** OXZI initially generates only the user's selected prompt style. The default is Agent Optimized with Balanced Quality context and manual review required. Alternate styles are generated only on request; Compact Command is disabled for complex, ambiguous, destructive, security-sensitive, or otherwise ineligible tasks.
 
 **Consequences:** OXZI avoids spending its own tokens on unused formats. Users may review, regenerate in another style, edit the underlying requirements through validated proposals, copy, or explicitly approve future connected-agent delivery. OXZI itself does not execute project code.
 
@@ -160,3 +160,211 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** Visual Master Architecture views are deterministic, audience-filtered projections over the same canonical state and Knowledge Graph used by other outputs. OXZI will not maintain a separate manually drifting diagram dataset.
 
 **Consequences:** Visual nodes remain traceable to canonical or repository evidence. Future SVG, PNG, PDF, Mermaid, and graph-JSON exports represent one versioned graph. Visual edits create validated canonical or graph-change proposals and cannot silently alter the source of truth.
+
+## ADR-018 — Optimization Overhead and No-Optimization Path
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** A token optimization is eligible only when its expected input, output, cache, latency, and rework benefit exceeds the cost of its instructions, graph queries, compression, summaries, tool calls, handoffs, and reintegration. Small or already concise tasks may use an explicit no-optimization path.
+
+**Consequences:** OXZI optimizes for the smallest sufficient context, not compression for its own sake. A compiler must record why optimization was selected or skipped and cannot claim savings without subtracting optimization overhead.
+
+## ADR-019 — Distinct Token Metrics and Net Savings
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Input-context savings, output savings, cache reads and writes, gross savings, optimization overhead, and net total savings are separate metrics. Character or word estimates are labeled estimates; only the selected target tokenizer may produce tokenizer-measured counts.
+
+**Consequences:** Output reduction cannot be marketed as total-session reduction. The future Token Ledger uses `measured`, `tokenizer-estimated`, `character-estimated`, or `unavailable` for every value and reports no positive success claim when measurement confidence is inadequate.
+
+## ADR-020 — Query-First Context Acquisition
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Task context acquisition starts from explicit task seeds and a Knowledge Graph query. It traverses justified dependency, blocker, decision, security, test, and documentation closure before reading raw files. Raw sources are read when graph evidence or task execution requires them; scope expansion records its reason.
+
+**Consequences:** OXZI does not load an entire Project Bible or repository by default and never imposes an unsafe blanket prohibition against reading additional files. Every seed is preserved, generic high-degree hubs are protected, uncertain sufficiency widens context, and truncation discloses omissions and minimum-safe capacity.
+
+## ADR-021 — Lean Root Agent Navigation Maps
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Root `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` files are navigation and safety maps. Detailed product and implementation requirements live in versioned context and specification files. The target root-instruction size is 500–1,000 estimated tokens, with a warning above 1,500 estimated tokens.
+
+**Consequences:** Root instructions point agents to task-specific context instead of duplicating the architecture. Size guidance never authorizes removal of required safety, source-of-truth, validation, or handoff rules, and material reductions require semantic review before application.
+
+## ADR-022 — Adaptive Session Hygiene
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Session guidance adapts to topic cohesion, risk, target-agent capabilities, and context pressure. One coherent implementation unit maps to one Task Card; unrelated work is not batched merely to reduce messages. Compaction thresholds and cache behavior come from configurable capability profiles rather than universal time or usage assumptions.
+
+**Consequences:** High-risk and cross-cutting work prefers plan-first execution; low-risk mechanical work may execute directly. A compacted handoff preserves current state, strict boundaries, open blockers, the active decision, next action, and stable references. No universal five-minute cache or off-peak-hour rule is a product invariant.
+
+## ADR-023 — Bounded Output Contracts
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Investigation, implementation, and review Task Cards use explicit, task-specific output contracts. Concision removes narration and repetition but preserves exact decisive errors, identifiers, paths, commands, API names, URLs, security findings, destructive operations, and ordered steps whose ambiguity would be unsafe.
+
+**Consequences:** Agents do not reproduce edited files or long logs by default. When a safe result cannot fit its bound, the response provides a continuation or artifact reference instead of deleting findings. Limits cannot reduce technical meaning.
+
+## ADR-024 — Dynamic Agent Capability and Cost Profiles
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Agent, model, renderer, cache, MCP, and sub-agent routing use configurable capability and cost profiles rather than permanent branded-model assumptions. Profiles cover planning and coding quality, context window, tokenizer, input/output cost, cache behavior, structured output, plan mode, session reset/compaction, sub-agent support, and MCP support.
+
+**Consequences:** Sub-agent choices account for fresh-context, static-instruction, handoff, and reintegration overhead; no universal cost multiplier is encoded. Bounded investigator, surgical-builder, and reviewer contracts are used only when isolation, specialization, safe parallelism, or a cheaper capable model provides net value. Surgical builders are not used for broad multi-file work.
+
+## ADR-025 — Quality-Controlled Token Measurement
+
+**Status:** Accepted — Token-Efficiency Contract Hardening
+
+**Decision:** Token-efficiency evaluation combines token and cost metrics with execution quality, acceptance coverage, rework, scope violations, latency, and user rating. Baseline behavior, concise-output-only behavior, graph/context optimization, and the full OXZI Task Card workflow are evaluated separately.
+
+**Consequences:** OXZI cannot claim optimization success after a quality regression, omission-caused repair, failed mandatory coverage, or measurement with inadequate confidence. Provider billing integration is not required for the deterministic foundation and remains deferred.
+
+## ADR-026 — Project Constitution as Derived Enforceable Governance
+
+**Status:** Accepted — Specification Governance Expansion
+
+**Decision:** A future canonical-schema version stores approved constitutional rules with stable IDs, evidence, applicability, severity, approval, version, and supersession metadata. The Project Constitution is a deterministic projection of those rules, not a competing source of truth.
+
+**Consequences:** ADRs continue to explain rationale while the Constitution supplies queryable execution constraints. Downstream specifications, plans, Task Cards, Passports, and reviews cite its version/fingerprint. Runtime enforcement requires a later explicit canonical migration.
+
+## ADR-027 — Specification, Technical Plan, and Task Separation
+
+**Status:** Accepted — Specification Governance Expansion
+
+**Decision:** Specifications own approved behavior and acceptance criteria, Technical Plans own implementation design and slice structure, and Task Cards own one bounded execution unit. Each is a separately versioned normalized artifact with explicit parent references.
+
+**Consequences:** A Task Card may narrow but cannot broaden its parents. Prompt rendering cannot recompute planning or requirement meaning. Health and approval gates precede downstream compilation.
+
+## ADR-028 — Controlled Living Specifications and Reverse Proposals
+
+**Status:** Accepted — Specification Governance Expansion
+
+**Decision:** Approved requirement changes, implementation discoveries, and progress-only updates use distinct versioned flows. Implementation discoveries produce evidence-backed reverse proposals; code or agent narration never silently becomes requirement truth.
+
+**Consequences:** Historical versions remain immutable. Approved semantic changes invalidate or re-evaluate affected plans, slices, Task Cards, Passports, context packages, and reviews through graph impact evidence.
+
+## ADR-029 — Independent Compliance and Quality Review Gates
+
+**Status:** Accepted — Specification Governance Expansion
+
+**Decision:** Execution acceptance requires both compliance review against approved scope, Constitution, specifications, plans, security, and criteria, and quality review of correctness, maintainability, tests, accessibility, performance, and design.
+
+**Consequences:** Passing one dimension cannot waive a blocking failure in the other. Findings remain evidence-backed and deterministic, and the Review/Audit Analyzer still recommends while the user approves.
+
+## ADR-030 — Selective Workflow and Skill Activation
+
+**Status:** Accepted — Agent Workflow Expansion
+
+**Decision:** A deterministic Workflow Policy Engine selects an explainable method from task, risk, health, evidence, and target-capability inputs. Only required, compatible skill metadata and instructions are loaded; a no-skill path remains valid.
+
+**Consequences:** Workflow and skill overhead is measured. Policies cannot waive constitutional or Passport gates, irrelevant tool catalogs are excluded, and unsafe user-selected policies are rejected with reasons.
+
+## ADR-031 — Execution Passport as Portable Certification Wrapper
+
+**Status:** Accepted — Agent Workflow Expansion
+
+**Decision:** An Execution Passport wraps exactly one normalized Task Card with parent versions, sufficient context, workflow policy, skills, target capabilities, artifacts, validation, review gates, approvals, freshness, and certification state.
+
+**Consequences:** The Passport does not replace the Task Card or prompt renderer. Only certified, fresh Passports are execution-deliverable, and changed semantic dependencies require re-certification.
+
+## ADR-032 — Artifact-First Agent Handoffs
+
+**Status:** Accepted — Agent Workflow Expansion
+
+**Decision:** Large context, plans, diffs, logs, and results move through versioned, hashed artifacts with concise referenced summaries. Inline reproduction is used only when access, readability, sensitivity, or target capability makes references unsafe.
+
+**Consequences:** Artifact integrity, freshness, authorization, and target readability are certification gates. Exact decisive errors remain visible. Production, retrieval, and reintegration overhead counts toward efficiency measurement.
+
+## ADR-033 — Bounded Repair Attempts and Escalation
+
+**Status:** Accepted — Agent Workflow Expansion
+
+**Decision:** Repair attempts are durable evidence records. Three failures for the same failure class is the configurable default escalation threshold, with earlier escalation for security regressions, destructive uncertainty, expanding scope, loops, or inadequate evidence.
+
+**Consequences:** Cosmetic retries cannot reset counts. Terminal outcomes are repaired, focused re-audit, user clarification, specialist escalation, or blocked, and failed attempts remain part of quality and token/rework measurement.
+
+## ADR-034 — Evidence-Based Spec-to-Code Convergence
+
+**Status:** Accepted — Specification Governance Expansion
+
+**Decision:** A future deterministic Convergence Engine compares versioned Specifications, Technical Plans, Task Cards, Constitution rules, repository evidence, execution artifacts, and reviews. It emits traceable findings and proposals rather than mutating authoritative state.
+
+**Consequences:** Review/Audit remains the bounded execution gate; convergence owns cross-version alignment. Unsupported agent claims remain unverified, implementation discoveries require reverse approval, and repository ingestion remains a separate future boundary.
+
+## ADR-035 — Bitemporal Project Facts with Preserved History
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Project graph facts distinguish effective/event time from ingestion/system time. Superseded or invalidated facts remain historically queryable with reasons, successors, versions, and affected artifacts.
+
+**Consequences:** One ambiguous timestamp is prohibited. Current views filter history; Project Time Machine and freshness analysis use preserved versions without turning the graph into product truth.
+
+## ADR-036 — Episodes as Immutable Provenance
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Source ingestion is represented by immutable Episodes. Every derived fact traces to Episodes or deterministic canonical records; summaries are not provenance substitutes.
+
+**Consequences:** Sensitive raw content may be separated from safe metadata. Canonical evidence projects to Episode nodes now; persistence and broader source ingestion remain later work.
+
+## ADR-037 — Separate Project and Repository Graphs
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Project intent and repository implementation are separate derived graphs joined only through a query-time Unified Evidence View.
+
+**Consequences:** Code is evidence, not automatic requirement truth. Repository scans cannot silently mutate canonical state, and each projection has independent freshness and versioning.
+
+## ADR-038 — Deterministic Static Evidence Before AI Enrichment
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Repository structure, symbols, dependencies, tests, and exact retrieval operate deterministically before optional semantic or AI enrichment.
+
+**Consequences:** Initial retrieval works without embeddings. Optional reranking remains provider-neutral, explainable, configurable, and subordinate to exact evidence and task seeds.
+
+## ADR-039 — Risk-Gated Architect and Executor Separation
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** High-impact work separates a reviewable Architect stage from an approved Executor stage; safe mechanical work may execute directly.
+
+**Consequences:** Architecture claims require repository evidence, approval controls transition, and Passports avoid duplicate context across stages.
+
+## ADR-040 — Versioned Agent Capability Profiles
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Every execution references an exact versioned agent capability profile which itself references separate model, tool, MCP, workflow, prompt, quality, and approval profiles.
+
+**Consequences:** Current branded agents are not permanent logic. Unsupported delivery, edit, monitoring, pause, or sandbox capabilities are disclosed rather than simulated.
+
+## ADR-041 — Adapter-Based Agent Integration
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Instruction-file, CLI, API, plugin, hook, protocol, artifact, and manual copy/export integrations implement capability-aware adapters.
+
+**Consequences:** Manual export remains first-class. Connected delivery is optional and requires explicit approval; adapters cannot change Task Card or Passport meaning.
+
+## ADR-042 — Event and Artifact Evidence with Separate Runtime States
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Append-oriented events, verified artifacts, and durable execution records—not conversation memory—prove execution. Conversation, execution, and runtime/sandbox states remain independent.
+
+**Consequences:** Git diffs and validation evidence outrank narrative. Events are ordered and redacted, artifacts are hashed/readable, and control-plane state cannot collapse into one vague status.
+
+## ADR-043 — Privacy-Controlled Performance Learning
+
+**Status:** Accepted — Unified Intelligence Foundation
+
+**Decision:** Prompt/workflow improvements require versioned evaluation, meaning preservation, regression evidence, and approval. Private project data never trains a global system without explicit consent.
+
+**Consequences:** Derived metrics are preferred; private/local performance memory is supported. Token wins cannot override failed quality, security, scope, or rework outcomes.

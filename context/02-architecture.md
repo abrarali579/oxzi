@@ -26,9 +26,19 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - `domain/project/` — canonical project types, runtime validation, fixtures, and deterministic serialization
 - `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
 - `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
-- `domain/knowledge-graph/` — future deterministic typed projection, traversal, impact analysis, and task subgraph extraction
+- `domain/knowledge-graph/` — implemented temporal typed projection, Episodes, indexes, traversal/path, impact, task subgraphs, integrity, serialization, and fingerprints
+- `domain/governance/` — implemented contract schemas only; governance engines remain future
+- `domain/workflow/` — implemented policy/skill/activation/escalation schemas only
+- `domain/execution/` — implemented Task Card, Passport, profile, status, event, artifact, receipt, and Token Ledger schemas only
+- `domain/repository-intelligence/` — future separate repository-evidence projection
+- Unified Evidence View — future query-time join; never persisted as product truth
+- `domain/project-constitution/` — future canonical-rule projection, applicability, supersession, and enforcement queries
+- `domain/specification-health/` — future deterministic requirement-readiness and planning gates
+- `domain/specification/` — future normalized Specifications, Technical Plans, controlled change, slices, and convergence findings
 - `domain/context-compiler/` — future quality-gated smallest-sufficient context selection
 - `domain/task-card/` — future normalized Task Card and deterministic style renderers
+- `domain/workflow-policy/` — future explainable policy selection, selective skills, and repair escalation
+- `domain/execution-passport/` — future portable certification, artifact references, execution ledger, and adapter contracts
 - `domain/review-analysis/` — future evidence-backed Review/Audit Analyzer and next-action classification
 - `domain/visual-architecture/` — future graph-derived visual view models and exports
 - `features/project-intake/` — input, import, and source parsing
@@ -63,6 +73,12 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - ReviewFinding
 - VisualArchitectureView
 - PromptPerformanceRecord (future, private by default)
+- ConstitutionalRule and ProjectConstitutionProjection
+- Specification and SpecificationHealthResult
+- TechnicalPlan and ImplementationSlice
+- WorkflowPolicy and AgentSkill
+- ExecutionPassport, ArtifactReference, and TaskExecutionRecord
+- ComplianceReview, QualityReview, and ConvergenceFinding
 
 ## Canonical Data Flow
 
@@ -76,12 +92,17 @@ Input or imported material
 → minimal discovery
 → approved canonical state
 → deterministic Knowledge Graph projection
-→ task subgraph and smallest-sufficient context package
-→ normalized Task Card and one selected prompt renderer
+→ compiled Constitution and deterministic specification-health gate
+→ approved Technical Plan and independent implementation slices
+→ query-first task subgraph with mandatory coverage and truncation evidence
+→ smallest-sufficient context package or explicit insufficiency
+→ normalized Task Card and selected Workflow Policy
+→ certified Execution Passport and one selected prompt/adapter rendering
 → six Markdown renderers
 → visual graph views and export package
 → implementation review evidence
-→ audit-gated repair or next-task recommendation
+→ compliance and quality review
+→ convergence findings and audit-gated repair, escalation, or next-task recommendation
 ```
 
 ## Storage Model
@@ -139,10 +160,25 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 13. Failed required checks, security findings, and blockers prevent recommendation of unrelated feature work.
 14. Only one selected prompt style is generated initially; style renderers preserve one normalized Task Card meaning.
 15. OXZI does not execute project code; any future connected-agent delivery obeys explicit configured approval policy.
+16. Every task seed survives graph and context limits; generic hubs cannot cause uncontrolled traversal.
+17. Token optimization includes its own overhead and cannot claim success after mandatory-coverage failure or omission-caused rework.
+18. Input, output, cache, and net savings remain separate measures with explicit measurement status.
+19. Specifications, Technical Plans, Task Cards, Context Packages, Passports, and renderings retain separate identities and version links.
+20. Planning requires a healthy specification; execution delivery requires a fresh certified Passport.
+21. Implementation evidence cannot silently mutate approved requirements; discoveries use controlled reverse proposals.
+22. Compliance and quality are independent blocking review dimensions.
+23. Workflow, skill, artifact, Passport, review, convergence, repair, and adapter overhead is measurable execution cost.
+24. Effective/event time and ingestion/system time remain distinct; superseded graph facts are preserved.
+25. Project intent and repository implementation remain separate derived projections.
+26. Conversation, execution, and runtime statuses are separate state machines.
 
-## Future Deterministic Intelligence Flow
+## Deterministic Intelligence Flow
 
-The Knowledge Graph is a versioned projection, not persistence. Its traversals provide impact sets and task subgraphs to the Token-Saving Context Compiler. The compiler widens context whenever mandatory coverage or relationship confidence is insufficient. The AI Task Card Prompt Compiler consumes that safe package and renders only the selected style. The Review/Audit Analyzer consumes Review Engine evidence and recommends accept, repair, clarify, focused re-audit, proceed, or stop. Visual Master Architecture views render the same graph at audience-specific detail levels.
+The implemented Knowledge Graph is a versioned, byte-stable projection, not persistence. Its deterministic indexes and traversals provide impact sets and task subgraphs with explicit cap, hub, omission, confidence, and coverage metadata. Repository AST/code evidence and incremental graph updates remain deferred.
+
+The future Token-Saving Context Compiler queries this graph before reading broad raw context, widens whenever mandatory coverage or relationship confidence is insufficient, accounts for optimization overhead, and returns explicit insufficiency for an unsafe budget. The AI Task Card Prompt Compiler consumes that safe package and renders only the selected style. The Review/Audit Analyzer consumes Review Engine evidence and recommends accept, repair, clarify, focused re-audit, proceed, or stop. Visual Master Architecture views render the same graph at audience-specific detail levels.
+
+Future governance layers compile constitutional rules, certify specification health, separate plans from executable slices, and package a Task Card into a target-compatible Execution Passport. Workflow Policy selection occurs before rendering. Execution evidence enters append-only ledgers and independent compliance/quality review; convergence compares durable versions without owning mutation. Detailed ownership is specified in `specs/11-project-constitution.md` through `specs/15-execution-passport.md`.
 
 ## Initial Status Lifecycle
 

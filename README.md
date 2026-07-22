@@ -168,22 +168,22 @@ npm run test:review
 ## Agent Start
 
 1. Read `AGENTS.md`.
-2. Read `PROJECT.md`.
-3. Read `DECISIONS.md`.
-4. Read `OXZI.md`.
-5. Read all context files in numerical order.
-6. Read relevant specifications.
-7. Read relevant examples.
+2. Read `CURRENT.md`.
+3. Read the active Task Card or explicit user task.
+4. Use `context/00-context-map.md` to select relevant authoritative context.
+5. Read affected source files, tests, and justified dependency closure.
 
-Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance and update `context/06-progress-tracker.md` after each completed unit.
+Do not load the full Project Bible by default, and do not skip relevant dependencies to save tokens. Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance. Update `CURRENT.md` and `context/06-progress-tracker.md` after each completed unit.
 
 ## Package Contents
 
 - `AGENTS.md` — universal agent entry point and repository operating rules
+- `CURRENT.md` — compact current-state resume view
 - `PROJECT.md` — concise product, phase, stack, and scope briefing
 - `DECISIONS.md` — formal accepted-decision register
 - `OXZI.md` — concise product manifesto
-- `context/` — six living project context files
+- `context/00-context-map.md` — task-oriented navigation index
+- `context/` — six living project context files plus the navigation map
 - `specs/01-canonical-project-schema.md` — structured source-of-truth model
 - `specs/02-discovery-engine.md` — minimal interview and skip logic
 - `specs/03-six-file-rendering-contract.md` — deterministic generation rules

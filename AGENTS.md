@@ -1,83 +1,58 @@
-# AGENTS.md — OXZI Agent Operating Guide
+# AGENTS.md — OXZI Operating Map
 
-Start here before planning, editing, or running implementation work.
+Read before planning, editing, or running work.
 
-## Required Reading Order
+## Default Startup
 
-Before making changes, read:
+1. Read `AGENTS.md`.
+2. Read `CURRENT.md` for the concise implementation state.
+3. Read the active Task Card or explicit user request.
+4. Read `context/00-context-map.md` to route the task.
+5. Read relevant authoritative sections, source files, and tests.
+6. Follow justified dependencies and consumers.
 
-1. `AGENTS.md`
-2. `PROJECT.md`
-3. `DECISIONS.md`
-4. `OXZI.md`
-5. All files under `context/` in numerical order
-6. Relevant files under `specs/`
-7. Relevant files under `examples/`
+Do not load the repository or Project Bible by default. Read task scope and justified dependency closure. Never skip a relevant dependency to save tokens. Record why scope widened; when context is uncertain, widen rather than guess.
+
+Full reads require cross-cutting audit/refactor, roadmap reconciliation, source migration, global policy change, user request, or unresolved sufficiency.
 
 ## Source-of-Truth Priority
 
-When information conflicts, use this order:
-
 1. Latest explicit user instruction
-2. Accepted decision recorded in `DECISIONS.md` or the project context/specs
-3. Canonical project schema and architecture contracts
-4. Six living context files
-5. Existing implementation
-6. Agent assumptions
+2. Canonical state for product facts
+3. Accepted `DECISIONS.md` ADRs
+4. Relevant specifications, then context files
+5. `CURRENT.md` resume view
+6. `context/00-context-map.md` index
+7. Existing implementation, then labeled assumptions
 
-Do not silently resolve a material conflict. Report it and recommend the smallest safe resolution.
+Generated Markdown, graphs, context packs, Task Cards, prompts, and diagrams are derived; they cannot mutate canonical state. Report material conflicts and recommend the smallest safe resolution.
 
-## Working Rules
+## Operating Rules
 
-- Never ask for information already present in the prompt, imported files, context, or specs.
-- Preserve the minimal-interview and Master Prompt skip behavior.
-- Put project quality, safety, and correctness ahead of token reduction; optimize for the smallest sufficient context.
-- Treat graphs, context packs, task cards, prompts, diagrams, and Markdown as derived views that cannot silently mutate canonical state.
-- Do not silently change approved product scope, architecture, security boundaries, or visual direction.
-- Work in small, verifiable implementation units.
-- Before editing, state the intended unit and affected files.
-- After editing, run relevant checks and report actual results.
-- For code or tooling units, use `npm run ci` for the complete local validation sequence when available.
-- Do not claim a test passed unless it was run successfully.
-- Keep code, documentation, and progress state synchronized.
-- Update `context/06-progress-tracker.md` after every completed unit.
-- Record significant architectural decisions or changed assumptions in the appropriate context/spec file.
-- Never place secrets, API keys, credentials, or private user data in committed files.
-- Do not remove or overwrite context/spec files during framework initialization.
+- Never ask for information already available in task context.
+- Never guess critical product, architecture, security, or approval behavior.
+- Preserve minimal discovery and Master Prompt interview skipping.
+- Quality, safety, correctness, and mandatory coverage outrank token reduction.
+- Work in one verifiable unit; do not enter later phases without authorization.
+- Before editing, state the unit, files, boundaries, and conflicts.
+- Do not silently change approved scope, architecture, security, or visual direction.
+- Keep code, documentation, `CURRENT.md`, and progress synchronized.
+- Record decisions or changed assumptions authoritatively.
+- Never expose or commit secrets, private data, local databases, or generated review evidence.
+- Keep output concise while preserving exact errors and security findings.
 
-## Git and Handoff Rules
+## Validation, Approval, and Handoff
 
+- Run relevant checks and report actual results; never claim an unrun check passed.
+- For code/tooling, use `npm run ci` when available and `npm run review` at completion.
 - Never commit or push unless the user explicitly requests it.
-- After every implementation unit:
-  - update `context/06-progress-tracker.md`
-  - report changed files
-  - report actual validation results
-  - run `npm run review` when the review generator is available
-  - provide a recommended commit message
-- Treat `.review/` outputs as local generated evidence; commit only `.review/.gitkeep` by default.
-- Never commit `.env`, API keys, credentials, tokens, generated secrets, or local database files.
-- Keep `main` stable and buildable.
+- External delivery, destructive actions, and protected architecture changes require authorization.
+- Keep `main` buildable; preserve unrelated worktree changes.
+- After every completed unit, update `CURRENT.md` and `context/06-progress-tracker.md`.
+- Commit only `.review/.gitkeep` by default; `.review/` reports are local generated evidence.
+
+Completion reporting must include changed files, actual validation results, warnings or unresolved risks, deferred work, the next smallest unit, and a recommended commit message.
 
 ## Current Boundary
 
-Phases 1 and 2 are complete and Phase 3 deterministic intelligence is in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for implemented versus specified work. Do not implement later compilers, product UI, or SaaS infrastructure unless the user explicitly requests that unit.
-
-## Completion Standard
-
-A task is complete only when:
-
-- Requested behavior is implemented within scope
-- Relevant checks/tests have been run
-- Failures or limitations are documented honestly
-- Context and progress files are updated
-- The next smallest implementation unit is identified
-
-## Session Start
-
-At the beginning of a new agent session:
-
-1. Follow the required reading order above.
-2. Inspect repository status and existing implementation.
-3. Summarize the current state briefly.
-4. State the single requested implementation unit and affected files.
-5. Execute only that unit or propose the smallest next unit.
+Use `CURRENT.md` for implemented versus specified work. Do not implement later compilers, product UI, persistence, providers, or SaaS infrastructure unless the active user-approved unit requires them.

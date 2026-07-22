@@ -50,6 +50,8 @@ Avoid:
 - Review findings and next-action approval
 - Export dialog
 - AI provider settings
+- Project Time Machine and temporal decision timeline
+- Specification convergence and agent execution dashboards
 
 ## New Project Screen
 
@@ -106,6 +108,7 @@ Mobile layout:
 - Reveal canonical or repository evidence, confidence, lifecycle/version, and approval state for every selected node or relationship.
 - Show direct and transitive impact before a feature or decision change is proposed.
 - Treat visual edits as reviewable change proposals, never immediate source-of-truth mutation.
+- Switch between current and historical evidence with freshness warnings, paths, impact highlighting, and guided tours.
 
 ## Future Task Card Review
 

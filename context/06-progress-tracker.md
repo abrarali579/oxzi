@@ -1,5 +1,300 @@
 # OXZI — Progress Tracker
 
+## Unified Agentic Intelligence Architecture Lock and Foundation
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `src/domain/knowledge-graph/temporal.ts`, `path.ts`, and `integrity.ts`
+- `src/domain/governance/index.ts` and `schemas.ts`
+- `src/domain/workflow/index.ts` and `schemas.ts`
+- `src/domain/execution/index.ts` and `schemas.ts`
+- `src/domain/contracts.test.ts`
+- `specs/16-temporal-project-memory.md`
+- `specs/17-repository-intelligence.md`
+- `specs/18-agent-control-evidence-evaluation.md`
+
+### Files Modified
+
+- Knowledge Graph enums, identifiers, schemas, types, projector, fingerprints, indexes, traversal, impact, subgraph, exports, and tests
+- `src/domain/project/schema.ts` (exports the existing timestamp validator for shared strict contracts)
+- `PROJECT.md`, `OXZI.md`, `DECISIONS.md`, and `CURRENT.md`
+- `context/00-context-map.md` through relevant architecture, UI, standards, workflow, and this tracker
+- `specs/05-knowledge-graph-engine.md` through `specs/09-visual-master-architecture-generator.md`
+
+### Implemented
+
+- Upgraded graph schema/projector to `2.0.0` with effective and ingestion timelines, freshness, derivation, schema/projector metadata, and deterministic fingerprints.
+- Projected canonical evidence into immutable Episode nodes and `evidenced_by` relationships.
+- Added temporal/current/version/section indexes, confidence and historical traversal, deterministic path finding, historical/stale impact classes, expanded task subgraphs, and graph integrity auditing.
+- Added strict governance schemas for Constitution rules, Specifications, acceptance criteria, plan references, slices, health results, and convergence findings.
+- Added workflow/skill/activation/escalation and Task Card/Passport/profile/status/event/artifact/receipt/Token Ledger schemas.
+- Added 20 new tests; the application suite increased from 72 to 92 tests.
+
+### Contracts Only / Not Implemented
+
+- Governance, health, planning, slicing, workflow selection, skills, Passport delivery, control plane, convergence, and Token Ledger computation are schemas only.
+- Repository scanning/AST, Unified Evidence View, Context Compiler, prompt rendering, adapters, execution, sandbox, persistence, providers, UI, telemetry, and evaluation remain unimplemented.
+
+### Validation Results
+
+- `npm run ci` — passed: formatting, typecheck, lint with no warnings, 7 files/92 tests, 14 Review Engine tests, and production build
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and secret scan passed
+- `git diff --check` — passed
+- No UI, provider, database, external dependency, or canonical-state mutation was introduced
+
+### Startup Measurement
+
+Method: UTF-8 characters divided by four; estimates, not target-tokenizer measurements.
+
+- Recorded legacy mandatory full-project startup: approximately 24,481 tokens
+- Current `AGENTS.md`: 3,157 characters / approximately 789 tokens
+- Current `CURRENT.md`: 1,813 characters / approximately 453 tokens
+- Current context map: 2,627 characters / approximately 657 tokens
+- New fixed startup: 7,597 characters / approximately 1,899 tokens
+- Estimated reduction: approximately 22,582 tokens / 92.2%
+
+Safety, source priority, no-guessing, dependencies, scope, validation, Review Engine use, approval, secret protection, and no automatic commit/push remain mandatory. No circular startup read or new mandatory large document was added.
+
+### Remaining Risks
+
+- Temporal history is snapshot/in-memory only; no cross-version persistence or incremental reconstruction exists.
+- Integrity direction rules are intentionally minimal until repository/governance edges have runtime producers.
+- Repository language/parser coverage, artifact storage trust, agent capability sources, and profile freshness remain design inputs for later units.
+- Fingerprints are deterministic invalidation hints, not cryptographic security guarantees.
+
+## Specification Governance and Agent Workflow Architecture Expansion
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `specs/11-project-constitution.md`
+- `specs/12-specification-health-engine.md`
+- `specs/13-controlled-specifications-convergence.md`
+- `specs/14-workflow-policy-skill-registry.md`
+- `specs/15-execution-passport.md`
+
+### Files Modified
+
+- `PROJECT.md`
+- `DECISIONS.md`
+- `OXZI.md`
+- `CURRENT.md`
+- `context/00-context-map.md`
+- `context/01-project-overview.md`
+- `context/02-architecture.md`
+- `context/04-code-standards.md`
+- `context/05-ai-workflow-rules.md`
+- `context/06-progress-tracker.md`
+- `specs/05-knowledge-graph-engine.md`
+- `specs/06-context-compiler.md`
+- `specs/07-ai-task-card-prompt-compiler.md`
+- `specs/08-review-audit-analyzer.md`
+- `specs/10-efficiency-ledger.md`
+
+### Completed Work
+
+- Defined a versioned Project Constitution as an enforceable projection of future canonical constitutional rules, distinct from ADR rationale and detailed specifications.
+- Defined deterministic Specification Health checks and visible requirement statuses that gate technical planning without arbitrary AI percentages.
+- Separated normalized Specifications, Technical Plans, implementation slices, Task Cards, Context Packages, Execution Passports, and rendered prompts by ownership and version.
+- Formalized vertical-first independent slices with justified foundation, migration, infrastructure, security, canonical-schema, and refactor exceptions.
+- Defined Controlled Living Specification forward, reverse-proposal, and continuous-reconciliation flows with approval thresholds and immutable history.
+- Defined evidence-based spec-to-code convergence and separated its cross-version responsibility from bounded Review/Audit analysis.
+- Defined explainable Workflow Policy selection, selective skill activation, durable repair attempts, and configurable escalation.
+- Defined Execution Passport certification, artifact-first handoff, target-agent adapters/capabilities, and a durable Task Execution Ledger.
+- Added independent specification-compliance and engineering-quality review gates.
+- Reserved future Knowledge Graph governance/execution nodes and edges without changing the implemented `1.0.0` graph runtime.
+- Extended Token Ledger accounting for Constitution, workflow, skills, Passports, adapters, artifacts, dual review, convergence, and repair overhead.
+- Added ADR-026 through ADR-034 and reconciled Phase 3–8 roadmap status as implemented, approved/spec, planned, or deferred.
+
+### Verification Results
+
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 6 files and 72 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+- Source/UI/runtime changes for this unit — none
+
+### Startup Context Measurement
+
+Method: UTF-8 character count divided by four; character estimates, not tokenizer measurements.
+
+- `AGENTS.md`: 3,157 characters, approximately 789 tokens
+- `CURRENT.md`: 2,225 characters, approximately 556 tokens
+- `context/00-context-map.md`: 2,340 characters, approximately 585 tokens
+- Fixed startup total: 7,722 characters, approximately 1,931 tokens
+
+`CURRENT.md` remains below its 1,200-token guidance and the fixed startup remains below 2,000 estimated tokens.
+
+### Unresolved Design Questions
+
+- Exact canonical-schema migration and backward compatibility for constitutional rules and normalized requirement records
+- Exact visible check catalog and versioning for Specification Health
+- Technical Plan and slice schema details, including parallel merge contracts
+- Trust source and persistence model for skills, target capability profiles, artifacts, and execution ledgers
+- Configurable approval thresholds for minor reverse synchronization and Passport expiration defaults
+- Repository-evidence ingestion and migration from current generic graph `task` nodes to future `task_card` nodes
+
+None blocks the documentation architecture. They require explicit implementation units.
+
+## Agent Startup Context Optimization
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `CURRENT.md`
+- `context/00-context-map.md`
+
+### Files Modified
+
+- `AGENTS.md`
+- `CODEX_LOCAL_SETUP.md`
+- `OXZI.md`
+- `README.md`
+- `context/05-ai-workflow-rules.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Replaced the conflicting full-project startup flow with `AGENTS.md` → `CURRENT.md` → active task → `context/00-context-map.md` → relevant authoritative sections/source/tests → justified dependency closure.
+- Created a compact derived current-state resume view with product identity, phase, implemented and deferred systems, blockers, boundaries, validations, version references, and authoritative pointers.
+- Created a routing map for product, architecture, UI, standards, workflow, status, canonical schema, discovery, extraction, Knowledge Graph, context efficiency, Task Cards, audits, visual architecture, decisions, and fixtures.
+- Preserved source-of-truth hierarchy, no-guessing, scope discipline, dependency reading, approval boundaries, secret protection, validation honesty, Review Engine use, completion reporting, and no automatic commit/push.
+- Removed direct legacy startup contradictions from OXZI, README, local Codex handoff, and detailed workflow rules without deleting authoritative content.
+- Moved detailed progress history out of normal startup while keeping it available for reconciliation and required post-unit maintenance.
+- Defined full-read exceptions for cross-cutting audits/refactors, roadmap reconciliation, source migration, global policy changes, explicit user requests, and unresolved context sufficiency.
+
+### Character-Estimated Startup Measurement
+
+Method: UTF-8 character count divided by four. These are estimates, not target-tokenizer measurements. Variable task text and task-specific follow-up reads are excluded from both fixed-pack comparisons.
+
+- Conflicting legacy full startup (`AGENTS.md`, `PROJECT.md`, `DECISIONS.md`, `OXZI.md`, and all six context files): approximately 24,481 tokens.
+- Partial pre-unit fixed minimum (`AGENTS.md`, three root detail files, and the full progress tracker): approximately 16,658 tokens before task-specific reads.
+- New fixed startup (`AGENTS.md`, `CURRENT.md`, and `context/00-context-map.md`): approximately 1,970 tokens before the active task.
+- Estimated reduction from the effective legacy full pack: approximately 22,511 tokens, or 91.9%.
+
+All detailed context, ADRs, specifications, examples, source files, tests, and progress history remain available on demand. Token efficiency does not outrank quality, safety, correctness, or mandatory coverage.
+
+### Manual Acceptance Verification
+
+- `AGENTS.md` points to `CURRENT.md` and `context/00-context-map.md` — passed
+- `CURRENT.md` contains no full history, ADR text, or detailed roadmap — passed
+- Context map routes to authoritative files and declares itself non-authoritative — passed
+- No circular mandatory reading instructions remain — passed
+- Detailed progress history is not part of default startup — passed
+- Full-read exceptions and evidence-backed widening are explicit — passed
+- Normal tasks no longer require all six context files — passed
+- No application/runtime/UI file changed in this unit — passed
+
+### Verification Results
+
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 6 files and 72 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+### Remaining Risks
+
+- Counts are character estimates and may differ from a target model tokenizer.
+- The active task and justified follow-up context remain variable by design; unsafe fixed caps are not imposed.
+- `CURRENT.md` and the context map require the documented maintenance discipline to avoid stale navigation.
+
+## Phase 3 — Knowledge Graph Foundation and Token-Efficiency Contract Hardening
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `src/domain/knowledge-graph/enums.ts`
+- `src/domain/knowledge-graph/fingerprints.ts`
+- `src/domain/knowledge-graph/identifiers.ts`
+- `src/domain/knowledge-graph/impact.ts`
+- `src/domain/knowledge-graph/index.ts`
+- `src/domain/knowledge-graph/indexes.ts`
+- `src/domain/knowledge-graph/knowledge-graph.test.ts`
+- `src/domain/knowledge-graph/projector.ts`
+- `src/domain/knowledge-graph/schemas.ts`
+- `src/domain/knowledge-graph/subgraph.ts`
+- `src/domain/knowledge-graph/traversal.ts`
+- `src/domain/knowledge-graph/types.ts`
+- `specs/10-efficiency-ledger.md`
+
+### Files Modified
+
+- `AGENTS.md`
+- `PROJECT.md`
+- `DECISIONS.md`
+- `OXZI.md`
+- `context/02-architecture.md`
+- `context/04-code-standards.md`
+- `context/05-ai-workflow-rules.md`
+- `context/06-progress-tracker.md`
+- `specs/05-knowledge-graph-engine.md`
+- `specs/06-context-compiler.md`
+- `specs/07-ai-task-card-prompt-compiler.md`
+
+### Completed Work
+
+- Implemented strict, JSON-safe Knowledge Graph node, edge, metadata, lifecycle, identifier, fingerprint, traversal, truncation, impact, and task-subgraph contracts.
+- Added deterministic canonical projection for project/version metadata, business and product structure, requirements, visual rules, architecture, integrations, data entities, security/privacy, testing, delivery, risks, decisions, assumptions, conflicts, feature acceptance criteria, and the six living documentation artifacts.
+- Added stable semantic node/edge identity, canonical/graph/projector version metadata, byte-stable serialization, content fingerprints, and full graph fingerprints for later invalidation.
+- Added deterministic indexes by node ID/type, edge type, incoming/outgoing relationship, source reference, and evidence reference.
+- Added forward/reverse bounded traversal with type/relationship filters, depth/result limits, cycle safety, seed preservation, generic high-degree hub protection, uncertain-edge disclosure, and explicit truncation metadata.
+- Added direct, transitive, uncertain, and blocking impact analysis grouped across every required target category without fabricating absent repository evidence.
+- Added task-subgraph extraction that preserves seeds and mandatory dependencies, blockers, approved decisions, security invariants, tests, and documentation even when the requested cap is unsafe.
+- Added eight accepted decisions, ADR-018 through ADR-025, covering optimization overhead, distinct savings metrics, query-first acquisition, lean root maps, adaptive sessions, bounded outputs, dynamic agent profiles, and quality-controlled measurement.
+- Formalized session, tool/MCP, sub-agent, renderer, Token Ledger, safe compression, no-optimization, insufficiency, and honest measurement policies without implementing the future compiler or provider behavior.
+- Kept every `AGENTS.md` operating and safety rule while replacing its blanket context load with task-relevant numerical context plus the always-required progress tracker.
+
+### Test Coverage Added
+
+- Deterministic projection and byte-stable serialization
+- Stable node and edge IDs
+- Evidence/source traceability and indexes
+- Forward/reverse traversal and relationship/node filters
+- Cycle safety, seed preservation, result-cap disclosure, and hub protection
+- Direct/transitive and blocking impact
+- Low-confidence relationship disclosure
+- Mandatory task-subgraph coverage and minimum-safe estimate status
+- Canonical non-mutation and relevant fingerprint invalidation
+- Both canonical project fixtures
+- Unknown, duplicate, and dangling graph-record rejection
+
+### Verification Results
+
+- Focused Knowledge Graph run — passed; 1 file and 20 tests
+- `npm run format:check` — passed after Prettier corrected the newly edited projector formatting
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 6 files and 72 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+The first restricted-sandbox production build failed because Turbopack could not bind its required local IPC port (`Operation not permitted`). The approved unchanged rerun outside that restriction compiled and prerendered successfully. This is the previously documented execution-environment limitation, not a product or graph failure.
+
+### Deferred Limits and Decisions
+
+- The foundation does not scan repository AST/code or create file, module, API, screen, or review-finding nodes without validated evidence.
+- Full incremental projection is deferred; versioned fingerprints provide the invalidation boundary for that later unit.
+- The deterministic fingerprint is a content-change key, not a cryptographic security primitive.
+- Structural flow-to-goal and architecture-to-integration links use visible fixed confidence and remain inferred; future enrichment cannot silently upgrade them.
+- The task subgraph provides graph selection evidence and a character-estimated minimum-safe size. It does not compress content or claim tokenizer-measured savings.
+- Token Ledger storage, target tokenizers, provider billing, capability-profile administration, adaptive session automation, and LLM compression remain unimplemented.
+- Repository evidence ingestion policy and Prisma-versus-Drizzle remain later decisions.
+
 ## Current Phase
 
 Phase 3 — Core Deterministic Intelligence: In Progress
@@ -547,7 +842,7 @@ The first sandboxed Review Engine run recorded typecheck and lint as passing but
 
 ## Current Phase
 
-Phase 3 — Core Deterministic Intelligence
+Wave 1 — Unified Contracts and Temporal Graph Foundation complete
 
 ### Implemented
 
@@ -555,25 +850,22 @@ Phase 3 — Core Deterministic Intelligence
 2. Deterministic completeness and critical-question ranking
 3. Deterministic natural-language extraction proposals
 4. Deterministic extraction hardening
+5. Deterministic Knowledge Graph projection, traversal, impact, task-subgraph, and fingerprint foundation
+6. Binding token-efficiency and future Token Ledger contracts
+7. Temporal graph, Episodes, path finding, integrity auditing, and shared governance/workflow/execution contract schemas
 
 ### Approved and Specified, Not Implemented
 
-1. Phase 3: Knowledge Graph foundation
-2. Phase 4: six-file deterministic renderer
-3. Phase 4: Token-Saving Context Compiler
-4. Phase 4: context version/diff packs
-5. Phase 4: Visual Master Architecture Generator
-6. Phase 5: Review/Audit Analyzer
-7. Phase 5: normalized AI Task Card
-8. Phase 5: prompt style renderers
-9. Phase 5: agent handoff/export
-10. Phase 6: project intake, minimal interview, understanding review, graph/architecture workspace, Task Card review, settings/defaults, and exports
+1. Phase 3: Project Constitution Foundation and Specification Health Foundation
+2. Phase 4: six-file renderer, Controlled Living Specification model, Technical Plan schema, Implementation Slice Planner, Context Compiler, context version/diff packs, and Visual Architecture Generator
+3. Phase 5: Workflow Policy Engine, selective Skill Registry, normalized Task Card, Execution Passport, prompt renderers, Review/Audit Analyzer, dual review, convergence, repair escalation, execution ledger, and handoff exports
+4. Phase 6: intake, minimal interview, Specification Health review, Constitution/plan/slice/graph workspaces, Task Card/Passport review, audit/convergence dashboard, settings, and exports
 
 ### Deferred
 
 1. Phase 5: optional connected-agent delivery after explicit approval
-2. Phase 7: authentication/workspaces, persistence/version storage, provider gateway, jobs/storage, and permissions/security
-3. Phase 8: both validation projects end to end, security/performance/accessibility validation, deployment, and launch readiness
+2. Phase 7: authentication/workspaces, persistence, artifact/version storage, capability registry, provider gateway, jobs, permissions, connected adapters, and execution monitoring
+3. Phase 8: benchmark/regression evaluation, both validation projects, token/quality A/B evaluation, security/performance/accessibility validation, deployment, and launch readiness
 4. Prompt Performance Dataset telemetry and any consented optimization pipeline
 
 ## Open Decisions for Later
@@ -584,10 +876,13 @@ Phase 3 — Core Deterministic Intelligence
 - Final OXZI brand identity
 - Deployment domain
 - Dedicated canonical temporal-scope representation versus the current visible out-of-scope markers
-- Exact repository-evidence ingestion policy for graph file/module/test nodes
+- Exact repository-evidence ingestion policy for graph file/module/API/screen/review-finding nodes
+- Target-agent tokenizer and dynamic capability/cost profile sources
+- Canonical Constitution migration and deterministic Specification Health check catalog
+- Artifact/capability trust, storage, freshness, and adapter compatibility contracts
 
-These decisions do not block the current canonical-domain or discovery-foundation work.
+These decisions do not block the implemented deterministic domains or the next scoped foundation unit.
 
 ## Session Resume Context
 
-The next smallest unit is the Phase 3 Knowledge Graph Foundation: implement the deterministic, provider-neutral typed graph projection and traversal contracts in `specs/05-knowledge-graph-engine.md`. No blocking prerequisite was found. Validated canonical mutation remains deferred until a unit explicitly returns to that boundary.
+The next smallest unit is Specification Governance Runtime Foundation: integrate constitutional-rule records into canonical state and implement deterministic Constitution projection/querying plus Specification Health evaluation. Do not include planning automation, Repository Intelligence, context compilation, agent delivery, persistence, providers, or UI.

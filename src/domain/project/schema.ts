@@ -33,7 +33,7 @@ import {
   type FieldId,
 } from "./identifiers";
 
-const timestampSchema = z.string().datetime({ offset: true });
+export const timestampSchema = z.string().datetime({ offset: true });
 const nonEmptyStringSchema = z.string().trim().min(1);
 
 export const fieldApprovalMetadataSchema = z

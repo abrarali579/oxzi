@@ -23,12 +23,14 @@ After extraction, the local root must look like:
 ```text
 oxzi/
 ├── AGENTS.md
+├── CURRENT.md
 ├── PROJECT.md
 ├── DECISIONS.md
 ├── OXZI.md
 ├── README.md
 ├── CODEX_LOCAL_SETUP.md
 ├── context/
+│   ├── 00-context-map.md
 │   ├── 01-project-overview.md
 │   ├── 02-architecture.md
 │   ├── 03-ui-visual-context.md
@@ -47,17 +49,15 @@ Avoid an accidental structure such as `oxzi/OXZI_Phase_1_AGENTS/...`. Move the i
 code ~/Projects/oxzi
 ```
 
-Open Codex in this workspace. Because `AGENTS.md` is at the repository root, any compatible coding agent can discover the operating instructions and then follow the linked context files.
+Open Codex in this workspace. Because `AGENTS.md` is at the repository root, any compatible coding agent can discover the operating instructions and route to task-relevant context.
 
 Use this reading order in every session:
 
 1. `AGENTS.md`
-2. `PROJECT.md`
-3. `DECISIONS.md`
-4. `OXZI.md`
-5. Context files in numerical order
-6. Relevant specifications
-7. Relevant examples
+2. `CURRENT.md`
+3. Active task or Task Card
+4. `context/00-context-map.md`
+5. Relevant authoritative sections, source files, tests, and justified dependencies
 
 ## 4. Initialize Git Before Coding
 
@@ -72,21 +72,20 @@ git commit -m "docs: establish OXZI phase 1 foundation"
 Paste this once after opening the folder:
 
 ```text
-Read AGENTS.md, PROJECT.md, DECISIONS.md, OXZI.md, all context files in numerical order, relevant specs, and relevant examples. Follow AGENTS.md exactly.
+Read AGENTS.md and CURRENT.md, then use context/00-context-map.md to select the authoritative context, source files, tests, and dependency closure relevant to this task. Follow AGENTS.md exactly and widen context rather than guess when sufficiency is uncertain.
 
 Do not modify files yet. First:
-1. Summarize the locked OXZI Phase 1 decisions.
-2. Confirm the current repository boundary.
-3. Identify conflicts, missing files, or unclear instructions.
-4. Propose the smallest Phase 2 implementation unit.
-5. List the files and checks that unit would involve.
+1. Summarize the current implementation state relevant to the task.
+2. Confirm the requested unit and strict boundaries.
+3. Identify material conflicts or missing context.
+4. List the files and checks the unit would involve.
 ```
 
 Compare its summary with the package before allowing implementation.
 
 ## 6. Current Implementation Handoff
 
-Phase 2 Unit 1, the Next.js application bootstrap, is complete. Read `context/06-progress-tracker.md` for the next smallest unit and its current validation requirements. Do not reuse a completed-unit prompt.
+Read `CURRENT.md` for the latest implementation handoff and next approved unit. Use `context/06-progress-tracker.md` only when detailed history or roadmap reconciliation is required. Do not reuse a completed-unit prompt.
 
 ## 7. Normal Daily Workflow
 

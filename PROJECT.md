@@ -23,16 +23,19 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 5. Skip discovery when the project is sufficiently complete, or ask only the highest-impact missing questions.
 6. Review confirmed facts, inferences, defaults, assumptions, conflicts, and deferred items.
 7. Derive a typed Knowledge Graph for impact analysis and task-specific context selection.
-8. Generate six living Markdown files and other approved views from canonical state.
-9. Compile one reviewable AI Task Card in the selected style with the smallest sufficient context.
-10. Approve, edit, version, and export the project package or explicitly approve a future connected-agent handoff.
-11. Analyze implementation review evidence before recommending repair or the next scoped unit.
+8. Compile approved constitutional rules and check specification health before technical planning.
+9. Produce versioned Technical Plans and independently verifiable implementation slices.
+10. Generate six living Markdown files and other controlled views from canonical state.
+11. Compile a reviewable Task Card, sufficient context, workflow policy, and certified Execution Passport.
+12. Render one selected prompt style, or export/deliver through an approved compatible adapter.
+13. Record execution artifacts and dual review evidence before repair or the next scoped unit.
+14. Detect spec/plan/task/code drift and route controlled updates without silent mutation.
 
 ## Current Phase
 
-Phase 3 — Core Deterministic Intelligence is in progress.
+Wave 1 — Unified Contracts and Temporal Graph Foundation is complete.
 
-The Next.js and developer-tooling foundation is complete. The canonical project state, completeness scoring, interview skipping, critical-question ranking, and deterministic extraction are implemented without an AI dependency. The future Knowledge Graph, Token-Saving Context Compiler, AI Task Card Prompt Compiler, Review/Audit Analyzer, and Visual Master Architecture Generator are approved and specified but not implemented. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
+The deterministic canonical, discovery, extraction, and Temporal Knowledge Graph foundations are implemented without AI. Governance, workflow, Task Card/Passport, agent-profile, event/artifact, and Token Ledger schemas are implemented as contracts only. Their engines, Repository Intelligence, context compilation, agent delivery, persistence, and UI remain future work.
 
 ## Locked Stack
 
@@ -53,18 +56,25 @@ The broader MVP architecture retains PostgreSQL, Supabase Auth and Storage, Zod 
 
 ## MVP Boundaries
 
-The expanded MVP direction includes project intake, requirement extraction, adaptive minimal discovery, understanding review, canonical state, a derived Knowledge Graph, deterministic six-file generation, safe context compilation, reviewable AI Task Cards, audit-gated next-task recommendations, visual architecture views, versioning, and portable Markdown/ZIP export. Cloud and local OpenAI-compatible models remain behind one provider-neutral boundary.
+The expanded MVP direction includes project intake, minimal discovery, canonical state, a derived Knowledge Graph, constitutional governance, specification health, controlled specifications and planning, independent slices, deterministic six-file generation, safe context compilation, reviewable Task Cards, Execution Passports, dual review, convergence findings, visual architecture, versioning, and portable Markdown/ZIP export. Cloud and local OpenAI-compatible models remain behind one provider-neutral boundary. Efficiency work is quality-gated and includes workflow, artifact, review, repair, and handoff overhead.
 
 OXZI does not execute project code. The initial product excludes autonomous full-project coding, real-time multiplayer collaboration, billing enforcement, direct repository creation, and automatic deployment. Connected-agent delivery is a future optional integration that requires the configured approval policy. Prompt-performance telemetry and global training reuse are deferred and may never use private project data without explicit consent.
 
-## Roadmap
+## Implementation Waves
 
-- Phase 3 — Core Deterministic Intelligence
-- Phase 4 — Context and Project Outputs
-- Phase 5 — Agent Workflow
-- Phase 6 — Product Experience
-- Phase 7 — SaaS Infrastructure
-- Phase 8 — Validation and Launch
+Status vocabulary: `implemented`, `implemented foundation only`, `approved and specified`, `planned`, or `deferred`.
+
+- Wave 0 Lean Agent Context — `implemented`
+- Wave 1 Unified Contracts and Temporal Graph — `implemented`; governance/workflow/execution schemas are `implemented foundation only`
+- Wave 2 Specification Governance — `approved and specified`
+- Wave 3 Repository Intelligence — `approved and specified`
+- Wave 4 Context Intelligence — `approved and specified`
+- Wave 5 Prompt and Handoff — `approved and specified`; connected delivery `deferred`
+- Wave 6 Review and Convergence — `approved and specified`
+- Wave 7 Agent Control Plane — contracts `implemented foundation only`; runtime `planned`
+- Wave 8 Product Experience — `planned`
+- Wave 9 SaaS Infrastructure — `planned`
+- Wave 10 Evaluation and Launch — `approved and specified`; execution `planned`
 
 The complete unit sequence and status vocabulary are maintained in [context/06-progress-tracker.md](context/06-progress-tracker.md).
 
@@ -76,5 +86,15 @@ The complete unit sequence and status vocabulary are maintained in [context/06-p
 - [Code standards](context/04-code-standards.md) — engineering, validation, testing, and organization rules
 - [AI workflow rules](context/05-ai-workflow-rules.md) — agent behavior, priorities, and verification
 - [Progress tracker](context/06-progress-tracker.md) — current phase, completed work, checks, and next unit
+- [Knowledge Graph specification](specs/05-knowledge-graph-engine.md) — implemented projection, traversal, impact, and task-subgraph contracts
+- [Efficiency and Token Ledger specification](specs/10-efficiency-ledger.md) — binding measurement, acquisition, session, tool, routing, and safe-compression policy
+- [Project Constitution specification](specs/11-project-constitution.md) — canonical governance projection and enforcement contract
+- [Specification Health specification](specs/12-specification-health-engine.md) — deterministic planning-readiness gates
+- [Controlled specifications and convergence](specs/13-controlled-specifications-convergence.md) — artifact separation, slices, controlled change, and drift findings
+- [Workflow Policy and skills](specs/14-workflow-policy-skill-registry.md) — method selection, selective capability loading, and repair escalation
+- [Execution Passport specification](specs/15-execution-passport.md) — portable certification, artifacts, execution ledger, and adapters
+- [Temporal Project Memory](specs/16-temporal-project-memory.md) — bitemporal facts, Episodes, history, and Project Time Machine
+- [Repository Intelligence](specs/17-repository-intelligence.md) — static repository graph, ranking, maps, and hybrid retrieval
+- [Agent control, evidence, and evaluation](specs/18-agent-control-evidence-evaluation.md) — profiles, adapters, runtime states, events, artifacts, and evaluation
 
 Formal accepted decisions are recorded in [DECISIONS.md](DECISIONS.md). Implementation contracts live under [`specs/`](specs/).

@@ -2,129 +2,144 @@
 
 ## Status and Purpose
 
-**Status:** Approved and specified; not implemented.
+**Status:** Deterministic temporal foundation `2.0.0` implemented in `src/domain/knowledge-graph/`; repository enrichment, persistence, cross-version storage, AI enrichment, and UI remain deferred.
 
-The Knowledge Graph Engine produces a typed, evidence-backed directed graph from one validated canonical project version. It supports impact analysis, context selection, Task Card compilation, visual architecture, and later repository-aware review. It is a derived projection, not a second database or source of truth.
+The Knowledge Graph is a typed, evidence-backed directed projection from one validated canonical project version. It supports deterministic impact analysis and query-first task-subgraph selection. It is a derived view, never a second database or source of truth.
 
-## Initial Node Types
+## Graph Model
 
-- `project`
-- `goal`
-- `user_persona`
-- `problem`
-- `solution`
-- `requirement`
-- `feature`
-- `user_flow`
-- `decision`
-- `assumption`
-- `conflict`
-- `risk`
-- `architecture_component`
-- `integration`
-- `api`
-- `data_entity`
-- `security_invariant`
-- `ui_screen`
-- `visual_rule`
-- `implementation_module`
-- `repository_file`
-- `test`
-- `documentation_artifact`
-- `task`
-- `review_finding`
-- `version`
+Schema-supported node types (the canonical projector emits only evidence-backed current categories):
 
-## Initial Relationship Types
+- `project`, `goal`, `user_persona`, `problem`, `solution`, `requirement`, `feature`, `user_flow`
+- `decision`, `assumption`, `conflict`, `risk`
+- `architecture_component`, `integration`, `api`, `data_entity`, `security_invariant`
+- `ui_screen`, `visual_rule`, `implementation_module`, `repository_file`, `test`
+- `documentation_artifact`, `task`, `review_finding`, `version`, `episode`
+- governance, planning, workflow, Passport, execution, artifact, convergence, symbol, and escalation types listed below
 
-- `depends_on`
-- `enables`
-- `affects`
-- `implements`
-- `implemented_by`
-- `blocked_by`
-- `conflicts_with`
-- `derived_from`
-- `decided_by`
-- `assumed_by`
-- `mitigates`
-- `secured_by`
-- `validated_by`
-- `tested_by`
-- `documented_in`
-- `rendered_as`
-- `reads_from`
-- `writes_to`
-- `precedes`
-- `supersedes`
-- `relevant_to`
+Implemented relationship vocabulary:
 
-## Common Record Contract
+- `depends_on`, `enables`, `affects`, `implements`, `implemented_by`
+- `blocked_by`, `conflicts_with`, `derived_from`, `decided_by`, `assumed_by`
+- `mitigates`, `secured_by`, `validated_by`, `tested_by`, `documented_in`
+- `rendered_as`, `reads_from`, `writes_to`, `precedes`, `supersedes`, `relevant_to`
 
-Every node and relationship contains:
+Every node and edge contains stable identity/type/label, source/evidence references, bounded confidence, derivation method, approval/lifecycle, bitemporal/freshness metadata, schema/projector versions, deterministic order, and a fingerprint. Edges also contain stable endpoints and an explicit `inferred` flag.
 
-- A stable identifier derived from stable canonical or repository evidence identity
-- Its declared node or relationship type
-- Source references and evidence references
-- Confidence bounded by the canonical confidence policy
-- Canonical lifecycle and version/hash metadata
-- A deterministic ordering key
-- Optional approval state when approval is meaningful
+The graph contains:
 
-Relationships additionally identify stable `from` and `to` node IDs. Implementations must reject dangling references, duplicate IDs, unknown types, non-finite confidence, and nondeterministic ordering.
+- canonical project version/hash
+- graph schema version `2.0.0`
+- projector version `2.0.0`
+- node and edge fingerprints
+- one graph fingerprint
 
-## Projection Rules
+Fingerprints are deterministic content invalidation keys, not cryptographic security claims.
 
-1. The initial graph is generated only from a validated canonical project version.
-2. Canonical identifiers are reused when suitable; derived identifiers use versioned deterministic rules.
-3. Evidence-backed explicit links outrank inferred structural links.
-4. Low-confidence relationships remain visible with their confidence and evidence. They cannot silently drive destructive changes, approval, scope removal, or security decisions.
-5. Repository-file, implementation-module, test, documentation-artifact, task, and review-finding nodes are added later only through explicit repository or Review Engine evidence.
-6. AI-assisted enrichment is deferred. A future provider may only emit validated graph proposals that require the configured approval policy.
-7. Regenerating the graph from identical canonical version and repository evidence produces byte-stable logical content and ordering.
-8. Deleting, changing, or superseding a feature exposes directly and transitively affected nodes; it never deletes canonical state.
+## Deterministic Projection
 
-## Required Traversals
+Canonical evidence records project as immutable Episode nodes with `evidenced_by` relationships. Effective/event and ingestion/system time remain distinct; current facts and superseded historical facts can coexist without canonical mutation.
 
-The foundation must support deterministic:
+`projectCanonicalProjectToKnowledgeGraph()` first validates input through the canonical project schema and never mutates it. Projection currently covers:
 
-- Direct neighbors filtered by relationship type
-- Forward and reverse dependency traversal
-- Direct and transitive impact sets
-- Blocker and conflict closure
-- Evidence and decision traceability
-- Feature-to-interface, file, test, and documentation traceability when repository evidence exists
-- Task-relevant subgraph extraction with inclusion reasons
-- Stable cycle reporting rather than unbounded traversal
+- project and version metadata
+- problems, solutions, goals, users, scope, dependencies, features, flows, and acceptance criteria
+- visual rules
+- architecture, stack, deployment, integrations, data entities, public-environment requirements, security, privacy, and authentication
+- quality requirements and canonical testing requirements
+- delivery phases, milestones, tasks, risks, assumptions, decisions, and conflicts
+- the six contract-defined living documentation artifacts
 
-Traversal results retain paths, relationship confidence, and inclusion reasons. Consumers must widen or stop when required paths are missing or too uncertain.
+Canonical field IDs form stable identity anchors. Named list-item IDs derive from their field identity and normalized semantic name; changing a description changes the node and graph fingerprints without unnecessarily changing the node ID. Projection order is independent of runtime map ordering, and stable JSON serialization recursively sorts object keys.
+
+Explicit canonical relationships retain field evidence. Structural relationships such as user-flow-to-goal or architecture-to-integration remain visibly inferred and may carry lower confidence. Open conflicts remain blocker nodes; blocking risks remain visible. No projection authorizes canonical mutation.
+
+Repository-file, implementation-module, API, UI-screen, and review-finding types are valid but are not fabricated when canonical evidence lacks those records. Later repository ingestion must add them through a separate validated evidence contract.
+
+## Deterministic Indexes
+
+`buildKnowledgeGraphIndexes()` provides indexes for:
+
+- node ID
+- node type
+- edge type
+- outgoing relationships
+- incoming relationships
+- source reference across nodes and edges
+- evidence reference across nodes and edges
+- temporal status/current validity, canonical version, and canonical project section
+
+Index array order follows graph order and stable identity.
+
+## Traversal Contract
+
+Forward and reverse traversal support relationship/node filters, confidence thresholds, current/historical/all temporal queries, depth/caps, cycle safety, seed preservation, hub suppression, and deterministic ordering.
+
+## Path Finding and Integrity
+
+Path finding returns node/edge paths, relationship types, minimum confidence, evidence, temporal validity, unresolved gaps, and truncation. The integrity auditor covers schema/ID validity, dangling/self edges, evidence direction, temporal and supersession consistency, ordering, fingerprints, orphans, unresolved relationships, freshness, conflicts, and canonical traceability. Statuses are `valid`, `valid_with_warnings`, `stale`, `partially_stale`, `conflicted`, `invalid`, or `rebuild_required`.
+
+Every task seed survives even when the requested result cap is smaller than the seed set. Generic project/version/documentation hubs stop expansion when their eligible degree exceeds the configured threshold unless the caller explicitly enables hub expansion. Low-confidence traversed edges are disclosed.
+
+Traversal truncation metadata contains:
+
+- `truncated`
+- ordered reasons
+- omitted node count
+- omitted node categories
+- mandatory coverage status
+- minimum-safe token estimate with measurement status
+
+Generic traversal reports mandatory coverage as `not_assessed` and its minimum-safe estimate as unavailable. The task-subgraph operation performs that assessment.
+
+## Impact Analysis
+
+`analyzeKnowledgeGraphImpact()` traverses forward and reverse from one or more seeds and returns affected:
+
+- requirements, features, decisions, risks, and blockers
+- security invariants and architecture components
+- integrations, screens, modules, and files
+- tests and documentation
+
+It classifies direct, transitive, uncertain, and blocking impact independently. A node may appear in multiple classifications. Missing repository evidence yields empty module/file/screen groups rather than invented records.
 
 ## Task Subgraph Contract
 
-A task subgraph includes the task target nodes, mandatory decisions and invariants, direct dependencies, blockers, affected interfaces, required tests, acceptance criteria, unresolved risks, and the evidence needed to explain inclusion. It records the canonical version/hash and graph policy version used. A subgraph is context-selection evidence, not permission to omit mandatory context.
+`extractTaskSubgraph()` selects task seeds and justified relationship closure for dependencies, blockers/conflicts, accepted decisions, assumptions, security invariants, acceptance criteria, tests, and documentation. It returns:
 
-## Consumers
+- seed nodes
+- mandatory dependencies
+- blockers
+- accepted decisions
+- security invariants
+- relevant tests and documentation
+- included nodes/edges
+- every omitted node with a reason
+- truncation and coverage state
+- canonical and graph fingerprints and policy versions
 
-- Impact analysis identifies direct and transitive consequences.
-- The Token-Saving Context Compiler selects and explains sufficient task context.
-- The AI Task Card Prompt Compiler references affected graph nodes.
-- The Visual Master Architecture Generator renders audience-specific views.
-- The Review/Audit Analyzer may later attach evidence-backed findings.
+The result cap cannot remove a seed or mandatory node. If the cap is below the mandatory set, the result may exceed the requested cap, reports `result_cap_below_mandatory_set`, and includes a clearly `character_estimated` minimum-safe token estimate. Task subgraphs are selection evidence for the later Context Compiler; they do not compress content or grant permission to omit mandatory context.
 
-## Non-Goals for the Foundation
+## Typed Governance and Execution Vocabulary
 
-- Graph database adoption
-- Persistence or synchronization jobs
-- Embeddings or semantic search
-- AI enrichment
-- Repository scanning
-- UI visualization
-- Canonical mutation
+The `2.0.0` schemas accept the following types, while the canonical projector creates only categories supported by current canonical data:
 
-## Foundation Acceptance Criteria
+- Nodes: `constitutional_rule`, `specification`, `acceptance_criterion`, `technical_plan`, `implementation_slice`, `workflow_policy`, `agent_skill`, `task_card`, `execution_passport`, `execution_record`, `artifact`, `compliance_review`, `quality_review`, `convergence_finding`, and `escalation`.
+- Edges: `governed_by`, `specifies`, `satisfies`, `violates`, `planned_by`, `decomposed_into`, `executed_by`, `packaged_as`, `uses_workflow`, `requires_skill`, `produces`, `evidenced_by`, `reviewed_by`, `converges_with`, `diverges_from`, `supersedes`, `repairs`, and `escalates_to`.
 
-- Strict TypeScript and Zod contracts cover all initial types and common metadata.
-- Two canonical fixtures produce valid deterministic projections.
-- Stable traversal and task-subgraph tests cover cycles, missing references, low confidence, blockers, and transitive impact.
-- The implementation is provider-neutral, pure, JSON-safe, and does not modify canonical state.
+The existing generic `task` type remains valid for current canonical execution fields. A future migration must define compatibility and cannot silently reinterpret existing node IDs. Every new record will preserve source/evidence references, confidence, lifecycle/version metadata, freshness, deterministic ordering, and fingerprints. Repository-derived file or symbol evidence remains a separate validated ingestion boundary.
 
+## Non-Goals of the Implemented Foundation
+
+- Repository AST or code graph
+- Repository scanning or evidence ingestion
+- Graph database or persistence
+- Incremental projection updates beyond fingerprints for later invalidation
+- Embeddings, semantic search, or AI graph enrichment
+- Provider calls, prompt compilation, or token compression
+- UI or visual diagram rendering
+- Canonical-state mutation
+
+## Foundation Acceptance Evidence
+
+The unit suite covers deterministic projection and serialization, stable IDs, evidence/source indexes, forward/reverse and filtered traversal, cycles, seed preservation, caps, hubs, impact classes, low-confidence disclosure, task mandatory coverage, non-mutation, fingerprint invalidation, both canonical fixtures, and invalid graph rejection.
