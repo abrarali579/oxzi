@@ -5,8 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "OXZI — Project clarity for every AI",
-  description:
-    "Turn one project description into a durable, AI-ready source of truth.",
+  description: "Turn one project description into a durable, AI-ready source of truth.",
 };
 
 type RootLayoutProps = Readonly<{

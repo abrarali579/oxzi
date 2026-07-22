@@ -33,6 +33,7 @@ Establish a production-quality application foundation before implementing the ca
 - Root project brief and formal decision register added
 - Agent reading order aligned across repository guidance
 - Phase 2 Unit 3: local review-engine foundation completed
+- Phase 2 Unit 4: developer tooling and CI foundation completed
 
 ## Phase 2 Unit 1 — Repository Bootstrap
 
@@ -201,6 +202,73 @@ The first hardened self-scan correctly exited nonzero after detecting a non-idem
 - Lockfile dependency impact is conservatively reported as changed whenever the lockfile changes; semantic package-level interpretation is intentionally omitted.
 - macOS execution is supported; Windows-specific `npm.cmd` and `NUL` handling is implemented but not yet verified in CI.
 
+## Phase 2 Unit 4 — Developer Tooling and CI Foundation
+
+Completed on 2026-07-22.
+
+### Files Created
+
+- `.env.example`
+- `.github/workflows/ci.yml`
+- `.prettierignore`
+- `.prettierrc.json`
+- `vitest.config.ts`
+- `src/app/page.test.tsx`
+- `src/lib/env.ts`
+- `src/lib/env.test.ts`
+
+### Files Modified
+
+- `package.json`
+- `package-lock.json`
+- `next.config.ts`
+- `README.md`
+- `AGENTS.md`
+- `PROJECT.md`
+- `context/06-progress-tracker.md`
+- `scripts/generate-review.mjs` (Prettier only)
+- `scripts/generate-review.test.mjs` (Prettier only)
+- `src/app/globals.css` (Prettier only)
+- `src/app/layout.tsx` (Prettier only)
+- `src/app/page.tsx` (Prettier only)
+
+### Dependencies Added
+
+- `zod@4.4.3`
+- `prettier@3.9.6`
+- `vitest@4.1.10`
+
+### Completed Work
+
+- Added Prettier write/check commands with generated, dependency, lockfile, and Phase 1 Markdown exclusions.
+- Added Vitest as the general application test runner.
+- Added a server-rendered homepage smoke test and focused environment-validation tests.
+- Added minimal Zod validation for `NODE_ENV` and optional `NEXT_PUBLIC_APP_URL` without production secrets.
+- Added `.env.example` with the optional public URL name and no credential value.
+- Added GitHub Actions CI using a clean npm install, formatting, type checking, linting, application tests, Review Engine tests, and production build.
+- Added `npm run ci` as the equivalent local validation sequence after installation.
+
+### Verification Results
+
+- `npm install --prefer-offline` — passed after a registry idle-timeout retry; 33 packages added
+- `npm ci --prefer-offline` — passed; clean install of 392 packages and 393 packages audited
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 2 files and 3 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `npm run ci` — passed; complete local CI sequence
+- `npm run review` — passed; generated the review package with 3 captured passing validations
+- `git diff --check` — passed
+
+### Limitations
+
+- CI workflow execution is defined but cannot be observed until GitHub runs it after a push or pull request.
+- The smoke test verifies server-rendered homepage content, not browser interaction or end-to-end navigation.
+- Environment validation intentionally covers only the current optional public URL and runtime mode.
+- npm continues to report the existing three transitive advisories and deferred install scripts for `fsevents`, `sharp`, and `unrs-resolver`.
+
 ## Next Phase
 
 Phase 2 — Repository Bootstrap and UX Prototype
@@ -208,12 +276,13 @@ Phase 2 — Repository Bootstrap and UX Prototype
 Recommended first implementation units:
 
 1. Initialize Next.js TypeScript project. — Complete
-2. Add formatting, test runner, and environment validation.
+2. Align root project and decision documentation. — Complete
 3. Add the local review-engine foundation. — Complete
-4. Implement canonical Zod schemas and fixtures.
-5. Implement deterministic completeness scoring and question ranking.
-6. Build static New Project and Understanding Review flows.
-7. Add mocked zero-question and minimal-question scenarios.
+4. Add formatting, test runner, environment validation, and CI. — Complete
+5. Implement canonical Zod schemas and fixtures.
+6. Implement deterministic completeness scoring and question ranking.
+7. Build static New Project and Understanding Review flows.
+8. Add mocked zero-question and minimal-question scenarios.
 
 ## Open Decisions for Later
 
@@ -227,4 +296,4 @@ These decisions do not block Phase 2 bootstrap.
 
 ## Session Resume Context
 
-The next smallest unit is the deferred Phase 2 Unit 2: add formatting, a project-wide test command, and environment validation without implementing product-domain logic. After that, read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas as Unit 4 before connecting a real AI provider. Use fixtures for the Oxzire 3D Website and News Automation validation projects.
+The next smallest unit is Phase 2 Unit 5: read `specs/01-canonical-project-schema.md` and implement runtime Zod schemas before connecting a real AI provider. Expand the Oxzire 3D Website and News Automation fixtures into concrete canonical-state validation data during that unit.

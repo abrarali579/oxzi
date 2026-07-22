@@ -28,7 +28,35 @@ npm run build      # Create a production build
 npm run start      # Serve the production build
 npm run lint       # Run ESLint
 npm run typecheck  # Check TypeScript without emitting files
+npm run format     # Format supported project files with Prettier
+npm run format:check # Verify formatting without changing files
+npm run test       # Run application tests once with Vitest
+npm run test:watch # Run application tests in watch mode
+npm run test:review # Run focused Review Engine tests
+npm run ci         # Run the complete local CI validation sequence
 ```
+
+## Environment
+
+Copy `.env.example` to `.env.local` only when local overrides are needed. The current application accepts one optional, non-secret setting:
+
+- `NEXT_PUBLIC_APP_URL` — canonical public application URL
+
+Empty values are treated as unset. Zod validates environment input when Next.js loads its configuration; validation errors report field names and reasons without echoing values. No production credentials are required in the current phase.
+
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on pushes and pull requests using Node.js 24. It performs:
+
+1. `npm ci`
+2. `npm run format:check`
+3. `npm run typecheck`
+4. `npm run lint`
+5. `npm run test`
+6. `npm run test:review`
+7. `npm run build`
+
+Run `npm run ci` for the same validation sequence locally after dependencies are installed.
 
 ## Local Review Package
 

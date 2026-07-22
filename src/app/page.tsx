@@ -8,8 +8,8 @@ export default function HomePage() {
         <p className="eyebrow">OXZI · Project Genesis</p>
         <h1 id="hero-title">Describe the project once.</h1>
         <p className="hero-copy">
-          OXZI turns your idea into a durable project source of truth, so every
-          AI can plan and build from the same decisions.
+          OXZI turns your idea into a durable project source of truth, so every AI can plan and
+          build from the same decisions.
         </p>
         <div className="status" role="status">
           <span className="status-dot" aria-hidden="true" />

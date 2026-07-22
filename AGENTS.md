@@ -35,6 +35,7 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 - Work in small, verifiable implementation units.
 - Before editing, state the intended unit and affected files.
 - After editing, run relevant checks and report actual results.
+- For code or tooling units, use `npm run ci` for the complete local validation sequence when available.
 - Do not claim a test passed unless it was run successfully.
 - Keep code, documentation, and progress state synchronized.
 - Update `context/06-progress-tracker.md` after every completed unit.

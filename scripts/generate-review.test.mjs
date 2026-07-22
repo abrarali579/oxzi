@@ -1,13 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -25,7 +18,7 @@ import {
 } from "./generate-review.mjs";
 
 const generatorPath = new URL("./generate-review.mjs", import.meta.url).pathname;
-const passingScript = "node -e \"process.exit(0)\"";
+const passingScript = 'node -e "process.exit(0)"';
 
 function write(root, relativePath, contents) {
   const destination = join(root, relativePath);
@@ -47,11 +40,19 @@ function createRepository({ commit = true, scripts = {}, files = {} } = {}) {
     build: passingScript,
     ...scripts,
   };
-  write(root, "package.json", `${JSON.stringify({
-    name: "review-test-fixture",
-    private: true,
-    scripts: packageScripts,
-  }, null, 2)}\n`);
+  write(
+    root,
+    "package.json",
+    `${JSON.stringify(
+      {
+        name: "review-test-fixture",
+        private: true,
+        scripts: packageScripts,
+      },
+      null,
+      2,
+    )}\n`,
+  );
   write(root, "README.md", "fixture\n");
   for (const [relativePath, contents] of Object.entries(files)) {
     write(root, relativePath, contents);
@@ -114,15 +115,17 @@ test("recognized credentials are redacted from captured text", () => {
 });
 
 test("Cookie, Set-Cookie, and all Authorization schemes are redacted", () => {
-  const sanitized = sanitizeText([
-    "Cookie: session=private-cookie",
-    "Set-Cookie: session=private-set-cookie; HttpOnly",
-    "Authorization: Bearer private-bearer",
-    "Authorization: Basic private-basic",
-    "Authorization: Digest private-digest",
-    "Authorization: API-Key private-api-key",
-    "Authorization: CustomScheme private-custom",
-  ].join("\n"));
+  const sanitized = sanitizeText(
+    [
+      "Cookie: session=private-cookie",
+      "Set-Cookie: session=private-set-cookie; HttpOnly",
+      "Authorization: Bearer private-bearer",
+      "Authorization: Basic private-basic",
+      "Authorization: Digest private-digest",
+      "Authorization: API-Key private-api-key",
+      "Authorization: CustomScheme private-custom",
+    ].join("\n"),
+  );
 
   for (const secret of [
     "private-cookie",
@@ -140,12 +143,14 @@ test("Cookie, Set-Cookie, and all Authorization schemes are redacted", () => {
 
 test("Docker auth and credential-key values are redacted", () => {
   const highEntropy = "Q7vN2xP9kL4mR8sT6wY3zA5bC1dE0fG";
-  const sanitized = sanitizeText([
-    `{"auth":"dXNlcjpwYXNzd29yZA=="}`,
-    `client_secret=${highEntropy}`,
-    `private_key="${highEntropy}"`,
-    `session_token: ${highEntropy}`,
-  ].join("\n"));
+  const sanitized = sanitizeText(
+    [
+      `{"auth":"dXNlcjpwYXNzd29yZA=="}`,
+      `client_secret=${highEntropy}`,
+      `private_key="${highEntropy}"`,
+      `session_token: ${highEntropy}`,
+    ].join("\n"),
+  );
 
   assert.doesNotMatch(sanitized, /dXNlcjpwYXNzd29yZA==/);
   assert.doesNotMatch(sanitized, new RegExp(highEntropy));
@@ -196,10 +201,7 @@ test("NUL-delimited Git name-status output supports renames", () => {
 });
 
 test("architecture impact renderer always emits the required sections", () => {
-  const report = renderArchitectureImpact([
-    "scripts/generate-review.mjs",
-    "README.md",
-  ]);
+  const report = renderArchitectureImpact(["scripts/generate-review.mjs", "README.md"]);
 
   for (const heading of [
     "Affected Domains",
@@ -220,11 +222,9 @@ test("spawn errors and timeouts retain actionable diagnostics", () => {
   assert.equal(missing.error?.code, "ENOENT");
   assert.match(describeProcessFailure(missing, 100), /Spawn error.*ENOENT/);
 
-  const timedOut = runProcess(
-    process.execPath,
-    ["-e", "setTimeout(() => {}, 1000)"],
-    { timeout: 25 },
-  );
+  const timedOut = runProcess(process.execPath, ["-e", "setTimeout(() => {}, 1000)"], {
+    timeout: 25,
+  });
   assert.equal(timedOut.timedOut, true);
   assert.match(describeProcessFailure(timedOut, 25), /Timed out after 25ms/);
 });
@@ -246,40 +246,49 @@ test("lockfile changes expose counts but never raw lockfile content", () => {
 });
 
 test("failing validations are all recorded and produce a nonzero result", () => {
-  withRepository({
-    scripts: {
-      typecheck: "node -e \"console.error('typecheck failed'); process.exit(2)\"",
-      lint: passingScript,
-      build: "node -e \"console.error('build failed'); process.exit(3)\"",
+  withRepository(
+    {
+      scripts: {
+        typecheck: "node -e \"console.error('typecheck failed'); process.exit(2)\"",
+        lint: passingScript,
+        build: "node -e \"console.error('build failed'); process.exit(3)\"",
+      },
     },
-  }, (root) => {
-    const result = generateReview(root);
-    const validation = readFileSync(join(root, ".review/validation-results.md"), "utf8");
+    (root) => {
+      const result = generateReview(root);
+      const validation = readFileSync(join(root, ".review/validation-results.md"), "utf8");
 
-    assert.equal(result.exitCode, 1);
-    assert.deepEqual(result.results.map((item) => item.passed), [false, true, false]);
-    assert.match(validation, /Exited with code 2/);
-    assert.match(validation, /Exited with code 3/);
-    assert.match(validation, /npm run lint[\s\S]*PASS/);
-    assert.equal(existsSync(join(root, ".review/.active-run")), false);
-  });
+      assert.equal(result.exitCode, 1);
+      assert.deepEqual(
+        result.results.map((item) => item.passed),
+        [false, true, false],
+      );
+      assert.match(validation, /Exited with code 2/);
+      assert.match(validation, /Exited with code 3/);
+      assert.match(validation, /npm run lint[\s\S]*PASS/);
+      assert.equal(existsSync(join(root, ".review/.active-run")), false);
+    },
+  );
 });
 
 test("indirect review recursion is blocked and the sentinel is cleaned", () => {
-  withRepository({
-    scripts: {
-      review: `node ${JSON.stringify(generatorPath)}`,
-      typecheck: "npm run review",
+  withRepository(
+    {
+      scripts: {
+        review: `node ${JSON.stringify(generatorPath)}`,
+        typecheck: "npm run review",
+      },
     },
-  }, (root) => {
-    const result = generateReview(root);
-    const validation = readFileSync(join(root, ".review/validation-results.md"), "utf8");
+    (root) => {
+      const result = generateReview(root);
+      const validation = readFileSync(join(root, ".review/validation-results.md"), "utf8");
 
-    assert.equal(result.exitCode, 1);
-    assert.equal(result.results[0].recursionDetected, true);
-    assert.match(validation, /BLOCKER: Review generation recursion detected/);
-    assert.equal(existsSync(join(root, ".review/.active-run")), false);
-  });
+      assert.equal(result.exitCode, 1);
+      assert.equal(result.results[0].recursionDetected, true);
+      assert.match(validation, /BLOCKER: Review generation recursion detected/);
+      assert.equal(existsSync(join(root, ".review/.active-run")), false);
+    },
+  );
 });
 
 test("a root-commit repository uses the empty-tree base and includes working changes", () => {

@@ -28,9 +28,9 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Current Phase
 
-Phase 2 — Repository Bootstrap, Review Foundation, and UX Prototype is in progress.
+Phase 2 — Repository Bootstrap, Tooling Foundation, and UX Prototype is in progress.
 
-The Next.js application foundation and local review-package generator are complete. The baseline development-tooling unit—formatting, project-wide testing, and environment validation—remains deferred and is the next smallest unit. Product-domain schema and workflow implementation follow that tooling unit. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
+The Next.js application foundation, local review-package generator, formatting, project-wide test runner, environment validation, and CI workflow are complete. Canonical project-schema implementation is the next smallest unit. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
 
 ## Locked Stack
 
@@ -42,6 +42,10 @@ The current implementation foundation is locked to:
 - Application code under `src/`
 - Tailwind CSS styling baseline
 - Next.js ESLint flat configuration
+- Prettier formatting
+- Vitest application testing
+- Zod environment and runtime validation
+- GitHub Actions CI on Node.js 24
 
 The broader MVP architecture retains PostgreSQL, Supabase Auth and Storage, Zod validation, a provider-neutral AI gateway, database-backed jobs, and initial Vercel/Supabase deployment. The ORM remains an explicit later decision; none of these later services are installed during repository bootstrap.
 

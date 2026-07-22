@@ -1,11 +1,5 @@
 import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, lstatSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -210,9 +204,11 @@ function shouldRedactCredentialValue(key, value) {
     return true;
   }
 
-  return /(?:password|passwd|passphrase|secret|private_key|access_key|api_key|cookie|session|token|credential)/.test(
-    normalizedKey,
-  ) && candidate.length >= 4;
+  return (
+    /(?:password|passwd|passphrase|secret|private_key|access_key|api_key|cookie|session|token|credential)/.test(
+      normalizedKey,
+    ) && candidate.length >= 4
+  );
 }
 
 export function sanitizeText(value) {
@@ -230,12 +226,12 @@ export function sanitizeText(value) {
     /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/g,
     "[REDACTED JWT]",
   );
+  text = text.replace(/(https?:\/\/)([^/\s:@]+):([^@\s/]+)@/gi, "$1[REDACTED CREDENTIALS]@");
   text = text.replace(
-    /(https?:\/\/)([^/\s:@]+):([^@\s/]+)@/gi,
-    "$1[REDACTED CREDENTIALS]@",
-  );
-  text = text.replace(
-    new RegExp(`^([+\\- ]?\\s*["']?(?:cookie|set-cookie|authorization)["']?\\s*[:=]\\s*).*$`, "gim"),
+    new RegExp(
+      `^([+\\- ]?\\s*["']?(?:cookie|set-cookie|authorization)["']?\\s*[:=]\\s*).*$`,
+      "gim",
+    ),
     "$1[REDACTED]",
   );
 
@@ -271,7 +267,9 @@ export function sanitizeText(value) {
 
 export function detectPotentialSecretLeakage(value) {
   const text = String(value ?? "");
-  return sanitizeText(text) === text ? [] : ["recognized secret pattern remained after sanitization"];
+  return sanitizeText(text) === text
+    ? []
+    : ["recognized secret pattern remained after sanitization"];
 }
 
 export function parseNameStatus(rawOutput) {
@@ -457,7 +455,14 @@ function collectDiff(root, baseRef, changes) {
 
   for (const filePath of untrackedPaths) {
     const nullDevice = process.platform === "win32" ? "NUL" : "/dev/null";
-    const fileDiff = runGit(root, ["diff", "--no-index", "--no-ext-diff", "--", nullDevice, filePath]);
+    const fileDiff = runGit(root, [
+      "diff",
+      "--no-index",
+      "--no-ext-diff",
+      "--",
+      nullDevice,
+      filePath,
+    ]);
     if (![0, 1].includes(fileDiff.status)) {
       throw new Error(`Generating the untracked diff failed for a safe path.`);
     }
@@ -474,18 +479,21 @@ function collectDiff(root, baseRef, changes) {
     }
   }
 
-  const lockfileReport = lockfiles.length > 0
-    ? [
-        "LOCKFILE SUMMARIES — RAW CONTENT EXCLUDED",
-        ...lockfiles.flatMap((lockfile) => [
-          `Filename: ${lockfile.path}`,
-          `Added lines: ${lockfile.added}`,
-          `Removed lines: ${lockfile.removed}`,
-          `Dependencies changed: ${lockfile.dependenciesChanged ? "yes" : "no"}`,
-          "",
-        ]),
-      ].join("\n").trimEnd()
-    : "";
+  const lockfileReport =
+    lockfiles.length > 0
+      ? [
+          "LOCKFILE SUMMARIES — RAW CONTENT EXCLUDED",
+          ...lockfiles.flatMap((lockfile) => [
+            `Filename: ${lockfile.path}`,
+            `Added lines: ${lockfile.added}`,
+            `Removed lines: ${lockfile.removed}`,
+            `Dependencies changed: ${lockfile.dependenciesChanged ? "yes" : "no"}`,
+            "",
+          ]),
+        ]
+          .join("\n")
+          .trimEnd()
+      : "";
   if (lockfileReport) {
     diff += `${diff ? "\n\n" : ""}${lockfileReport}`;
     stat += `${stat ? "\n" : ""}${lockfileReport}`;
@@ -506,7 +514,11 @@ export function runValidation(root, scriptName, options = {}) {
   const durationMs = Date.now() - startedAt;
   const passed = result.status === 0 && !result.error && !result.signal;
   const diagnostic = passed ? "" : describeProcessFailure(result, timeoutMs);
-  const combinedOutput = [result.stdout, result.stderr, diagnostic ? `[Execution diagnostic] ${diagnostic}` : ""]
+  const combinedOutput = [
+    result.stdout,
+    result.stderr,
+    diagnostic ? `[Execution diagnostic] ${diagnostic}` : "",
+  ]
     .filter(Boolean)
     .join("\n");
   const output = sanitizeText(combinedOutput).trim();
@@ -536,19 +548,24 @@ function renderLockfileTable(lockfiles) {
 
   return `| Filename | Added lines | Removed lines | Dependencies changed |
 |---|---:|---:|---|
-${lockfiles.map((lockfile) =>
-    `| ${markdownPath(lockfile.path)} | ${lockfile.added} | ${lockfile.removed} | ${lockfile.dependenciesChanged ? "Yes" : "No"} |`,
-  ).join("\n")}`;
+${lockfiles
+  .map(
+    (lockfile) =>
+      `| ${markdownPath(lockfile.path)} | ${lockfile.added} | ${lockfile.removed} | ${lockfile.dependenciesChanged ? "Yes" : "No"} |`,
+  )
+  .join("\n")}`;
 }
 
 function renderChangedFiles(changes, stat, comparisonLabel, lockfiles) {
-  const rows = changes.filter((change) => !change.lockfile).map((change) => {
-    const label = STATUS_LABELS[change.status] ?? change.rawStatus;
-    const path = change.previousPath
-      ? `${markdownPath(change.previousPath)} → ${markdownPath(change.path)}`
-      : markdownPath(change.path);
-    return `| ${label} | ${path} |`;
-  });
+  const rows = changes
+    .filter((change) => !change.lockfile)
+    .map((change) => {
+      const label = STATUS_LABELS[change.status] ?? change.rawStatus;
+      const path = change.previousPath
+        ? `${markdownPath(change.previousPath)} → ${markdownPath(change.path)}`
+        : markdownPath(change.path);
+      return `| ${label} | ${path} |`;
+    });
 
   return `# Changed Files
 
@@ -580,9 +597,10 @@ function renderValidationResults(results) {
   const detailSections = results.map((result) => {
     const output = result.output || "Command completed without output.";
     const limit = 16_000;
-    const captured = output.length > limit
-      ? `${output.slice(0, limit)}\n[Output truncated after ${limit} characters]`
-      : output;
+    const captured =
+      output.length > limit
+        ? `${output.slice(0, limit)}\n[Output truncated after ${limit} characters]`
+        : output;
 
     return `## ${result.command}
 
@@ -624,30 +642,38 @@ export function renderArchitectureImpact(paths, excludedCount = 0) {
     domains.push("Application implementation");
   }
 
-  const invariantImpact = pathMatches(paths, /^(DECISIONS\.md|context\/02-architecture\.md|specs\/)/)
+  const invariantImpact = pathMatches(
+    paths,
+    /^(DECISIONS\.md|context\/02-architecture\.md|specs\/)/,
+  )
     ? "Decision, architecture, or specification files changed; a reviewer must confirm protected invariants remain consistent."
-    : "No protected decision, architecture, or specification file changed."
+    : "No protected decision, architecture, or specification file changed.";
   const schemaImpact = pathMatches(paths, /(project-schema|canonical-project-schema|schema)/i)
     ? "Potential schema impact detected from changed paths; inspect the diff before approval."
-    : "No canonical project schema path changed."
+    : "No canonical project schema path changed.";
   const apiImpact = pathMatches(paths, /(^src\/app\/api\/|route\.[cm]?[jt]sx?$|\/api\/)/)
     ? "Potential API surface changes detected; inspect route contracts and authorization."
-    : "No application API route path changed."
+    : "No application API route path changed.";
   const uiImpact = pathMatches(paths, /^(src\/(?:app|components)\/|.*\.(?:css|scss)$)/)
     ? "Potential UI changes detected; inspect responsive, accessibility, and visual behavior."
-    : "No application UI path changed."
-  const securityImpact = pathMatches(paths, /(^src\/lib\/security\/|package(?:-lock)?\.json$|scripts\/generate-review\.mjs$)/)
+    : "No application UI path changed.";
+  const securityImpact = pathMatches(
+    paths,
+    /(^src\/lib\/security\/|package(?:-lock)?\.json$|scripts\/generate-review\.mjs$)/,
+  )
     ? "Review execution boundaries, dependency changes, and redaction safeguards. Sensitive paths are excluded and recognized credential patterns are redacted."
-    : "No security-domain or dependency-manifest path changed."
+    : "No security-domain or dependency-manifest path changed.";
   const documentationImpact = pathMatches(paths, /\.md$/i)
     ? "Documentation changed and should be checked for consistency with code and accepted decisions."
-    : "No Markdown documentation path changed."
+    : "No Markdown documentation path changed.";
   const risks = [
     "Architecture classification is path-based and requires human confirmation.",
     "The package compares against HEAD~1, so it can include the latest commit plus working-tree changes.",
   ];
   if (excludedCount > 0) {
-    risks.push(`${excludedCount} sensitive or generated path(s) were excluded without exposing their names.`);
+    risks.push(
+      `${excludedCount} sensitive or generated path(s) were excluded without exposing their names.`,
+    );
   }
 
   return `# Architecture Impact
@@ -742,7 +768,9 @@ function renderCodexReport({
     "Recognized credential formats are redacted, but repository policy must still prevent secrets from entering tracked files.",
   ];
   if (excludedCount > 0) {
-    warnings.push(`${excludedCount} sensitive or generated path(s) were excluded without exposing their names.`);
+    warnings.push(
+      `${excludedCount} sensitive or generated path(s) were excluded without exposing their names.`,
+    );
   }
   if (failed.length > 0) {
     warnings.push(`Failed validation: ${failed.map((result) => result.command).join(", ")}.`);
@@ -759,7 +787,7 @@ function renderCodexReport({
     : "chore: prepare auditable review package";
   const nextUnit = generatorChanged
     ? "Complete the deferred Phase 2 Unit 2 developer tooling foundation, then proceed to canonical Zod schemas."
-    : "Confirm the next smallest unit recorded in context/06-progress-tracker.md."
+    : "Confirm the next smallest unit recorded in context/06-progress-tracker.md.";
 
   return `# Codex Report
 
@@ -826,7 +854,9 @@ function acquireRunGuard(reviewDir) {
 
   const sentinelPath = resolve(reviewDir, ACTIVE_RUN_SENTINEL);
   if (existsSync(sentinelPath)) {
-    throw new Error(`${RECURSION_BLOCKER} Active sentinel already exists at .review/${ACTIVE_RUN_SENTINEL}.`);
+    throw new Error(
+      `${RECURSION_BLOCKER} Active sentinel already exists at .review/${ACTIVE_RUN_SENTINEL}.`,
+    );
   }
 
   const runId = randomUUID();
@@ -956,12 +986,7 @@ export function generateReview(startDirectory = process.cwd()) {
         lockfiles,
         securityLeakageDetected,
       }),
-      "changed-files.md": renderChangedFiles(
-        changes,
-        stat,
-        repository.comparisonLabel,
-        lockfiles,
-      ),
+      "changed-files.md": renderChangedFiles(changes, stat, repository.comparisonLabel, lockfiles),
       "validation-results.md": renderValidationResults(results),
       "architecture-impact.md": renderArchitectureImpact(paths, excludedCount),
       "codex-report.md": renderCodexReport({
@@ -988,14 +1013,17 @@ export function generateReview(startDirectory = process.cwd()) {
     const generationIncomplete = writtenCount !== GENERATED_FILES.size;
     const recursionDetected = results.some((result) => result.recursionDetected);
     const validationFailed = results.some((result) => !result.passed);
-    const exitCode = validationFailed || securityLeakageDetected || recursionDetected || generationIncomplete
-      ? 1
-      : 0;
+    const exitCode =
+      validationFailed || securityLeakageDetected || recursionDetected || generationIncomplete
+        ? 1
+        : 0;
 
     const relativeReviewDir = relative(root, reviewDir) || ".review";
     console.log(`Review package generated in ${relativeReviewDir}/`);
     for (const result of results) {
-      console.log(`${result.passed ? "PASS" : "FAIL"}: ${result.command}${result.passed ? "" : ` — ${result.diagnostic}`}`);
+      console.log(
+        `${result.passed ? "PASS" : "FAIL"}: ${result.command}${result.passed ? "" : ` — ${result.diagnostic}`}`,
+      );
     }
     if (securityLeakageDetected) {
       console.error("BLOCKER: Generated-output secret scan failed.");
