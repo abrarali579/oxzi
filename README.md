@@ -33,14 +33,20 @@ npm run typecheck  # Check TypeScript without emitting files
 ## Agent Start
 
 1. Read `AGENTS.md`.
-2. Follow `CODEX_LOCAL_SETUP.md`.
-3. Keep the six living files inside `context/`.
-4. Use `specs/` as the implementation contract.
-5. Update `context/06-progress-tracker.md` after each completed unit.
+2. Read `PROJECT.md`.
+3. Read `DECISIONS.md`.
+4. Read `OXZI.md`.
+5. Read all context files in numerical order.
+6. Read relevant specifications.
+7. Read relevant examples.
+
+Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance and update `context/06-progress-tracker.md` after each completed unit.
 
 ## Package Contents
 
 - `AGENTS.md` — universal agent entry point and repository operating rules
+- `PROJECT.md` — concise product, phase, stack, and scope briefing
+- `DECISIONS.md` — formal accepted-decision register
 - `OXZI.md` — concise product manifesto
 - `context/` — six living project context files
 - `specs/01-canonical-project-schema.md` — structured source-of-truth model

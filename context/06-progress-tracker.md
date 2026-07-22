@@ -30,6 +30,8 @@ Establish a production-quality application foundation before implementing the ca
 - Responsive OXZI placeholder homepage added
 - npm development, build, start, lint, and typecheck scripts added
 - Local installation and development commands documented
+- Root project brief and formal decision register added
+- Agent reading order aligned across repository guidance
 
 ## Phase 2 Unit 1 — Repository Bootstrap
 
@@ -70,27 +72,42 @@ The first sandboxed production build could not bind Turbopack's internal local p
 - npm reports three transitive dependency advisories: one moderate PostCSS advisory and two high-severity paths involving Next.js/Sharp. npm does not currently offer a non-breaking upgrade for the pinned latest stable Next.js release.
 - npm deferred install scripts for optional/transitive `sharp@0.34.5` and `unrs-resolver@1.12.2`. Type checking, linting, production build, and the development smoke check still completed successfully.
 
+## Documentation Alignment Unit
+
+Completed on 2026-07-22.
+
+### Files Created
+
+- `PROJECT.md`
+- `DECISIONS.md`
+
+### Files Modified
+
+- `AGENTS.md`
+- `OXZI.md`
+- `README.md`
+- `CODEX_LOCAL_SETUP.md`
+- `context/05-ai-workflow-rules.md`
+- `context/06-progress-tracker.md`
+
+### Alignment Results
+
+- Established one repository reading order: `AGENTS.md`, `PROJECT.md`, `DECISIONS.md`, `OXZI.md`, numbered context files, relevant specs, then relevant examples.
+- Moved the concise product/phase/stack briefing into `PROJECT.md`.
+- Consolidated formal accepted decisions in `DECISIONS.md` and replaced the duplicate tracker register with a reference.
+- Replaced the stale Phase 2 Unit 1 setup prompt with a tracker-based current handoff.
+- Kept `AGENTS.md` focused on navigation, operating rules, scope, and completion behavior.
+
+### Verification Results
+
+- `git diff --check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+
 ## Locked Architecture Decisions
 
-### ADR-001 — Canonical Structured State
-
-Markdown files are generated views, not the primary database. This prevents contradictions and enables consistent regeneration and export.
-
-### ADR-002 — Minimal Discovery
-
-OXZI asks only for missing high-impact information. It never uses a fixed questionnaire.
-
-### ADR-003 — Interview Skip
-
-When critical completeness meets the threshold and there are no unresolved contradictions, OXZI skips the interview.
-
-### ADR-004 — Provider Neutrality
-
-Cloud and local models connect through one AI gateway interface.
-
-### ADR-005 — Portable Ownership
-
-Users can export readable Markdown and ZIP packages that remain useful outside OXZI.
+The formal accepted-decision register is maintained in root `DECISIONS.md`. Decisions cannot be changed silently.
 
 ## Next Phase
 

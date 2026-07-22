@@ -23,6 +23,8 @@ After extraction, the local root must look like:
 ```text
 oxzi/
 ├── AGENTS.md
+├── PROJECT.md
+├── DECISIONS.md
 ├── OXZI.md
 ├── README.md
 ├── CODEX_LOCAL_SETUP.md
@@ -47,6 +49,16 @@ code ~/Projects/oxzi
 
 Open Codex in this workspace. Because `AGENTS.md` is at the repository root, any compatible coding agent can discover the operating instructions and then follow the linked context files.
 
+Use this reading order in every session:
+
+1. `AGENTS.md`
+2. `PROJECT.md`
+3. `DECISIONS.md`
+4. `OXZI.md`
+5. Context files in numerical order
+6. Relevant specifications
+7. Relevant examples
+
 ## 4. Initialize Git Before Coding
 
 ```bash
@@ -60,7 +72,7 @@ git commit -m "docs: establish OXZI phase 1 foundation"
 Paste this once after opening the folder:
 
 ```text
-Read the root AGENTS.md and follow it exactly. Then read all required context and specs in the stated order.
+Read AGENTS.md, PROJECT.md, DECISIONS.md, OXZI.md, all context files in numerical order, relevant specs, and relevant examples. Follow AGENTS.md exactly.
 
 Do not modify files yet. First:
 1. Summarize the locked OXZI Phase 1 decisions.
@@ -72,31 +84,16 @@ Do not modify files yet. First:
 
 Compare its summary with the package before allowing implementation.
 
-## 6. Phase 2 Unit 1 Prompt
+## 6. Current Implementation Handoff
 
-After the summary is correct, paste:
-
-```text
-Execute Phase 2, Unit 1 only: bootstrap a production-quality Next.js TypeScript application in this repository.
-
-Requirements:
-- Follow AGENTS.md and all context/spec files.
-- Preserve every existing documentation file.
-- Use Next.js App Router and strict TypeScript.
-- Configure linting, formatting, environment validation, and a test runner.
-- Create the agreed source-folder structure without fake business logic.
-- Do not add authentication, database, billing, or real AI providers yet.
-- Add or update local development commands in README.md.
-- Run all available checks.
-- Update context/06-progress-tracker.md with changed files, check results, unresolved issues, and the next smallest unit.
-```
+Phase 2 Unit 1, the Next.js application bootstrap, is complete. Read `context/06-progress-tracker.md` for the next smallest unit and its current validation requirements. Do not reuse a completed-unit prompt.
 
 ## 7. Normal Daily Workflow
 
 For every new task, give Codex one bounded unit, for example:
 
 ```text
-Follow AGENTS.md. Implement only the project-input parsing domain described in the specs. Do not build the interview UI yet. Run relevant tests and update the progress tracker.
+Follow the required reading order in AGENTS.md. Implement only the requested unit. Run relevant checks and update the progress tracker.
 ```
 
 Avoid asking it to “build the whole app.” Small units reduce architecture drift and make Git review easier.
@@ -114,7 +111,7 @@ git diff --no-index ./context /path/to/new/context
 ```
 
 4. Merge approved context/spec changes.
-5. Ask Codex to re-read `AGENTS.md` and the changed files before continuing.
+5. Ask Codex to repeat the required reading order from `AGENTS.md` before continuing.
 
 Do not paste all six files into Codex chat repeatedly. Keep the approved versions inside the repository.
 

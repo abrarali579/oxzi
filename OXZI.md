@@ -29,8 +29,16 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Agent Entry Point
 
-All coding agents must begin with the root `AGENTS.md`, which defines reading order, source-of-truth priority, working rules, and completion standards.
+All coding agents use this reading order:
+
+1. `AGENTS.md`
+2. `PROJECT.md`
+3. `DECISIONS.md`
+4. `OXZI.md`
+5. Context files in numerical order
+6. Relevant specifications
+7. Relevant examples
 
 ## Current Build Boundary
 
-Phase 1 defines the product, canonical schema, discovery logic, six living files, architecture guardrails, and handoff process. It does not yet implement the application.
+Phase 1 defines the product, canonical schema, discovery logic, six living files, architecture guardrails, and handoff process. Phase 2 application implementation is in progress; the repository bootstrap is complete and product-domain logic has not yet been implemented.

@@ -1,29 +1,25 @@
 # AGENTS.md — OXZI Agent Operating Guide
 
-This repository contains the source of truth for OXZI. Any coding agent working in this repository must follow this file before planning, editing, or running implementation work.
+Start here before planning, editing, or running implementation work.
 
-## 1. Required Reading Order
+## Required Reading Order
 
 Before making changes, read:
 
-1. `context/01-project-overview.md`
-2. `specs/01-canonical-project-schema.md`
-3. `specs/02-discovery-engine.md`
-4. `context/02-architecture.md`
-5. `context/03-ui-visual-context.md`
-6. `context/04-code-standards.md`
-7. `context/05-ai-workflow-rules.md`
-8. `context/06-progress-tracker.md`
-9. Any task-specific file in `specs/` or `examples/`
+1. `AGENTS.md`
+2. `PROJECT.md`
+3. `DECISIONS.md`
+4. `OXZI.md`
+5. All files under `context/` in numerical order
+6. Relevant files under `specs/`
+7. Relevant files under `examples/`
 
-`OXZI.md` is the concise product manifesto. The six files under `context/` are the living project context. The structured schema and contracts under `specs/` define implementation behavior.
-
-## 2. Source-of-Truth Priority
+## Source-of-Truth Priority
 
 When information conflicts, use this order:
 
 1. Latest explicit user instruction
-2. Approved decision recorded in the project context/specs
+2. Accepted decision recorded in `DECISIONS.md` or the project context/specs
 3. Canonical project schema and architecture contracts
 4. Six living context files
 5. Existing implementation
@@ -31,7 +27,7 @@ When information conflicts, use this order:
 
 Do not silently resolve a material conflict. Report it and recommend the smallest safe resolution.
 
-## 3. Mandatory Working Rules
+## Working Rules
 
 - Never ask for information already present in the prompt, imported files, context, or specs.
 - Preserve the minimal-interview and Master Prompt skip behavior.
@@ -57,21 +53,11 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 - Never commit `.env`, API keys, credentials, tokens, generated secrets, or local database files.
 - Keep `main` stable and buildable.
 
-## 4. Current Project Boundary
+## Current Boundary
 
-Phase 1 is complete and defines:
+Phase 1 is complete and Phase 2 implementation is in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for the current unit. Do not jump to later SaaS features unless the user explicitly requests them.
 
-- OXZI product purpose and operating principles
-- Canonical Project Schema
-- Minimal Discovery Engine
-- Master Prompt interview-skip logic
-- Six-file rendering contract
-- Initial architecture and code standards
-- Two validation fixtures
-
-Application implementation begins in Phase 2. Do not jump to later SaaS features unless the user explicitly requests them.
-
-## 5. Completion Standard
+## Completion Standard
 
 A task is complete only when:
 
@@ -81,12 +67,12 @@ A task is complete only when:
 - Context and progress files are updated
 - The next smallest implementation unit is identified
 
-## 6. Standard Session Start
+## Session Start
 
 At the beginning of a new agent session:
 
-1. Read this file and the required files above.
-2. Read the latest entries in `context/06-progress-tracker.md`.
-3. Inspect repository status and existing implementation.
-4. Summarize current state briefly.
-5. Execute only the requested task or propose the smallest next unit.
+1. Follow the required reading order above.
+2. Inspect repository status and existing implementation.
+3. Summarize the current state briefly.
+4. State the single requested implementation unit and affected files.
+5. Execute only that unit or propose the smallest next unit.

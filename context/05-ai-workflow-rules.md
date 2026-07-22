@@ -4,11 +4,14 @@
 
 Before implementation or architectural work:
 
-1. Read `OXZI.md`.
-2. Read all six context files in order.
-3. Read the relevant specification file.
-4. Read the latest progress tracker.
-5. State the single implementation unit being worked on.
+1. Read `AGENTS.md`.
+2. Read `PROJECT.md`.
+3. Read `DECISIONS.md`.
+4. Read `OXZI.md`.
+5. Read all context files in numerical order.
+6. Read the relevant specification files.
+7. Read the relevant examples.
+8. State the single implementation unit being worked on.
 
 ## Scope Discipline
 
@@ -67,11 +70,4 @@ Before changing an approved boundary, technology, data model, or invariant:
 
 ## Protected Decisions
 
-The following Phase 1 decisions cannot be changed silently:
-
-- Canonical structured state is the source of truth.
-- Six Markdown files are generated views.
-- Interviews are adaptive and minimal.
-- Complete master prompts may skip the interview.
-- Cloud and local model support use a provider-neutral gateway.
-- Users retain portable Markdown/ZIP exports.
+`DECISIONS.md` is the formal register of accepted decisions. No accepted decision may be changed silently; any change must follow the architecture-change process above and update every affected context, specification, implementation, and progress record.
