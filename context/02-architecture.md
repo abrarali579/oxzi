@@ -2,7 +2,7 @@
 
 ## Architecture Principle
 
-The canonical structured project state is the source of truth. The six Markdown files are deterministic views generated from that state.
+The canonical structured project state is the sole source of truth. Markdown, the Knowledge Graph, context packs, Task Cards, prompts, review recommendations, and visual diagrams are derived views or validated proposals; none may silently mutate canonical state.
 
 ## Proposed MVP Stack
 
@@ -26,10 +26,16 @@ The canonical structured project state is the source of truth. The six Markdown 
 - `domain/project/` — canonical project types, runtime validation, fixtures, and deterministic serialization
 - `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
 - `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
+- `domain/knowledge-graph/` — future deterministic typed projection, traversal, impact analysis, and task subgraph extraction
+- `domain/context-compiler/` — future quality-gated smallest-sufficient context selection
+- `domain/task-card/` — future normalized Task Card and deterministic style renderers
+- `domain/review-analysis/` — future evidence-backed Review/Audit Analyzer and next-action classification
+- `domain/visual-architecture/` — future graph-derived visual view models and exports
 - `features/project-intake/` — input, import, and source parsing
 - `features/discovery/` — future discovery UI and workflow orchestration
 - `features/project-schema/` — future application workflows and validated canonical-state mutations
 - `features/generation/` — six-file rendering and export generation
+- `features/agent-handoff/` — future Task Card review, copy/export, and approval-gated connected delivery
 - `features/projects/` — project workspace, approval, and versions
 - `lib/ai/` — provider-neutral AI gateway and structured output handling
 - `lib/db/` — persistence and repositories
@@ -51,6 +57,12 @@ The canonical structured project state is the source of truth. The six Markdown 
 - GeneratedArtifact
 - AIProviderConfiguration
 - GenerationRun
+- KnowledgeGraphProjection
+- ContextPackage
+- TaskCard
+- ReviewFinding
+- VisualArchitectureView
+- PromptPerformanceRecord (future, private by default)
 
 ## Canonical Data Flow
 
@@ -63,8 +75,13 @@ Input or imported material
 → deterministic completeness and ranked critical gaps
 → minimal discovery
 → approved canonical state
+→ deterministic Knowledge Graph projection
+→ task subgraph and smallest-sufficient context package
+→ normalized Task Card and one selected prompt renderer
 → six Markdown renderers
-→ export package
+→ visual graph views and export package
+→ implementation review evidence
+→ audit-gated repair or next-task recommendation
 ```
 
 ## Storage Model
@@ -102,6 +119,8 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 4. AI provider calls receive only the minimum required project context.
 5. Sensitive values detected in source input must be flagged and optionally redacted.
 6. Local mode must allow project generation without sending content to cloud providers.
+7. Prompt-performance analytics prefer derived metrics; private project or prompt content cannot be reused for global training without explicit consent.
+8. Context compilation must include all relevant security and privacy constraints before any token optimization.
 
 ## System Invariants
 
@@ -115,6 +134,15 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 8. Long-running AI work must not execute inside a request handler without job tracking.
 9. Completeness and question priority are computed from versioned deterministic policy, never from provider-generated weights.
 10. Extraction cannot overwrite approved canonical values or silently resolve contradictory explicit sources.
+11. Derived graphs, context packages, Task Cards, prompts, diagrams, and Markdown cannot directly mutate canonical state.
+12. Context compression removes redundancy, not unique requirements or execution-critical meaning.
+13. Failed required checks, security findings, and blockers prevent recommendation of unrelated feature work.
+14. Only one selected prompt style is generated initially; style renderers preserve one normalized Task Card meaning.
+15. OXZI does not execute project code; any future connected-agent delivery obeys explicit configured approval policy.
+
+## Future Deterministic Intelligence Flow
+
+The Knowledge Graph is a versioned projection, not persistence. Its traversals provide impact sets and task subgraphs to the Token-Saving Context Compiler. The compiler widens context whenever mandatory coverage or relationship confidence is insufficient. The AI Task Card Prompt Compiler consumes that safe package and renders only the selected style. The Review/Audit Analyzer consumes Review Engine evidence and recommends accept, repair, clarify, focused re-audit, proceed, or stop. Visual Master Architecture views render the same graph at audience-specific detail levels.
 
 ## Initial Status Lifecycle
 

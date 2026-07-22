@@ -22,15 +22,17 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 4. Calculate critical completeness.
 5. Skip discovery when the project is sufficiently complete, or ask only the highest-impact missing questions.
 6. Review confirmed facts, inferences, defaults, assumptions, conflicts, and deferred items.
-7. Generate six living Markdown files from the approved canonical state.
-8. Approve, edit, version, and export the project package.
-9. Let coding agents implement one scoped unit at a time while keeping decisions and progress synchronized.
+7. Derive a typed Knowledge Graph for impact analysis and task-specific context selection.
+8. Generate six living Markdown files and other approved views from canonical state.
+9. Compile one reviewable AI Task Card in the selected style with the smallest sufficient context.
+10. Approve, edit, version, and export the project package or explicitly approve a future connected-agent handoff.
+11. Analyze implementation review evidence before recommending repair or the next scoped unit.
 
 ## Current Phase
 
-Phase 3 — Canonical Domain and Discovery Foundations is in progress.
+Phase 3 — Core Deterministic Intelligence is in progress.
 
-The Next.js and developer-tooling foundation is complete. The canonical project state has a strict TypeScript and Zod runtime contract, deterministic serialization, and concrete validation fixtures. Deterministic extraction, completeness scoring, interview skipping, and critical-question ranking are implemented without an AI dependency. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
+The Next.js and developer-tooling foundation is complete. The canonical project state, completeness scoring, interview skipping, critical-question ranking, and deterministic extraction are implemented without an AI dependency. The future Knowledge Graph, Token-Saving Context Compiler, AI Task Card Prompt Compiler, Review/Audit Analyzer, and Visual Master Architecture Generator are approved and specified but not implemented. See [context/06-progress-tracker.md](context/06-progress-tracker.md) for the live implementation state.
 
 ## Locked Stack
 
@@ -51,9 +53,20 @@ The broader MVP architecture retains PostgreSQL, Supabase Auth and Storage, Zod 
 
 ## MVP Boundaries
 
-The MVP includes project intake, requirement extraction, adaptive minimal discovery, understanding review, canonical project state, deterministic six-file generation, versioning, and portable Markdown/ZIP export. It supports cloud providers and local OpenAI-compatible models through one provider-neutral boundary.
+The expanded MVP direction includes project intake, requirement extraction, adaptive minimal discovery, understanding review, canonical state, a derived Knowledge Graph, deterministic six-file generation, safe context compilation, reviewable AI Task Cards, audit-gated next-task recommendations, visual architecture views, versioning, and portable Markdown/ZIP export. Cloud and local OpenAI-compatible models remain behind one provider-neutral boundary.
 
-The initial MVP excludes autonomous full-project coding, direct Figma generation, real-time multiplayer collaboration, billing enforcement, direct GitHub repository creation, automatic deployment, and continuous code-versus-spec auditing.
+OXZI does not execute project code. The initial product excludes autonomous full-project coding, real-time multiplayer collaboration, billing enforcement, direct repository creation, and automatic deployment. Connected-agent delivery is a future optional integration that requires the configured approval policy. Prompt-performance telemetry and global training reuse are deferred and may never use private project data without explicit consent.
+
+## Roadmap
+
+- Phase 3 — Core Deterministic Intelligence
+- Phase 4 — Context and Project Outputs
+- Phase 5 — Agent Workflow
+- Phase 6 — Product Experience
+- Phase 7 — SaaS Infrastructure
+- Phase 8 — Validation and Launch
+
+The complete unit sequence and status vocabulary are maintained in [context/06-progress-tracker.md](context/06-progress-tracker.md).
 
 ## Detailed Context
 

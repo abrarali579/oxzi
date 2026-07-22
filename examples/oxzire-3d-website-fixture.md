@@ -31,3 +31,18 @@ technical:
 ```
 
 This scenario exercises complete-master-prompt handling, mobile and media fallbacks, bilingual content, dark/light presentation, CMS ownership, visual exclusions, and zero-question eligibility without replacing the executable fixture.
+
+## Deterministic Extraction Variant
+
+The extraction regression suite also covers this mixed-language form of the same scenario:
+
+```text
+Oxzire ke liye mobile first website bnana hai. Hamara goal qualified creative-production enquiries generate krna hai.
+Features: adaptive 3D hero, captioned video case studies, localized CMS
+Design: cinematic, premium, editorial, dark mode and light mode
+Languages: English, Bhasa Indonesia
+Later: real-time 3D configurator
+Must not remove the static WebGL fallback.
+```
+
+The hardened extractor must normalize obvious aliases, keep the later configurator outside current features, preserve the fallback prohibition, and retain original evidence wording.

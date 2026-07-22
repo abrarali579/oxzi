@@ -12,7 +12,14 @@ import {
   VISUAL_TERMS,
   type LexiconEntry,
 } from "./lexicon";
-import { normalizeComparison, segmentSources, stableHash, type SourceSegment } from "./parser";
+import {
+  normalizeComparison,
+  normalizeForMatching,
+  redactSensitiveExcerpt,
+  segmentSources,
+  stableHash,
+  type SourceSegment,
+} from "./parser";
 import {
   canonicalFieldUpdateSchema,
   extractionRequestSchema,
@@ -86,8 +93,8 @@ function canonicalSourceType(kind: ExtractionSourceKind) {
 }
 
 function hasTerm(text: string, term: string): boolean {
-  const normalizedText = ` ${normalizeComparison(text)} `;
-  const normalizedTerm = normalizeComparison(term);
+  const normalizedText = ` ${normalizeForMatching(text)} `;
+  const normalizedTerm = normalizeForMatching(term);
   return normalizedText.includes(` ${normalizedTerm} `) || normalizedText.trim() === normalizedTerm;
 }
 
@@ -99,14 +106,17 @@ function cleanItem(value: string): string {
   return value
     .trim()
     .replace(/^[-*+]\s*/, "")
-    .replace(/^(?:must|should|could|required|harus|wajib|optional)\s*[:\-]?\s*/i, "")
+    .replace(
+      /^(?:must|should|could|required|harus|wajib|optional|zaroori|lazmi|laazmi)\s*[:\-]?\s*/i,
+      "",
+    )
     .replace(/[.;]+$/, "")
     .trim();
 }
 
 function splitItems(value: string): string[] {
   const parts = value
-    .split(/\s*(?:[,;|]|\band\b|\bdan\b)\s*/i)
+    .split(/\s*(?:[,;|]|\band\b|\bdan\b|\baur\b)\s*/i)
     .map((item) =>
       item
         .trim()
@@ -123,14 +133,27 @@ function titleCaseStart(value: string): string {
   return cleaned ? cleaned[0]!.toLocaleUpperCase() + cleaned.slice(1) : cleaned;
 }
 
+function preserveStatement(value: string): string {
+  const cleaned = redactSensitiveExcerpt(value)
+    .trim()
+    .replace(/[.;]+$/, "")
+    .trim();
+  return cleaned ? cleaned[0]!.toLocaleUpperCase() + cleaned.slice(1) : cleaned;
+}
+
 function itemPriority(value: string): "must" | "should" | "could" {
-  if (/\b(?:must|required|critical|wajib|harus|utama|p0)\b/i.test(value)) return "must";
+  if (
+    /\b(?:must|required|critical|wajib|harus|zaroori|lazmi|laazmi|chahiye|chahye|utama|p0)\b/i.test(
+      value,
+    )
+  )
+    return "must";
   if (/\b(?:could|optional|nice to have|opsional|p2)\b/i.test(value)) return "could";
   return "should";
 }
 
 function goalPriority(value: string): "primary" | "secondary" {
-  return /\b(?:primary|main|most important|utama|prioritas|p0)\b/i.test(value)
+  return /\b(?:primary|main|most important|utama|prioritas|maqsad|p0)\b/i.test(value)
     ? "primary"
     : "secondary";
 }
@@ -185,7 +208,12 @@ function makeFeature(value: string) {
 
 function makeGoal(value: string) {
   const cleaned = titleCaseStart(
-    value.replace(/^(?:goal|objective|tujuan)\s*(?:is|adalah)?\s*/i, ""),
+    value
+      .replace(
+        /^(?:(?:mera|mery|hamara|humara)\s+)?(?:goal|objective|tujuan|maqsad)\s*(?:is|hai|adalah)?\s*/i,
+        "",
+      )
+      .replace(/\s+(?:hai|hoga|ho ga)$/i, ""),
   );
   return {
     name: cleaned,
@@ -197,9 +225,12 @@ function makeGoal(value: string) {
 function makeIntegration(name: string, context: string) {
   return {
     name: titleCaseStart(name),
-    purpose: `Integration identified from source: ${cleanItem(context)}`,
+    purpose: `Integration identified from source: ${cleanItem(redactSensitiveExcerpt(context))}`,
     direction: direction(context),
-    required: /\b(?:must|required|wajib|harus|integrate|integration|integrasi)\b/i.test(context),
+    required:
+      /\b(?:must|required|wajib|harus|zaroori|lazmi|laazmi|chahiye|chahye|integrate|integration|integrasi)\b/i.test(
+        context,
+      ),
   };
 }
 
@@ -213,6 +244,17 @@ function makeRisk(value: string) {
       ? titleCaseStart(mitigationPart)
       : "No mitigation was specified in the source.",
   };
+}
+
+function sanitizeCandidateValue(value: unknown): unknown {
+  if (typeof value === "string") return redactSensitiveExcerpt(value);
+  if (Array.isArray(value)) return value.map(sanitizeCandidateValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nested]) => [key, sanitizeCandidateValue(nested)]),
+    );
+  }
+  return value;
 }
 
 function addCandidate(
@@ -229,7 +271,7 @@ function addCandidate(
   const inferred = options.inferred || assistantInference;
   candidates.push({
     fieldPath,
-    value,
+    value: sanitizeCandidateValue(value),
     confidence: Math.max(
       0,
       Math.min(
@@ -246,6 +288,170 @@ function addCandidate(
     reasoning,
   });
   matchedSegments.add(segment.segmentId);
+}
+
+type TemporalScope = "current_mvp" | "later" | "out_of_scope" | "undecided" | "unspecified";
+
+function classifyTemporalScope(value: string): TemporalScope {
+  const text = normalizeForMatching(value);
+  if (
+    /\b(?:undecided|not decided|decision pending|tbd|to be decided|abhi decide nahi|decide later)\b/.test(
+      text,
+    )
+  ) {
+    return "undecided";
+  }
+  if (
+    /\b(?:out of scope|outside scope|not in scope|exclude from mvp|excluded from mvp|not part of mvp|mvp mein nahi|mvp me nahi)\b/.test(
+      text,
+    )
+  ) {
+    return "out_of_scope";
+  }
+  if (
+    /\b(?:later|future|future phase|phase 2|phase two|next phase|baad mein|baad me|abhi nahi|not now)\b/.test(
+      text,
+    ) ||
+    /\babhi\b.+\bnahi\s+chahiye\b/.test(text)
+  ) {
+    return "later";
+  }
+  if (
+    /\b(?:current mvp|mvp|first version|initial release|current release|abhi ke liye)\b/.test(text)
+  ) {
+    return "current_mvp";
+  }
+  return "unspecified";
+}
+
+function scopedSubject(value: string): string {
+  const cleaned = cleanItem(value)
+    .replace(
+      /^(?:later|future|future phase|phase\s+(?:2|two)|next phase|out of scope|undecided|tbd)\s*[:\-]?\s*/i,
+      "",
+    )
+    .replace(/^(?:for\s+)?(?:the\s+)?(?:current\s+)?mvp\s*(?:includes?|contains?|needs?)?\s*/i, "")
+    .replace(/^(?:we\s+)?(?:can\s+)?(?:add|include|support)\s+/i, "")
+    .replace(/^abhi\s+/i, "")
+    .replace(/\s+(?:is\s+)?(?:out of scope|outside scope|undecided|tbd)$/i, "")
+    .replace(
+      /\s+(?:later|in (?:a )?future(?: phase)?|in phase\s+(?:2|two)|baad mein|baad me)$/i,
+      "",
+    )
+    .replace(/\s+(?:nahi|ni)\s+(?:chahiye|chahye)$/i, "")
+    .trim();
+  return cleaned || cleanItem(value);
+}
+
+function canonicalListItem(path: ExtractableFieldPath, value: string): string {
+  const lexicons: Partial<Record<ExtractableFieldPath, readonly LexiconEntry[]>> = {
+    "technical.preferredStack": TECH_TERMS,
+    "quality.localization": LANGUAGE_TERMS,
+    "visual.visualKeywords": VISUAL_TERMS,
+    "visual.themes": THEME_TERMS,
+    "product.platforms": PLATFORM_TERMS,
+    "technical.security": SECURITY_TERMS,
+    "technical.privacy": PRIVACY_TERMS,
+  };
+  const match = lexicons[path]?.find((entry) => entry.terms.some((term) => hasTerm(value, term)));
+  if (match) return match.canonical;
+  if (path === "quality.localization" && /^(?:bahasa|bhasa)$/i.test(normalizeForMatching(value))) {
+    return "Bahasa Indonesia";
+  }
+  if (path === "scope.constraints" && /\bmobile first\b/.test(normalizeForMatching(value))) {
+    return "Mobile-first";
+  }
+  return titleCaseStart(value);
+}
+
+function canonicalDeployment(value: string): string {
+  return (
+    DEPLOYMENT_TERMS.find((entry) => entry.terms.some((term) => hasTerm(value, term)))?.canonical ??
+    cleanItem(value)
+  );
+}
+
+function extractScopeOrNegativeCandidate(
+  segment: SourceSegment,
+  candidates: RawCandidate[],
+  matchedSegments: Set<string>,
+): boolean {
+  if (segment.section === "scope.outOfScope") return false;
+
+  const temporalScope = classifyTemporalScope(segment.text);
+  const subject = titleCaseStart(scopedSubject(segment.text));
+  if (
+    temporalScope === "later" ||
+    temporalScope === "out_of_scope" ||
+    temporalScope === "undecided"
+  ) {
+    const prefix =
+      temporalScope === "later" ? "Deferred: " : temporalScope === "undecided" ? "Undecided: " : "";
+    addCandidate(
+      candidates,
+      matchedSegments,
+      segment,
+      "scope.outOfScope",
+      [`${prefix}${subject}`],
+      `temporal_${temporalScope}`,
+      `Classified the statement as ${temporalScope.replaceAll("_", " ")} rather than current scope.`,
+      { confidenceAdjustment: segment.section ? -2 : -8 },
+    );
+    return true;
+  }
+
+  const matchingText = normalizeForMatching(segment.text);
+  const avoidMatch = segment.text.match(/\bavoid\s+(.+)$/i);
+  if (avoidMatch?.[1]) {
+    const avoided = titleCaseStart(avoidMatch[1]);
+    const visual = /\b(?:design|layout|visual|style|crowded|clutter|color|colour|animation)\b/.test(
+      matchingText,
+    );
+    addCandidate(
+      candidates,
+      matchedSegments,
+      segment,
+      visual ? "visual.avoidList" : "scope.constraints",
+      [visual ? avoided : `Avoid ${avoided}`],
+      visual ? "negative_visual" : "negative_constraint",
+      "Matched an explicit negative constraint.",
+      { confidenceAdjustment: segment.section ? -2 : -6 },
+    );
+    return true;
+  }
+
+  if (
+    /\b(?:do not|don't|must not|shall not|cannot|can not|nahi hona chahiye|nahi hona chahye|ni hona chahiye|tidak boleh)\b/.test(
+      matchingText,
+    )
+  ) {
+    addCandidate(
+      candidates,
+      matchedSegments,
+      segment,
+      "scope.constraints",
+      [preserveStatement(segment.text)],
+      "negative_constraint",
+      "Matched an explicit prohibition and preserved it as a constraint.",
+      { confidenceAdjustment: segment.section ? -2 : -6 },
+    );
+    return true;
+  }
+
+  if (temporalScope === "current_mvp") {
+    addCandidate(
+      candidates,
+      matchedSegments,
+      segment,
+      "scope.inScope",
+      [subject],
+      "temporal_current_mvp",
+      "Matched an explicit current-MVP scope statement.",
+      { confidenceAdjustment: segment.section ? -2 : -6 },
+    );
+  }
+
+  return false;
 }
 
 function extractSectionCandidate(
@@ -268,7 +474,9 @@ function extractSectionCandidate(
         matchedSegments,
         segment,
         segment.section,
-        cleanItem(segment.text),
+        segment.section === "technical.deployment"
+          ? canonicalDeployment(segment.text)
+          : cleanItem(segment.text),
         "section_scalar",
         reasoning,
       );
@@ -354,6 +562,25 @@ function extractSectionCandidate(
           { inferred: !/mitigation|mitigasi|->/i.test(item) },
         );
       return;
+    case "technical.preferredStack":
+    case "quality.localization":
+    case "visual.visualKeywords":
+    case "visual.themes":
+    case "product.platforms":
+    case "technical.security":
+    case "technical.privacy":
+    case "scope.constraints":
+      for (const item of items)
+        addCandidate(
+          candidates,
+          matchedSegments,
+          segment,
+          segment.section,
+          [canonicalListItem(segment.section, item)],
+          "section_normalized_list",
+          reasoning,
+        );
+      return;
     default:
       for (const item of items)
         addCandidate(
@@ -373,6 +600,7 @@ function extractDictionaryCandidates(
   candidates: RawCandidate[],
   matchedSegments: Set<string>,
 ) {
+  const options = { confidenceAdjustment: segment.section ? 0 : -8 };
   for (const entry of findLexiconEntries(segment.text, TECH_TERMS)) {
     addCandidate(
       candidates,
@@ -382,6 +610,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_tech",
       `Matched the technology term “${entry.canonical}”.`,
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, LANGUAGE_TERMS)) {
@@ -393,6 +622,28 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_language",
       `Matched the language term “${entry.canonical}”.`,
+      options,
+    );
+  }
+  if (
+    !findLexiconEntries(segment.text, LANGUAGE_TERMS).some(
+      (entry) => entry.canonical === "Bahasa Indonesia",
+    ) &&
+    /\b(?:bahasa|bhasa)\b/.test(normalizeForMatching(segment.text)) &&
+    (segment.section === "quality.localization" ||
+      /\b(?:language|languages|zaban|localization|localisation)\b/.test(
+        normalizeForMatching(segment.text),
+      ))
+  ) {
+    addCandidate(
+      candidates,
+      matchedSegments,
+      segment,
+      "quality.localization",
+      ["Bahasa Indonesia"],
+      "dictionary_language_context",
+      "Normalized Bahasa to Bahasa Indonesia in an explicit language context.",
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, VISUAL_TERMS)) {
@@ -404,6 +655,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_visual",
       `Matched the visual-direction term “${entry.canonical}”.`,
+      options,
     );
   }
 
@@ -423,6 +675,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_theme",
       `Matched the theme term “${entry.canonical}”.`,
+      options,
     );
   }
 
@@ -435,6 +688,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_platform",
       `Matched the platform term “${entry.canonical}”.`,
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, INTEGRATION_TERMS)) {
@@ -446,6 +700,7 @@ function extractDictionaryCandidates(
       [makeIntegration(entry.canonical, segment.text)],
       "dictionary_integration",
       `Matched the integration term “${entry.canonical}”.`,
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, SECURITY_TERMS)) {
@@ -457,6 +712,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_security",
       `Matched the security requirement “${entry.canonical}”.`,
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, PRIVACY_TERMS)) {
@@ -468,6 +724,7 @@ function extractDictionaryCandidates(
       [entry.canonical],
       "dictionary_privacy",
       `Matched the privacy requirement “${entry.canonical}”.`,
+      options,
     );
   }
   for (const entry of findLexiconEntries(segment.text, DEPLOYMENT_TERMS)) {
@@ -479,6 +736,7 @@ function extractDictionaryCandidates(
       entry.canonical,
       "dictionary_deployment",
       `Matched the deployment target “${entry.canonical}”.`,
+      options,
     );
   }
 }
@@ -488,6 +746,7 @@ function extractImplicitCandidates(
   candidates: RawCandidate[],
   matchedSegments: Set<string>,
 ) {
+  const matchingText = normalizeForMatching(segment.text);
   const projectType = PROJECT_TYPE_TERMS.find((entry) =>
     entry.terms.some((term) => hasTerm(segment.text, term)),
   );
@@ -506,10 +765,11 @@ function extractImplicitCandidates(
 
   if (!segment.section) {
     const userMatch = segment.text.match(
-      /\b(?:for|untuk)\s+([^,.]+?)(?=\s+(?:to|with|that|who|agar|dengan|yang)\b|[,.]|$)/i,
+      /\b(?:for|untuk)\s+([^,.]+?)(?=\s+(?:to|with|that|who|agar|dengan|yang)\b|[,.]|$)|\b(users?|customers?|clients?)\s+ke\s+liye\b/i,
     );
-    if (userMatch?.[1] && userMatch[1].trim().split(/\s+/).length <= 10) {
-      const targetUser = makeTargetUser(userMatch[1]);
+    const explicitUserValue = userMatch?.[1] ?? userMatch?.[2];
+    if (explicitUserValue && explicitUserValue.trim().split(/\s+/).length <= 10) {
+      const targetUser = makeTargetUser(explicitUserValue);
       addCandidate(
         candidates,
         matchedSegments,
@@ -523,29 +783,131 @@ function extractImplicitCandidates(
     }
 
     const goalMatch = segment.text.match(
-      /\b(?:goal is|objective is|aims? to|bertujuan untuk|agar)\s+([^.!?]+)/i,
+      /\b(?:(?:mera|mery|hamara|humara)\s+)?(?:goal|maqsad)\s*(?:is|hai|adalah)?\s*[:\-]?\s*([^.!?]+)|\b(?:objective is|aims? to|bertujuan untuk|agar)\s+([^.!?]+)/i,
     );
-    if (goalMatch?.[1]) {
+    const goalValue = goalMatch?.[1] ?? goalMatch?.[2];
+    if (goalValue) {
       addCandidate(
         candidates,
         matchedSegments,
         segment,
         "business.goals",
-        [makeGoal(goalMatch[1])],
+        [makeGoal(goalValue)],
         "implicit_goal",
         "Matched an explicit goal phrase.",
-        { confidenceAdjustment: -4 },
+        { confidenceAdjustment: -8 },
+      );
+    }
+
+    const audienceMatch = matchingText.match(
+      /\b(?:users?|customers?|clients?)\s+(?:are|hain|honge|hoga)\s+([^.!?]+)|\b(?:users?|customers?|clients?)\s*[:\-]\s*([^.!?]+)|\bkis ke liye\s*[:\-]?\s*([^.!?]+)/,
+    );
+    const audienceValue = audienceMatch?.[1] ?? audienceMatch?.[2] ?? audienceMatch?.[3];
+    if (
+      audienceValue &&
+      audienceValue.trim().split(/\s+/).length <= 12 &&
+      !/\b(?:unknown|undecided|not sure|pata nahi)\b/.test(audienceValue)
+    ) {
+      const targetUser = makeTargetUser(audienceValue.replace(/\s+(?:hain|honge|hoga)$/i, ""));
+      addCandidate(
+        candidates,
+        matchedSegments,
+        segment,
+        "business.targetUsers",
+        [targetUser.value],
+        "sectionless_user",
+        "Matched an explicit sectionless audience statement.",
+        { inferred: targetUser.inferred, confidenceAdjustment: -8 },
+      );
+    }
+
+    const patternText = segment.text
+      .replace(/\bchahye\b/gi, "chahiye")
+      .replace(/\bho\s+ga\b/gi, "hoga");
+    const featureMatch = patternText.match(
+      /\b(?:features?|functionality|isme)\s*(?:mein|me|are|include|includes|will include|hoga|honge|hona chahiye|chahiye)?\s*[:\-]?\s*(.+)|\b(?:it|the (?:mvp|product|app|website|system))\s+(?:must|should|will)\s+include\s+(.+)/i,
+    );
+    const featureValue = featureMatch?.[1] ?? featureMatch?.[2];
+    if (featureValue) {
+      const cleanedFeatures = featureValue
+        .replace(/[.!?]+$/, "")
+        .replace(/\s+(?:hona chahiye|chahiye|honge|hoga|hai)$/i, "")
+        .trim();
+      for (const item of splitItems(cleanedFeatures)) {
+        addCandidate(
+          candidates,
+          matchedSegments,
+          segment,
+          "product.features",
+          [makeFeature(item)],
+          "sectionless_feature",
+          "Matched an explicit sectionless feature statement.",
+          { confidenceAdjustment: -8 },
+        );
+      }
+    }
+
+    const problemMatch = matchingText.match(
+      /\b(?:problem|issue|masla)\s*(?:is|hai|ye hai)?\s*[:\-]?\s*(.+)/,
+    );
+    if (
+      problemMatch?.[1] &&
+      !/\b(?:unknown|undecided|not sure|pata nahi)\b/.test(problemMatch[1])
+    ) {
+      addCandidate(
+        candidates,
+        matchedSegments,
+        segment,
+        "business.problem",
+        titleCaseStart(problemMatch[1]),
+        "sectionless_problem",
+        "Matched an explicit sectionless problem statement.",
+        { confidenceAdjustment: -8 },
+      );
+    }
+
+    const solutionMatch = matchingText.match(
+      /\b(?:solution|hal)\s*(?:is|hai|ye hai)?\s*[:\-]?\s*(.+)/,
+    );
+    if (solutionMatch?.[1]) {
+      addCandidate(
+        candidates,
+        matchedSegments,
+        segment,
+        "business.solution",
+        titleCaseStart(solutionMatch[1]),
+        "sectionless_solution",
+        "Matched an explicit sectionless solution statement.",
+        { confidenceAdjustment: -8 },
+      );
+    }
+
+    const riskMatch = matchingText.match(/\b(?:risk|risks|khatra)\s*(?:is|hai)?\s*[:\-]?\s*(.+)/);
+    if (riskMatch?.[1]) {
+      addCandidate(
+        candidates,
+        matchedSegments,
+        segment,
+        "execution.risks",
+        [makeRisk(riskMatch[1])],
+        "sectionless_risk",
+        "Matched an explicit sectionless risk statement.",
+        { inferred: !/mitigation|mitigasi|->/i.test(segment.text), confidenceAdjustment: -8 },
       );
     }
   }
 
-  if (/\b(?:must|must not|required|shall|cannot|harus|wajib|tidak boleh)\b/i.test(segment.text)) {
+  if (
+    /\b(?:must|required|shall|cannot|harus|wajib|zaroori|lazmi|laazmi|tidak boleh)\b/.test(
+      matchingText,
+    )
+  ) {
     addCandidate(
       candidates,
       matchedSegments,
       segment,
       "scope.constraints",
-      [titleCaseStart(segment.text)],
+      [preserveStatement(segment.text)],
       "modal_constraint",
       "Matched mandatory or prohibited language.",
       { confidenceAdjustment: -4 },
@@ -722,7 +1084,9 @@ function markCrossPathContradictions(
     (features.value as Array<{ name: string }>).map((feature) => normalizeComparison(feature.name)),
   );
   const overlapping = (exclusions.value as string[]).filter((item) =>
-    featureNames.has(normalizeComparison(item)),
+    featureNames.has(
+      normalizeComparison(item).replace(/^(?:deferred|future|later|undecided|out of scope)\s+/, ""),
+    ),
   );
   if (overlapping.length === 0) return;
 
@@ -745,9 +1109,18 @@ export function extractCanonicalUpdates(input: ExtractionRequest | unknown): Ext
   const matchedSegments = new Set<string>();
 
   for (const segment of segments) {
-    extractSectionCandidate(segment, candidates, matchedSegments);
-    extractDictionaryCandidates(segment, candidates, matchedSegments);
-    extractImplicitCandidates(segment, candidates, matchedSegments);
+    const suppressCurrentExtraction = extractScopeOrNegativeCandidate(
+      segment,
+      candidates,
+      matchedSegments,
+    );
+    if (!suppressCurrentExtraction) {
+      extractSectionCandidate(segment, candidates, matchedSegments);
+    }
+    if (!suppressCurrentExtraction && segment.section !== "scope.outOfScope") {
+      extractDictionaryCandidates(segment, candidates, matchedSegments);
+      extractImplicitCandidates(segment, candidates, matchedSegments);
+    }
   }
 
   const hasExplicitSectionCandidate = (fieldPath: ExtractableFieldPath, ruleId: string) =>

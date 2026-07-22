@@ -28,9 +28,11 @@ OXZI maintains one structured project truth and renders it into six living files
 5. OXZI skips the interview or asks only high-impact missing questions.
 6. User reviews the interpreted project summary and assumptions.
 7. OXZI generates the six living files.
-8. User approves, edits, or exports the package.
-9. A coding agent reads the files and implements one scoped unit at a time.
-10. Progress, decisions, and architecture changes remain synchronized.
+8. OXZI derives a typed Knowledge Graph for impact analysis, context selection, and visual views.
+9. OXZI compiles one normalized, reviewable Task Card with the smallest sufficient task context.
+10. User approves, edits, copies, or exports the package and prompt.
+11. A coding agent implements one scoped unit; OXZI itself does not execute project code.
+12. Review evidence gates repair or next-task recommendations while progress and decisions remain synchronized.
 
 ## MVP Capabilities
 
@@ -59,6 +61,14 @@ OXZI maintains one structured project truth and renders it into six living files
 - Edit and regenerate outputs
 - Version structured project state
 
+### Project Intelligence and Agent Handoff
+
+- Typed, evidence-backed Knowledge Graph derived from canonical state
+- Quality-gated task-specific context packages
+- Normalized AI Task Cards rendered in one selected prompt style
+- Review/Audit Analyzer with repair-first blocker handling
+- Visual Master Architecture views derived from the same graph
+
 ### Export
 
 - Markdown folder
@@ -80,7 +90,9 @@ OXZI maintains one structured project truth and renders it into six living files
 - Billing and subscription enforcement
 - Direct GitHub repository creation
 - Automatic deployment
-- Continuous code-versus-spec auditing
+- Autonomous continuous code-versus-spec auditing
+- Connected-agent delivery without explicit approval
+- Prompt-performance telemetry during the deterministic foundation phases
 
 ## Success Criteria
 
@@ -90,6 +102,13 @@ OXZI maintains one structured project truth and renders it into six living files
 4. Generated files contain no unresolved placeholders when the project is marked approved.
 5. A fresh coding agent can read the package and correctly identify project goal, stack, current phase, next task, and protected decisions.
 6. The same canonical project state can regenerate all six files consistently.
+7. Task context preserves 100% of relevant mandatory context, dependencies, and blockers in every token mode.
+8. Failed checks or security findings produce repair or stop recommendations before unrelated roadmap work.
+9. Prompt styles preserve one normalized Task Card meaning and only the selected style is generated initially.
+
+## Prompt Performance and Privacy Direction
+
+A future Prompt Performance Dataset may relate user goal, normalized Task Card, rendered style, target agent, token estimate, output, audit findings, rework, acceptance, and user feedback. Analytics should prefer derived metrics over raw project or prompt content. Users must be able to keep all performance data private, and private data cannot be reused for global model training without explicit consent. Optimization cannot alter approved requirements merely to improve token metrics.
 
 ## Validation Projects
 

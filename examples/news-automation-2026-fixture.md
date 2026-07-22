@@ -29,3 +29,18 @@ quality:
 ```
 
 This scenario exercises automation classification, source licensing, scheduling, citations, fact checks, duplicate detection, mandatory editorial approval, idempotent publishing, monitoring, and cloud/local provider routing without replacing the executable fixture.
+
+## Deterministic Extraction Variant
+
+The extraction regression suite also preserves the scenario's scope and safety rules from mixed prose:
+
+```text
+News automation system banana hai for editors. Maqsad handling time reduce krna hai without losing source traceability.
+Isme scheduled ingestion, duplicate detection, cited drafts aur editorial approval hona chahiye.
+Integrations: RSS feeds, News APIs, Publisher CMS
+Security: RBAC, audit logging, human approval zaroori
+Future: automatic social distribution
+Must not publish without editor approval.
+```
+
+The future distribution capability must not become a current feature, and the publication prohibition remains a constraint rather than a guessed implementation.

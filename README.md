@@ -106,7 +106,7 @@ const result = extractCanonicalUpdates({
 });
 ```
 
-The engine accepts plain text, Master Prompts, uploaded notes, and previous AI conversations. It emits only Zod-validated canonical update proposals with confidence, evidence, source metadata, rule explanations, and explicit/inferred status. It merges exact duplicates, reports contradictions, and marks every proposal targeting an approved field as blocked. It does not mutate state or call an LLM.
+The engine accepts plain text, Master Prompts, uploaded notes, and previous AI conversations. It emits only Zod-validated canonical update proposals with confidence, evidence, source metadata, rule explanations, and explicit/inferred status. Reviewed rules cover English, Bahasa Indonesia, Roman Urdu, mixed-language and sectionless descriptions, common aliases, negative constraints, and current/deferred/out-of-scope/undecided scope markers. It merges exact duplicates, reports contradictions, redacts credential-shaped retained content, and marks every proposal targeting an approved field as blocked. It does not mutate state or call an LLM.
 
 See `specs/04-deterministic-extraction-engine.md` for supported fields, confidence rules, and current vocabulary limitations.
 
@@ -188,9 +188,14 @@ Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance and update `context/06-
 - `specs/02-discovery-engine.md` — minimal interview and skip logic
 - `specs/03-six-file-rendering-contract.md` — deterministic generation rules
 - `specs/04-deterministic-extraction-engine.md` — rule-based intake normalization and conflict policy
+- `specs/05-knowledge-graph-engine.md` — future derived graph and traversal contract
+- `specs/06-context-compiler.md` — future Token-Saving Context Compiler contract
+- `specs/07-ai-task-card-prompt-compiler.md` — future normalized Task Card and style-renderer contract
+- `specs/08-review-audit-analyzer.md` — future evidence-backed next-action classification
+- `specs/09-visual-master-architecture-generator.md` — future graph-derived visual view contract
 - `examples/` — Oxzire 3D Website and News Automation validation fixtures
 - `CODEX_LOCAL_SETUP.md` — local VS Code and Codex instructions
 
 ## Project Status
 
-Phases 1 and 2 are complete. Phase 3 canonical-domain implementation is in progress; see `context/06-progress-tracker.md` for the current implementation state.
+Phases 1 and 2 are complete. Phase 3 deterministic intelligence is in progress; future architecture capabilities are specified but not implemented. See `context/06-progress-tracker.md` for the current implementation state.

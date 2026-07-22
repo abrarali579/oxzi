@@ -26,6 +26,14 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 8. Do not silently modify approved architecture or product scope.
 9. Keep the user interaction short; prefer selectable answers over typing.
 10. Every generated requirement must be traceable to user input, imported material, an approved assumption, or a documented default.
+11. Project quality, safety, and correctness always take priority over token reduction.
+12. Optimize for the smallest sufficient context, never the smallest possible context.
+13. Never remove critical constraints, security rules, blockers, accepted decisions, direct dependencies, required tests, or relevant acceptance criteria merely to save tokens.
+14. Treat Knowledge Graphs, context packs, task cards, prompts, visual diagrams, and Markdown as derived views that cannot silently mutate canonical state.
+15. Generate only the user's selected or default prompt style initially; alternate styles are generated only when requested.
+16. Let users review, regenerate, edit requirements, copy, or explicitly approve a prompt before any future connected-agent delivery.
+17. OXZI does not execute project code; connected-agent delivery is optional, future, and governed by explicit approval policy.
+18. Audit failures, security findings, and blockers must be repaired before unrelated feature work is recommended.
 
 ## Agent Entry Point
 
@@ -41,4 +49,4 @@ All coding agents use this reading order:
 
 ## Current Build Boundary
 
-Phase 1 defines the product contracts and Phase 2 established the application/tooling foundation. Phase 3 is implementing validated canonical, discovery, and deterministic extraction domains before persistence, provider integration, or product UI workflows.
+Phase 1 defines the original product contracts and Phase 2 established the application/tooling foundation. Phase 3 implements deterministic intelligence: the canonical, discovery, extraction, and derived Knowledge Graph foundations. Later phases add context outputs, agent workflow, product experience, SaaS infrastructure, and launch validation in that order.

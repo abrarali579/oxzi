@@ -31,6 +31,8 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 
 - Never ask for information already present in the prompt, imported files, context, or specs.
 - Preserve the minimal-interview and Master Prompt skip behavior.
+- Put project quality, safety, and correctness ahead of token reduction; optimize for the smallest sufficient context.
+- Treat graphs, context packs, task cards, prompts, diagrams, and Markdown as derived views that cannot silently mutate canonical state.
 - Do not silently change approved product scope, architecture, security boundaries, or visual direction.
 - Work in small, verifiable implementation units.
 - Before editing, state the intended unit and affected files.
@@ -58,7 +60,7 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 
 ## Current Boundary
 
-Phases 1 and 2 are complete and Phase 3 domain foundations are in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for the current unit. Do not jump to later SaaS features unless the user explicitly requests them.
+Phases 1 and 2 are complete and Phase 3 deterministic intelligence is in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for implemented versus specified work. Do not implement later compilers, product UI, or SaaS infrastructure unless the user explicitly requests that unit.
 
 ## Completion Standard
 

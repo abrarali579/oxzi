@@ -19,6 +19,7 @@ Before implementation or architectural work:
 - Do not combine UI, persistence, provider integration, and background processing unless the feature requires them end to end.
 - Split work when the change cannot be tested clearly.
 - Do not rewrite unrelated files.
+- Repair failed checks, security findings, blockers, and incomplete acceptance criteria before unrelated feature work.
 
 ## Requirement Priority
 
@@ -57,6 +58,17 @@ Before changing an approved boundary, technology, data model, or invariant:
 - Every renderer must use shared normalized data.
 - Missing optional content should be omitted cleanly, not left as `[placeholder]`.
 - Critical missing content must block approval rather than produce vague filler.
+- Treat Knowledge Graphs, context packages, Task Cards, prompts, audit recommendations, visual diagrams, and Markdown as derived outputs or proposals.
+- Generate only the selected prompt style initially; default to Agent Optimized with Balanced Quality context and manual review.
+- Never compress away unique requirements, security boundaries, blockers, decisions, direct dependencies, required tests, acceptance criteria, or ambiguity warnings.
+
+## Review and Handoff
+
+- Verify agent claims against the Review Engine's changed files, validation results, architecture impact, diff metadata, and security findings.
+- Classify the next action as accept, repair, clarify, focused re-audit, proceed, or stop.
+- Changes outside the approved unit require explicit review.
+- The analyzer recommends; the user approves the next Task Card or any future connected-agent send.
+- OXZI does not execute project code.
 
 ## Verification Before Completing a Unit
 

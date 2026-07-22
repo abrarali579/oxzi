@@ -8,6 +8,8 @@
 - Do not mix AI provider code with product workflow logic.
 - Do not trust AI-generated JSON until schema validation passes.
 - Prefer deterministic renderers for Markdown output.
+- Keep token optimization behind mandatory quality and sufficiency gates.
+- Model graphs, context packages, Task Cards, prompt styles, audit findings, and visual views as derived data or validated proposals.
 - Keep modules small enough to test independently.
 - Use explicit error types and user-safe error messages.
 
@@ -43,6 +45,17 @@
 - User-confirmed values outrank inferred values and defaults.
 - Approved values require an explicit conflict workflow before replacement.
 - Markdown is rendered from state; Markdown edits must be parsed into proposed state changes rather than silently becoming truth.
+- Knowledge Graph, context packages, Task Cards, prompts, review recommendations, and visual edits follow the same no-silent-mutation rule.
+
+## Derived Intelligence
+
+- Graph identifiers, ordering, traversal results, context selection, Task Card compilation, and style rendering must be deterministic for identical versioned inputs.
+- Every graph node and relationship retains source/evidence references, confidence, and version/lifecycle metadata.
+- Context compilation must prove complete mandatory-context, direct-dependency, and blocker coverage before reporting sufficiency.
+- Token estimates must be labeled estimates unless produced by the selected target tokenizer.
+- Prompt renderers consume a validated normalized Task Card and cannot introduce new requirements.
+- Audit analysis must inspect validation evidence and changed-file scope rather than trusting completion prose.
+- Low-confidence graph relationships cannot silently authorize destructive or high-impact changes.
 
 ## Database
 
@@ -69,6 +82,7 @@ Required layers:
 - Integration tests for project creation and authorization
 - End-to-end tests for zero-question and minimal-question project flows
 - Golden-file tests for generated Markdown
+- Contract tests for graph projection, context sufficiency, Task Card render equivalence, audit classification, and graph-derived visual view models as those units are implemented
 
 ## Critical Test Cases
 
@@ -78,6 +92,9 @@ Required layers:
 4. A low-confidence noncritical field does not block generation.
 5. An approved critical field cannot be overwritten silently.
 6. Exported six files remain internally consistent.
+7. Every context mode preserves mandatory constraints, dependencies, blockers, tests, and acceptance criteria.
+8. Failed review checks yield repair or stop rather than unrelated next work.
+9. Prompt-style renderers preserve identical normalized Task Card meaning.
 
 ## File Organization
 

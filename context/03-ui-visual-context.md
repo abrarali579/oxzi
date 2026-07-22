@@ -43,7 +43,11 @@ Avoid:
 - Project Bible workspace
 - Visual direction view
 - Architecture view
+- Knowledge Graph and impact view
+- Visual Master Architecture workspace
 - Decisions and assumptions view
+- Task Card review and prompt-style selector
+- Review findings and next-action approval
 - Export dialog
 - AI provider settings
 
@@ -94,6 +98,23 @@ Mobile layout:
 - Single active panel
 - Bottom sheet for navigation and evidence
 - No forced desktop-style split view
+
+## Future Graph and Architecture Workspace
+
+- Switch among executive, capability, system, data-flow, user-flow, agent-workflow, roadmap, dependency, security, and status views.
+- Filter one shared graph by audience and detail level instead of editing a separate diagram dataset.
+- Reveal canonical or repository evidence, confidence, lifecycle/version, and approval state for every selected node or relationship.
+- Show direct and transitive impact before a feature or decision change is proposed.
+- Treat visual edits as reviewable change proposals, never immediate source-of-truth mutation.
+
+## Future Task Card Review
+
+- Default to Agent Optimized style, Balanced Quality context, and manual approval.
+- Generate only the selected style; explain Plain English readability and token trade-offs honestly.
+- Allow style regeneration without changing the normalized Task Card.
+- Disable Compact Command when risk or context complexity is too high.
+- Show included mandatory context, omissions with reasons, token estimates, sufficiency status, risks, validation commands, and protected files.
+- Offer review, copy, edit-through-proposal, and explicit connected-agent approval actions; OXZI does not execute code itself.
 
 ## Initial Visual Direction
 
