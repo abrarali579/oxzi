@@ -2,6 +2,7 @@ import { stableJson, type JsonValue } from "../knowledge-graph";
 import { analyzeClarifications } from "./clarification";
 import { analyzeSpecificationConsistency } from "./consistency";
 import { evaluateConstitutionCompliance, resolveProjectConstitution } from "./constitution";
+import { evaluateSpecificationFreshness } from "./freshness";
 import { calculateSpecificationHealth, decideImplementationReadiness } from "./health";
 import { normalizeSpecification } from "./normalizer";
 import {
@@ -18,8 +19,12 @@ import {
 } from "./runtime-utils";
 import { validateSpecificationStructure } from "./structure";
 import { analyzeSpecificationTraceability } from "./traceability";
+import { analyzeSpecificationTestability } from "./testability";
 
 function semanticReportValue(report: Omit<GovernanceReport, "semanticFingerprint">): JsonValue {
+  const { evaluationTimestamp: _evaluationTimestamp, ...semanticNormalizedInput } =
+    report.normalization.normalizedInput;
+  void _evaluationTimestamp;
   return {
     id: report.id,
     specificationId: report.specificationId,
@@ -31,11 +36,17 @@ function semanticReportValue(report: Omit<GovernanceReport, "semanticFingerprint
     canonicalVersionId: report.canonicalVersionId,
     canonicalFingerprint: report.canonicalFingerprint,
     evaluatorVersions: report.evaluatorVersions,
+    normalization: {
+      ...report.normalization,
+      normalizedInput: semanticNormalizedInput,
+    },
     structuralFindings: report.structuralFindings,
     clarificationNeeds: report.clarificationNeeds,
     constitutionalResults: report.constitutionalResults,
     consistencyFindings: report.consistencyFindings,
     traceabilityFindings: report.traceabilityFindings,
+    testabilityFindings: report.testabilityFindings,
+    freshness: report.freshness,
     health: report.health,
     readiness: report.readiness,
     evidenceRefs: report.evidenceRefs,
@@ -45,9 +56,9 @@ function semanticReportValue(report: Omit<GovernanceReport, "semanticFingerprint
 
 export function evaluateSpecificationGovernance(input: unknown): GovernanceReport {
   const parsedInput = specificationGovernanceInputSchema.parse(input);
-  const constitution = resolveProjectConstitution(parsedInput);
   const normalization = normalizeSpecification(parsedInput);
   const normalizedInput: SpecificationGovernanceInput = normalization.normalizedInput;
+  const constitution = resolveProjectConstitution(normalizedInput);
   const compliance = evaluateConstitutionCompliance(normalizedInput, constitution);
   const structural = sortFindings([
     ...normalization.blockingErrors,
@@ -57,6 +68,8 @@ export function evaluateSpecificationGovernance(input: unknown): GovernanceRepor
   const clarifications = analyzeClarifications(normalizedInput);
   const consistency = analyzeSpecificationConsistency(normalizedInput, clarifications);
   const traceability = analyzeSpecificationTraceability(normalizedInput);
+  const testability = analyzeSpecificationTestability(normalizedInput);
+  const freshness = evaluateSpecificationFreshness(normalization, constitution);
   const health = calculateSpecificationHealth({
     normalization,
     constitution,
@@ -65,6 +78,8 @@ export function evaluateSpecificationGovernance(input: unknown): GovernanceRepor
     clarifications,
     consistency,
     traceability,
+    testability,
+    freshness,
   });
   const readiness = decideImplementationReadiness(normalization, constitution, health);
   const evidenceRefs = [
@@ -93,11 +108,14 @@ export function evaluateSpecificationGovernance(input: unknown): GovernanceRepor
     canonicalFingerprint: normalizedInput.revision.canonicalFingerprint,
     evaluatedAt: normalizedInput.evaluationTimestamp,
     evaluatorVersions: GOVERNANCE_EVALUATOR_VERSIONS,
+    normalization,
     structuralFindings: structural,
     clarificationNeeds: clarifications,
     constitutionalResults: compliance,
     consistencyFindings: consistency,
     traceabilityFindings: traceability,
+    testabilityFindings: testability,
+    freshness,
     health,
     readiness,
     evidenceRefs: [...new Set(evidenceRefs)].sort(),

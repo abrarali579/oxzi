@@ -1,4 +1,6 @@
 import { canonicalProjectFingerprint } from "../knowledge-graph";
+import { resolveProjectConstitution } from "./constitution";
+import { normalizeSpecification } from "./normalizer";
 import type {
   GovernanceFinding,
   GovernanceReport,
@@ -105,9 +107,11 @@ export function assessGovernanceReportFreshness(
   current: SpecificationGovernanceInput,
 ): { status: "current" | "stale"; reasons: string[] } {
   const reasons: string[] = [];
+  const normalization = normalizeSpecification(current);
+  const constitution = resolveProjectConstitution(normalization.normalizedInput);
   if (report.specificationVersion !== current.specification.version)
     reasons.push("specification_version_changed");
-  if (report.specificationFingerprint !== current.specification.fingerprint)
+  if (report.specificationFingerprint !== normalization.fingerprint)
     reasons.push("specification_fingerprint_changed");
   if (report.canonicalVersionId !== current.canonicalProject.metadata.version.id)
     reasons.push("canonical_version_changed");
@@ -115,5 +119,17 @@ export function assessGovernanceReportFreshness(
     reasons.push("canonical_fingerprint_changed");
   if (report.constitutionVersion !== current.constitutionVersion)
     reasons.push("constitution_version_changed");
+  if (report.constitutionFingerprint !== constitution.fingerprint)
+    reasons.push("constitution_fingerprint_changed");
+  if (
+    JSON.stringify(report.normalization.normalizedInput.revision.sourceFingerprints) !==
+    JSON.stringify(current.revision.sourceFingerprints)
+  )
+    reasons.push("source_fingerprints_changed");
+  if (
+    JSON.stringify(report.normalization.normalizedInput.revision.dependencyFingerprints) !==
+    JSON.stringify(current.revision.dependencyFingerprints)
+  )
+    reasons.push("dependency_fingerprints_changed");
   return { status: reasons.length === 0 ? "current" : "stale", reasons: reasons.sort() };
 }

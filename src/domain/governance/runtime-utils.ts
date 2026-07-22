@@ -15,6 +15,8 @@ export const GOVERNANCE_EVALUATOR_VERSIONS = {
   complianceEvaluator: "constitution-compliance-1.0.0",
   consistencyAnalyzer: "consistency-analyzer-1.0.0",
   traceabilityAnalyzer: "traceability-analyzer-1.0.0",
+  testabilityAnalyzer: "testability-analyzer-1.0.0",
+  freshnessEvaluator: "freshness-evaluator-1.0.0",
   healthCalculator: "spec-health-1.0.0",
   readinessPolicy: "implementation-readiness-1.0.0",
   reportCompiler: "governance-report-1.0.0",

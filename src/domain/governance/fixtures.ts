@@ -190,6 +190,12 @@ export const ambiguousRequirementSpecificationFixture = (() => {
   return finalize(value);
 })();
 
+export const ambiguousSuccessSpecificationFixture = (() => {
+  const value = clone(implementationReadySpecificationFixture);
+  value.requirements[0]!.successCondition = null;
+  return finalize(value);
+})();
+
 export const constitutionViolationSpecificationFixture = (() => {
   const value = clone(implementationReadySpecificationFixture);
   value.complianceEvidence[0]!.status = "fail";
@@ -232,6 +238,12 @@ export const contradictoryRequirementsSpecificationFixture = (() => {
   return finalize(value);
 })();
 
+export const includeExcludeConflictSpecificationFixture = (() => {
+  const value = clone(implementationReadySpecificationFixture);
+  value.specification.exclusions.push("Markdown export");
+  return finalize(value);
+})();
+
 export const brokenTraceabilitySpecificationFixture = (() => {
   const value = clone(implementationReadySpecificationFixture);
   value.traceabilityLinks.push({
@@ -261,6 +273,7 @@ export const unauthorizedExceptionSpecificationFixture = (() => {
     ruleId: constitutionRuleIdSchema.parse("constitution_rule_testing"),
     specificationId: value.specification.id,
     specificationVersion: value.specification.version,
+    scopeRefs: [value.specification.id],
     approvalStatus: "pending",
     approvedBy: null,
     approvedAt: null,
@@ -289,6 +302,12 @@ export const unverifiableAcceptanceSpecificationFixture = (() => {
   const value = clone(implementationReadySpecificationFixture);
   value.specification.acceptanceCriteria[0]!.statement = "The export works well";
   value.specification.acceptanceCriteria[0]!.verificationRefs = [];
+  return finalize(value);
+})();
+
+export const privacyValidationRequiredSpecificationFixture = (() => {
+  const value = clone(implementationReadySpecificationFixture);
+  value.requirements[0]!.privacyClassification = "restricted";
   return finalize(value);
 })();
 

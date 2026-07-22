@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { contentFingerprint } from "../knowledge-graph";
 import {
   acceptanceCriterionIdSchema,
+  constitutionExceptionSchema,
   constitutionRuleBindingSchema,
   governanceReportSchema,
   specificationGovernanceInputSchema,
@@ -10,12 +11,15 @@ import {
 } from ".";
 import {
   ambiguousRequirementSpecificationFixture,
+  ambiguousSuccessSpecificationFixture,
   brokenTraceabilitySpecificationFixture,
   constitutionViolationSpecificationFixture,
   contradictoryRequirementsSpecificationFixture,
   draftAmendmentSpecificationFixture,
   implementationReadySpecificationFixture,
+  includeExcludeConflictSpecificationFixture,
   nonBlockingWarningSpecificationFixture,
+  privacyValidationRequiredSpecificationFixture,
   staleSpecificationEvaluationFixture,
   structurallyIncompleteSpecificationFixture,
   unauthorizedExceptionSpecificationFixture,
@@ -26,10 +30,12 @@ import {
   analyzeClarifications,
   analyzeSpecificationConsistency,
   analyzeSpecificationTraceability,
+  analyzeSpecificationTestability,
   assessGovernanceReportFreshness,
   calculateNormalizedSpecificationFingerprint,
   evaluateConstitutionCompliance,
   evaluateSpecificationGovernance,
+  evaluateSpecificationFreshness,
   normalizeSpecification,
   resolveProjectConstitution,
   serializeGovernanceReportSemantic,
@@ -395,7 +401,7 @@ describe("Governance report", () => {
     const versions = evaluateSpecificationGovernance(
       implementationReadySpecificationFixture,
     ).evaluatorVersions;
-    expect(Object.values(versions)).toHaveLength(10);
+    expect(Object.values(versions)).toHaveLength(12);
     expect(Object.values(versions).every(Boolean)).toBe(true);
   });
 
@@ -413,5 +419,246 @@ describe("Governance report", () => {
         specificationVersion: 0,
       }),
     ).toThrow();
+  });
+});
+
+describe("Expanded governance runtime contract", () => {
+  it("42. deduplicates exact references", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.requirements[0]!.evidenceRefs.push(input.requirements[0]!.evidenceRefs[0]!);
+    expect(normalizeSpecification(input).normalizedInput.requirements[0]!.evidenceRefs).toEqual([
+      "evidence:export",
+    ]);
+  });
+
+  it("43. normalization does not mutate canonical input", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    const before = JSON.stringify(input.canonicalProject);
+    normalizeSpecification(input);
+    expect(JSON.stringify(input.canonicalProject)).toBe(before);
+  });
+
+  it("44. rejects missing specification identity", () => {
+    const input = clone(implementationReadySpecificationFixture) as unknown as Record<
+      string,
+      unknown
+    >;
+    input.specification = {
+      ...(input.specification as Record<string, unknown>),
+      id: "",
+    };
+    expect(() => normalizeSpecification(input)).toThrow();
+  });
+
+  it("45. accepts an authorized exception only for its exact scope", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.constitutionExceptions.push(
+      constitutionExceptionSchema.parse({
+        id: "constitution_exception_authorized_testing",
+        ruleId: "constitution_rule_testing",
+        specificationId: input.specification.id,
+        specificationVersion: input.specification.version,
+        scopeRefs: [input.specification.id],
+        approvalStatus: "approved",
+        approvedBy: "project-owner",
+        approvedAt: "2026-07-23T00:00:00.000Z",
+        justification: "A reviewed equivalent validation supplies the same evidence.",
+        evidenceRefs: ["evidence:approved-exception"],
+        fingerprint: contentFingerprint({ exception: "authorized-testing" }),
+      }),
+    );
+    expect(resolveProjectConstitution(input).appliedExceptionIds).toEqual([
+      "constitution_exception_authorized_testing",
+    ]);
+  });
+
+  it("46. does not treat missing Constitution context as passing", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.constitutionRules = [];
+    input.complianceEvidence = [];
+    expect(evaluateSpecificationGovernance(input).readiness.decision).toBe("not_ready");
+  });
+
+  it("47. generates clarification questions deterministically", () => {
+    expect(analyzeClarifications(ambiguousSuccessSpecificationFixture)).toEqual(
+      analyzeClarifications(clone(ambiguousSuccessSpecificationFixture)),
+    );
+  });
+
+  it("48. detects include and exclude conflicts", () => {
+    expect(
+      analyzeSpecificationConsistency(includeExcludeConflictSpecificationFixture, []).some(
+        (finding) => finding.ruleId === "consistency.included_and_excluded",
+      ),
+    ).toBe(true);
+  });
+
+  it("49. detects incompatible lifecycle and approval states", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.revision.lifecycle = "implementation_ready";
+    input.specification.approvalStatus = "pending";
+    expect(
+      validateSpecificationStructure(refingerprint(input)).some(
+        (finding) => finding.ruleId === "structure.approval_state",
+      ),
+    ).toBe(true);
+  });
+
+  it("50. reports stale traceability references", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.traceabilityLinks[0]!.freshness = "stale";
+    expect(
+      analyzeSpecificationTraceability(input).some(
+        (finding) => finding.ruleId === "traceability.superseded_artifact_reference",
+      ),
+    ).toBe(true);
+  });
+
+  it("51. makes stale artifact references blocking", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.traceabilityLinks[0]!.freshness = "stale";
+    expect(
+      analyzeSpecificationTraceability(input).some((finding) => finding.severity === "blocking"),
+    ).toBe(true);
+  });
+
+  it("52. accepts an observable criterion", () => {
+    expect(analyzeSpecificationTestability(implementationReadySpecificationFixture)).toEqual([]);
+  });
+
+  it("53. rejects a subjective criterion", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.specification.acceptanceCriteria[0]!.statement = "The export works well";
+    expect(
+      analyzeSpecificationTestability(input).some(
+        (finding) => finding.ruleId === "testability.observable_result",
+      ),
+    ).toBe(true);
+  });
+
+  it("54. rejects a criterion that only restates its requirement", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.specification.acceptanceCriteria[0]!.statement = input.requirements[0]!.statement;
+    expect(
+      analyzeSpecificationTestability(input).some(
+        (finding) => finding.ruleId === "testability.requirement_restatement",
+      ),
+    ).toBe(true);
+  });
+
+  it("55. rejects a criterion without an expected result", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.specification.acceptanceCriteria[0]!.statement = "Validation documentation";
+    expect(
+      analyzeSpecificationTestability(input).some(
+        (finding) => finding.ruleId === "testability.expected_result",
+      ),
+    ).toBe(true);
+  });
+
+  it("56. requires privacy validation for restricted data", () => {
+    expect(
+      analyzeSpecificationTestability(privacyValidationRequiredSpecificationFixture).some(
+        (finding) => finding.ruleId === "testability.security_privacy_validation",
+      ),
+    ).toBe(true);
+  });
+
+  it("57. preserves current status for unchanged authoritative inputs", () => {
+    const normalization = normalizeSpecification(implementationReadySpecificationFixture);
+    expect(
+      evaluateSpecificationFreshness(
+        normalization,
+        resolveProjectConstitution(normalization.normalizedInput),
+      ).status,
+    ).toBe("current");
+  });
+
+  it("58. invalidates a report after a Constitution change", () => {
+    const report = evaluateSpecificationGovernance(implementationReadySpecificationFixture);
+    const changed = clone(implementationReadySpecificationFixture);
+    changed.constitutionRules[0]!.rule.title = "Updated verification rule";
+    changed.constitutionRules[0]!.rule.fingerprint = contentFingerprint({ rule: "testing-v2" });
+    expect(assessGovernanceReportFreshness(report, changed).reasons).toContain(
+      "constitution_fingerprint_changed",
+    );
+  });
+
+  it("59. includes normalized, testability, and freshness results", () => {
+    const report = evaluateSpecificationGovernance(implementationReadySpecificationFixture);
+    expect(report.normalization.fingerprint).toBe(report.specificationFingerprint);
+    expect(report.testabilityFindings).toEqual([]);
+    expect(report.freshness.status).toBe("current");
+  });
+
+  it("60. records exact input fingerprints in readiness", () => {
+    const report = evaluateSpecificationGovernance(implementationReadySpecificationFixture);
+    expect(report.readiness.inputFingerprints).toEqual(report.freshness.inputFingerprints);
+  });
+
+  it("61. exposes unweighted health dimensions with evaluator versions", () => {
+    const dimensions = evaluateSpecificationGovernance(implementationReadySpecificationFixture)
+      .health.dimensions;
+    expect(dimensions.every((dimension) => dimension.evaluatorVersion.length > 0)).toBe(true);
+    expect(dimensions.every((dimension) => !("weight" in dimension))).toBe(true);
+  });
+
+  it("62. prevents final readiness when approval is missing", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.revision.lifecycle = "review";
+    input.specification.approvalStatus = "pending";
+    expect(evaluateSpecificationGovernance(refingerprint(input)).readiness.decision).not.toBe(
+      "readiness_recommended",
+    );
+  });
+
+  it("63. rejects a prohibited lifecycle transition", () => {
+    const previous = clone(implementationReadySpecificationFixture);
+    const next = clone(previous);
+    next.specification.version = 2;
+    next.revision.lifecycle = "completed";
+    next.revision.parentSpecificationVersion = previous.specification.version;
+    next.revision.parentSpecificationFingerprint = previous.specification.fingerprint;
+    next.revision.amendmentReason = "Skip required lifecycle gates";
+    expect(
+      validateSpecificationAmendment(previous, normalizeSpecification(refingerprint(next))).some(
+        (finding) => finding.ruleId === "controlled_living.lifecycle_transition",
+      ),
+    ).toBe(true);
+  });
+
+  it("64. exposes unknown Constitution applicability", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.constitutionRules[0]!.rule.applicability = ["unknown"];
+    expect(
+      resolveProjectConstitution(input).findings.some(
+        (finding) => finding.ruleId === "constitution.applicability_unknown",
+      ),
+    ).toBe(true);
+  });
+
+  it("65. does not carry an exception to a new specification version", () => {
+    const input = clone(implementationReadySpecificationFixture);
+    input.constitutionExceptions.push(
+      constitutionExceptionSchema.parse({
+        id: "constitution_exception_version_one",
+        ruleId: "constitution_rule_testing",
+        specificationId: input.specification.id,
+        specificationVersion: 1,
+        scopeRefs: [input.specification.id],
+        approvalStatus: "approved",
+        approvedBy: "project-owner",
+        approvedAt: "2026-07-23T00:00:00.000Z",
+        justification: "Version-one-only reviewed exception.",
+        evidenceRefs: ["evidence:version-one-exception"],
+        fingerprint: contentFingerprint({ exception: "version-one" }),
+      }),
+    );
+    input.specification.version = 2;
+    input.revision.parentSpecificationVersion = 1;
+    input.revision.parentSpecificationFingerprint =
+      implementationReadySpecificationFixture.specification.fingerprint;
+    input.revision.amendmentReason = "Create version two";
+    expect(resolveProjectConstitution(refingerprint(input)).appliedExceptionIds).toEqual([]);
   });
 });

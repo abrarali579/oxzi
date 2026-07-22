@@ -6,6 +6,8 @@ export * from "./structure";
 export * from "./clarification";
 export * from "./consistency";
 export * from "./traceability";
+export * from "./testability";
+export * from "./freshness";
 export * from "./health";
 export * from "./controlled-living";
 export * from "./evaluate";

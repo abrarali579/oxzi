@@ -27,7 +27,7 @@ The canonical structured project state is the sole source of truth. Markdown, th
 - `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
 - `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
 - `domain/knowledge-graph/` — implemented temporal typed projection, Episodes, indexes, traversal/path, impact, task subgraphs, integrity, serialization, and fingerprints
-- `domain/governance/` — implemented deterministic Specification Governance runtime: normalization, Constitution resolution/compliance, structure, clarification, consistency, traceability, categorical health, readiness recommendation, controlled-living checks, reporting, and fixtures
+- `domain/governance/` — implemented deterministic Specification Governance runtime: normalization, Constitution resolution/compliance, structure, clarification, consistency, lifecycle-aware traceability, testability, temporal freshness, categorical health, readiness recommendation, controlled-living checks, normalized reporting, and fixtures
 - `domain/workflow/` — implemented policy/skill/activation/escalation schemas only
 - `domain/execution/` — implemented Task Card, Passport, profile, status, event, artifact, receipt, and Token Ledger schemas only
 - `domain/evaluation/` — implemented assertion, suite/scenario, trust, certification, dataset, optimization, renderer, and release schemas; runtime deferred

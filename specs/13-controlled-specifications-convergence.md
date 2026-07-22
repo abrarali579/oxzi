@@ -50,7 +50,7 @@ Change-proposal statuses are `proposed`, `awaiting_review`, `accepted`, `rejecte
 
 Every change records initiator, reason, prior/new version, affected graph IDs, evidence, approval, and invalidated artifacts. Historical versions remain immutable and readable.
 
-The implemented governance foundation validates approved-version immutability, requires amendments to create a new version with parent fingerprint and amendment reason, validates lifecycle transitions, and detects stale governance reports after authoritative version changes. It does not persist versions, accept proposals, generate plans, or perform convergence analysis.
+The implemented governance foundation validates approved-version immutability, requires amendments to create a new version with parent fingerprint and amendment reason, validates lifecycle transitions, prevents version-specific exceptions from carrying forward, and detects stale governance reports after Specification, Constitution, canonical, source, or dependency fingerprint changes. It does not persist versions, accept proposals, generate plans, or perform convergence analysis.
 
 ## Spec-to-Code Convergence Engine
 

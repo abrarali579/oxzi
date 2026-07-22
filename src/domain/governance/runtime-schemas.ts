@@ -53,6 +53,8 @@ export const governanceEvaluatorVersionsSchema = z
     complianceEvaluator: nonempty,
     consistencyAnalyzer: nonempty,
     traceabilityAnalyzer: nonempty,
+    testabilityAnalyzer: nonempty,
+    freshnessEvaluator: nonempty,
     healthCalculator: nonempty,
     readinessPolicy: nonempty,
     reportCompiler: nonempty,
@@ -138,6 +140,7 @@ export const constitutionExceptionSchema = z
     ruleId: constitutionRuleIdSchema,
     specificationId: specificationIdSchema,
     specificationVersion: z.number().int().positive(),
+    scopeRefs: refs.min(1),
     approvalStatus: approvalStatusSchema,
     approvedBy: nonempty.nullable(),
     approvedAt: timestampSchema.nullable(),
@@ -243,6 +246,7 @@ export const governanceFindingSchema = z
       "constitution",
       "consistency",
       "traceability",
+      "testability",
       "freshness",
       "controlled_living",
     ]),
@@ -327,6 +331,27 @@ export const clarificationNeedSchema = z
   })
   .strict();
 
+export const freshnessEvaluationSchema = z
+  .object({
+    status: z.enum(["current", "stale", "unknown"]),
+    specificationVersion: z.number().int().positive(),
+    constitutionVersion: nonempty,
+    canonicalVersionId: versionIdSchema,
+    inputFingerprints: z
+      .object({
+        specification: contentFingerprintSchema,
+        constitution: contentFingerprintSchema,
+        canonical: contentFingerprintSchema,
+      })
+      .strict(),
+    passedCheckIds: refs,
+    failedCheckIds: refs,
+    unknownCheckIds: refs,
+    findings: z.array(governanceFindingSchema),
+    evaluatorVersion: nonempty,
+  })
+  .strict();
+
 export const healthDimensionSchema = z
   .object({
     dimension: z.enum([
@@ -345,6 +370,7 @@ export const healthDimensionSchema = z
     failedCheckIds: refs,
     unknownCheckIds: refs,
     blockingFindingIds: z.array(governanceFindingIdSchema),
+    evaluatorVersion: nonempty,
   })
   .strict();
 
@@ -367,6 +393,7 @@ export const governanceHealthResultSchema = z
       "constitution_blocked",
       "inconsistent",
       "structurally_incomplete",
+      "untestable",
       "review_required",
       "implementation_ready",
       "stale",
@@ -383,10 +410,14 @@ export const governanceHealthResultSchema = z
 export const implementationReadinessDecisionSchema = z
   .object({
     decision: z.enum(["readiness_recommended", "not_ready", "human_review_required", "stale"]),
+    readinessClass: governanceHealthResultSchema.shape.readinessClass,
     blockingReasons: refs,
+    recommendations: refs,
     governingPolicyVersion: nonempty,
     evaluatedSpecificationId: specificationIdSchema,
     evaluatedSpecificationVersion: z.number().int().positive(),
+    constitutionVersion: nonempty,
+    evaluatorVersions: governanceEvaluatorVersionsSchema,
     inputFingerprints: z
       .object({
         specification: contentFingerprintSchema,
@@ -412,11 +443,14 @@ export const governanceReportSchema = z
     canonicalFingerprint: contentFingerprintSchema,
     evaluatedAt: timestampSchema,
     evaluatorVersions: governanceEvaluatorVersionsSchema,
+    normalization: normalizationResultSchema,
     structuralFindings: z.array(governanceFindingSchema),
     clarificationNeeds: z.array(clarificationNeedSchema),
     constitutionalResults: z.array(constitutionComplianceResultSchema),
     consistencyFindings: z.array(governanceFindingSchema),
     traceabilityFindings: z.array(governanceFindingSchema),
+    testabilityFindings: z.array(governanceFindingSchema),
+    freshness: freshnessEvaluationSchema,
     health: governanceHealthResultSchema,
     readiness: implementationReadinessDecisionSchema,
     evidenceRefs: refs,
@@ -435,6 +469,7 @@ export type NormalizationResult = z.infer<typeof normalizationResultSchema>;
 export type ResolvedConstitution = z.infer<typeof resolvedConstitutionSchema>;
 export type ConstitutionComplianceResult = z.infer<typeof constitutionComplianceResultSchema>;
 export type ClarificationNeed = z.infer<typeof clarificationNeedSchema>;
+export type FreshnessEvaluation = z.infer<typeof freshnessEvaluationSchema>;
 export type GovernanceHealthResult = z.infer<typeof governanceHealthResultSchema>;
 export type ImplementationReadinessDecision = z.infer<typeof implementationReadinessDecisionSchema>;
 export type GovernanceReport = z.infer<typeof governanceReportSchema>;

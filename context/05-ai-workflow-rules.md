@@ -60,6 +60,7 @@ Implementation discoveries follow the same controlled path as reverse proposals.
 - Compile and cite applicable Project Constitution rules before planning or execution packaging.
 - Treat Specification Governance readiness as a deterministic recommendation only. Do not plan until all blocking structural, clarification, Constitution, consistency, traceability, testability, approval, and freshness gates pass and the configured approval boundary authorizes progression.
 - Never mutate an approved Specification in place; create a linked amendment version with an explicit reason and re-evaluate stale downstream reports.
+- Treat testability and freshness as independent blocking evidence: subjective or unverifiable mandatory criteria, stale authoritative fingerprints, unknown mandatory Constitution applicability, and version-mismatched exceptions cannot be waived by aggregate health.
 - Run deterministic Specification Health checks before creating a Technical Plan.
 - Plan work as independently verifiable slices with explicit prerequisites, acceptance criteria, validation, and protected boundaries.
 - Select an explainable Workflow Policy from task type, risk, evidence, health, and target capabilities.

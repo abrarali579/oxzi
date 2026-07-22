@@ -45,7 +45,7 @@ Given a canonical project version, compilation must:
 5. emit canonical version, compiler version, and projection fingerprint; and
 6. reject an execution-ready result if a blocking rule is conflicted or unverifiable.
 
-The implemented resolver additionally detects same-policy authority conflicts, validates version-specific approved exceptions, exposes unknown mandatory evidence, and fingerprints the exact canonical version, Constitution version, applicable rules, and exceptions used. Its readiness output is a recommendation for an authorized workflow or human; it is never automatic approval.
+The implemented resolver additionally detects same-policy authority conflicts, preserves unknown applicability, validates rule-, scope-, and version-specific approved exceptions, exposes unknown mandatory evidence, and fingerprints the exact canonical version, Constitution version, applicable rules, and exceptions used. Exceptions never transfer automatically to an amendment. Its readiness output is a recommendation for an authorized workflow or human; it is never automatic approval.
 
 Consumers query by rule ID, category, severity, lifecycle phase, graph node, specification, plan, task, or artifact. Query results preserve source, evidence, approval, and freshness metadata.
 

@@ -231,7 +231,7 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 **Decision:** A future canonical-schema version stores approved constitutional rules with stable IDs, evidence, applicability, severity, approval, version, and supersession metadata. Until that migration, the deterministic runtime resolves an explicit, versioned snapshot of those records beside canonical state. The Project Constitution remains a read-only projection, not a competing source of truth.
 
-**Consequences:** ADRs continue to explain rationale while the Constitution supplies queryable execution constraints. Downstream artifacts cite its exact version/fingerprint. The runtime can block or recommend readiness from the supplied snapshot, but it cannot persist rules, mutate canonical truth, approve a Specification, or authorize implementation; canonical storage migration remains deferred.
+**Consequences:** ADRs continue to explain rationale while the Constitution supplies queryable execution constraints. Downstream artifacts cite its exact version/fingerprint. Approved exceptions require exact rule, Specification version, and scope identity and never transfer automatically. Unknown applicability or mandatory evidence blocks readiness. The runtime cannot persist rules, mutate canonical truth, approve a Specification, or authorize implementation; canonical storage migration remains deferred.
 
 ## ADR-027 — Specification, Technical Plan, and Task Separation
 
@@ -239,7 +239,7 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 
 **Decision:** Specifications own approved behavior and acceptance criteria, Technical Plans own implementation design and slice structure, and Task Cards own one bounded execution unit. Each is a separately versioned normalized artifact with explicit parent references.
 
-**Consequences:** A Task Card may narrow but cannot broaden its parents. Prompt rendering cannot recompute planning or requirement meaning. The implemented categorical health gate exposes structural, clarification, constitutional, consistency, traceability, testability, approval, and freshness results without hidden weighting; planning and Task Card compilation remain deferred.
+**Consequences:** A Task Card may narrow but cannot broaden its parents. Prompt rendering cannot recompute planning or requirement meaning. The implemented categorical health gate exposes structural, clarification, constitutional, consistency, traceability, testability, approval, and freshness results without hidden weighting. Standalone deterministic testability and freshness analyzers feed the normalized Governance Report; planning and Task Card compilation remain deferred.
 
 ## ADR-028 — Controlled Living Specifications and Reverse Proposals
 

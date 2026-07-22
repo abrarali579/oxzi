@@ -7,6 +7,7 @@ import {
   type ConstitutionComplianceResult,
   type GovernanceFinding,
   type GovernanceHealthResult,
+  type FreshnessEvaluation,
   type ImplementationReadinessDecision,
   type NormalizationResult,
   type ResolvedConstitution,
@@ -21,6 +22,8 @@ type HealthInputs = {
   clarifications: ClarificationNeed[];
   consistency: GovernanceFinding[];
   traceability: GovernanceFinding[];
+  testability: GovernanceFinding[];
+  freshness: FreshnessEvaluation;
 };
 
 const blockingIds = (findings: GovernanceFinding[]) =>
@@ -49,9 +52,8 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
   ];
   const consistencyBlocking = blockingIds(inputs.consistency);
   const traceabilityBlocking = blockingIds(inputs.traceability);
-  const testabilityFailures = inputs.structural.filter(
-    (finding) =>
-      finding.ruleId === "structure.acceptance_verifiable" && finding.severity === "blocking",
+  const testabilityFailures = inputs.testability.filter(
+    (finding) => finding.severity === "blocking",
   );
   const nonTestabilityStructureBlocking = structureBlocking.filter(
     (findingId) => !testabilityFailures.some((finding) => finding.id === findingId),
@@ -59,11 +61,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
   const approvalMissing =
     input.revision.humanApprovalRequired && input.specification.approvalStatus !== "approved";
   const actualCanonicalFingerprint = canonicalProjectFingerprint(input.canonicalProject);
-  const stale =
-    input.revision.staleSince !== null ||
-    input.revision.canonicalVersionId !== input.canonicalProject.metadata.version.id ||
-    input.revision.canonicalFingerprint !== actualCanonicalFingerprint ||
-    !inputs.normalization.declaredFingerprintMatches;
+  const stale = inputs.freshness.status !== "current";
 
   const dimensions = [
     {
@@ -79,6 +77,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
         .map((finding) => finding.ruleId),
       unknownCheckIds: [],
       blockingFindingIds: structureBlocking,
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "clarification_completeness" as const,
@@ -88,6 +87,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
       failedCheckIds: clarificationBlocking.map((need) => need.category),
       unknownCheckIds: [],
       blockingFindingIds: [],
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "constitutional_compliance" as const,
@@ -113,6 +113,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
         .filter((result) => result.status === "unknown")
         .map((result) => result.ruleId),
       blockingFindingIds: blockingIds(inputs.constitution.findings),
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "internal_consistency" as const,
@@ -127,6 +128,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
         .map((finding) => finding.ruleId),
       unknownCheckIds: [],
       blockingFindingIds: consistencyBlocking,
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "traceability" as const,
@@ -141,15 +143,20 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
         .map((finding) => finding.ruleId),
       unknownCheckIds: [],
       blockingFindingIds: traceabilityBlocking,
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "testability" as const,
       result: resultFor(testabilityFailures.length > 0, false),
-      calculationInputs: input.specification.acceptanceCriteria.map((criterion) => criterion.id),
+      calculationInputs: [
+        ...input.specification.acceptanceCriteria.map((criterion) => criterion.id),
+        GOVERNANCE_EVALUATOR_VERSIONS.testabilityAnalyzer,
+      ],
       passedCheckIds: testabilityFailures.length === 0 ? ["testability.criteria_verifiable"] : [],
       failedCheckIds: testabilityFailures.map((finding) => finding.ruleId),
       unknownCheckIds: [],
       blockingFindingIds: testabilityFailures.map((finding) => finding.id),
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "approval_completeness" as const,
@@ -159,19 +166,21 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
       failedCheckIds: approvalMissing ? ["approval.required"] : [],
       unknownCheckIds: [],
       blockingFindingIds: [],
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
     {
       dimension: "freshness" as const,
-      result: resultFor(stale, false),
+      result: inputs.freshness.status === "unknown" ? "unknown" : resultFor(stale, false),
       calculationInputs: [
         input.revision.canonicalVersionId,
         input.revision.canonicalFingerprint,
         actualCanonicalFingerprint,
       ],
-      passedCheckIds: stale ? [] : ["freshness.current"],
-      failedCheckIds: stale ? ["freshness.authoritative_inputs"] : [],
-      unknownCheckIds: [],
-      blockingFindingIds: blockingIds(inputs.normalization.blockingErrors),
+      passedCheckIds: inputs.freshness.passedCheckIds,
+      failedCheckIds: inputs.freshness.failedCheckIds,
+      unknownCheckIds: inputs.freshness.unknownCheckIds,
+      blockingFindingIds: blockingIds(inputs.freshness.findings),
+      evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.healthCalculator,
     },
   ];
 
@@ -194,7 +203,7 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
     readinessClass = "structurally_incomplete";
   } else if (testabilityFailures.length > 0) {
     status = "untestable";
-    readinessClass = "structurally_incomplete";
+    readinessClass = "untestable";
   } else if (clarificationBlocking.length > 0) {
     status = "clarification_required";
     readinessClass = "clarification_required";
@@ -209,6 +218,8 @@ export function calculateSpecificationHealth(inputs: HealthInputs): GovernanceHe
     ...inputs.structural,
     ...inputs.consistency,
     ...inputs.traceability,
+    ...inputs.testability,
+    ...inputs.freshness.findings,
   ];
   const blockerRefs = [
     ...allFindings
@@ -273,10 +284,14 @@ export function decideImplementationReadiness(
           ? "human_review_required"
           : "readiness_recommended"
         : "not_ready",
+    readinessClass: health.readinessClass,
     blockingReasons: health.blockingReasons,
+    recommendations: health.recommendations,
     governingPolicyVersion: GOVERNANCE_EVALUATOR_VERSIONS.readinessPolicy,
     evaluatedSpecificationId: input.specification.id,
     evaluatedSpecificationVersion: input.specification.version,
+    constitutionVersion: constitution.constitutionVersion,
+    evaluatorVersions: GOVERNANCE_EVALUATOR_VERSIONS,
     inputFingerprints: {
       specification: normalization.fingerprint,
       constitution: constitution.fingerprint,

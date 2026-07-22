@@ -52,6 +52,19 @@ export function analyzeSpecificationTraceability(
           evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.traceabilityAnalyzer,
         }),
       );
+    if (link.freshness !== "current")
+      findings.push(
+        createGovernanceFinding({
+          ruleId: "traceability.superseded_artifact_reference",
+          category: "traceability",
+          severity: link.freshness === "stale" ? "blocking" : "warning",
+          message: `Traceability link ${link.id} targets ${link.freshness} artifact evidence`,
+          evidenceRefs: link.evidenceRefs,
+          affectedEntityIds: [link.id, link.fromId, link.toId],
+          remediation: "Link the current artifact version or retain this link as historical only.",
+          evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.traceabilityAnalyzer,
+        }),
+      );
     if (link.evidenceRefs.length === 0)
       findings.push(
         createGovernanceFinding({

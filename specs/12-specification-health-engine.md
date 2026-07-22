@@ -71,7 +71,9 @@ The runtime returns `readiness_recommended`, `not_ready`, `human_review_required
 
 ## Implemented Pipeline
 
-The public governance evaluator performs normalization, Constitution resolution, structural validation, clarification analysis, constitutional compliance, consistency analysis, traceability analysis, categorical health calculation, readiness recommendation, and report compilation. Reports include authoritative versions/fingerprints, evaluator versions, findings, evidence references, temporal metadata, and a semantic fingerprint. Approved Specifications remain immutable inputs.
+The public governance evaluator performs canonical input validation, normalization, Constitution resolution, structural validation, clarification analysis, constitutional compliance, consistency analysis, lifecycle-aware traceability, standalone testability analysis, temporal freshness evaluation, categorical health calculation, readiness recommendation, and report compilation. Reports include the normalization result, authoritative versions/fingerprints, evaluator versions, every analysis result, evidence references, temporal metadata, and a semantic fingerprint that excludes the execution timestamp. Approved Specifications remain immutable inputs.
+
+Testability checks require an observable subject/condition/result and configured verification evidence. They block subjective wording without thresholds, requirement restatements, absent expected results or verification methods, unavailable evidence, and missing security/privacy validation for protected data. Freshness checks bind reports to exact Specification, Constitution, canonical, source, and dependency fingerprints; old reports remain valid historical records but cannot certify changed inputs.
 
 ## Non-Goals
 

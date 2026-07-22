@@ -26,6 +26,20 @@ export function resolveProjectConstitution(
     if (rule.projectId !== input.specification.projectId) return false;
     if (rule.effectiveVersion !== input.revision.canonicalVersionId) return false;
     if (rule.temporal.currentStatus !== "current") return false;
+    if (rule.applicability.includes("unknown")) {
+      findings.push(
+        createGovernanceFinding({
+          ruleId: "constitution.applicability_unknown",
+          category: "constitution",
+          severity: rule.severity === "advisory" ? "warning" : "blocking",
+          message: `Constitution rule ${rule.id} has unknown applicability`,
+          evidenceRefs: rule.evidenceRefs,
+          affectedEntityIds: [rule.id, input.specification.id],
+          remediation: "Resolve applicability for this exact specification and lifecycle version.",
+          evaluatorVersion: GOVERNANCE_EVALUATOR_VERSIONS.constitutionResolver,
+        }),
+      );
+    }
     if (rule.approvalStatus !== "approved") {
       findings.push(
         createGovernanceFinding({
@@ -109,18 +123,24 @@ export function resolveProjectConstitution(
     const correctVersion =
       exception.specificationId === input.specification.id &&
       exception.specificationVersion === input.specification.version;
+    const binding = applicable.find((candidate) => candidate.rule.id === exception.ruleId);
+    const correctScope =
+      binding !== undefined &&
+      exception.scopeRefs.some((scope) =>
+        [input.specification.id, binding.policyKey, binding.subject].includes(scope),
+      );
     const approved =
       exception.approvalStatus === "approved" &&
       exception.approvedAt !== null &&
       exception.approvedBy !== null;
-    if (correctVersion && approved) appliedExceptionIds.push(exception.id);
+    if (correctVersion && correctScope && approved) appliedExceptionIds.push(exception.id);
     else
       findings.push(
         createGovernanceFinding({
           ruleId: "constitution.exception_authorization",
           category: "constitution",
           severity: "blocking",
-          message: `Constitution exception ${exception.id} is unapproved or belongs to another specification version`,
+          message: `Constitution exception ${exception.id} is unapproved or has invalid version/scope`,
           evidenceRefs: exception.evidenceRefs,
           affectedEntityIds: [exception.id, exception.ruleId],
           remediation:

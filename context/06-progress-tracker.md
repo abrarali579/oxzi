@@ -1089,3 +1089,50 @@ The first sandboxed Review Engine run correctly recorded its nested Turbopack bu
 ### Next Smallest Unit
 
 Implement the Technical Plan and Independent Implementation Slice Runtime Foundation over healthy, approved Specification Governance reports. Keep planning deterministic and read-only, preserve parent Constitution/Specification/report fingerprints, and defer Task Card compilation, provider calls, persistence, repository parsers, convergence, and UI.
+
+## Specification Governance Runtime Contract Hardening
+
+### Completed Work
+
+- Added standalone deterministic testability and temporal freshness analyzers and integrated them into health, readiness, and Governance Report compilation.
+- Extended Governance Reports with the complete normalization result, testability findings, freshness result, and exact semantic inputs while keeping execution timestamps outside semantic identity.
+- Extended readiness output with readiness class, recommendations, Constitution version, and all evaluator versions; the runtime still recommends rather than approves.
+- Added evaluator versions to every health dimension and retained categorical, unweighted evaluation.
+- Made Constitution exceptions explicitly rule-, Specification-version-, and scope-specific; added unknown-applicability blocking and verified exceptions do not carry into amendments.
+- Expanded stale-report detection to Constitution fingerprints plus source and dependency fingerprints, while preserving historical reports as immutable values.
+- Added lifecycle-aware stale/superseded trace findings and deterministic subjective, restatement, observable-result, evidence, verification-method, and protected-data testability rules.
+- Expanded the governance fixture set to 15 and the focused suite from 41 to 65 tests.
+
+### Files Created
+
+- `src/domain/governance/testability.ts`
+- `src/domain/governance/freshness.ts`
+
+### Files Modified
+
+- `src/domain/governance/runtime-schemas.ts`, `runtime-utils.ts`, `evaluate.ts`, `health.ts`, `constitution.ts`, `controlled-living.ts`, `traceability.ts`, `fixtures.ts`, `governance-runtime.test.ts`, and `index.ts`
+- `CURRENT.md`, `DECISIONS.md`, `context/02-architecture.md`, `context/05-ai-workflow-rules.md`, and this tracker
+- `specs/11-project-constitution.md`, `specs/12-specification-health-engine.md`, and `specs/13-controlled-specifications-convergence.md`
+
+### Validation Results
+
+- Focused governance run — passed; 1 file and 65 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 15 files and 218 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed
+- `npm run review` — passed outside the restricted sandbox; all captured checks and generated-output secret scan passed
+- `git diff --check` — passed
+
+### Remaining Limits
+
+- Testability is intentionally deterministic and vocabulary/rule based; it does not generate tests or use semantic similarity.
+- Freshness validates supplied exact versions and fingerprints but does not resolve them from a database or repository registry.
+- Constitution snapshots remain explicit runtime inputs until the planned canonical storage migration.
+- Technical planning, slices, Task Cards, persistence, providers, parsers, UI, convergence runtime, and automatic approval remain deferred.
+
+### Next Smallest Unit
+
+Implement the Technical Plan and Independent Implementation Slice Runtime Foundation over a healthy, approved, current Governance Report. Preserve exact parent fingerprints and keep Task Card compilation, execution, persistence, providers, parsers, convergence, and UI outside that unit.
