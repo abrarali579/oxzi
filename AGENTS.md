@@ -46,6 +46,17 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 - Never place secrets, API keys, credentials, or private user data in committed files.
 - Do not remove or overwrite context/spec files during framework initialization.
 
+## Git and Handoff Rules
+
+- Never commit or push unless the user explicitly requests it.
+- After every implementation unit:
+  - update `context/06-progress-tracker.md`
+  - report changed files
+  - report actual validation results
+  - provide a recommended commit message
+- Never commit `.env`, API keys, credentials, tokens, generated secrets, or local database files.
+- Keep `main` stable and buildable.
+
 ## 4. Current Project Boundary
 
 Phase 1 is complete and defines:
