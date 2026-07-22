@@ -41,4 +41,4 @@ All coding agents use this reading order:
 
 ## Current Build Boundary
 
-Phase 1 defines the product, canonical schema, discovery logic, six living files, architecture guardrails, and handoff process. Phase 2 application implementation is in progress; the repository bootstrap is complete and product-domain logic has not yet been implemented.
+Phase 1 defines the product contracts and Phase 2 established the application/tooling foundation. Phase 3 is implementing validated canonical, discovery, and deterministic extraction domains before persistence, provider integration, or product UI workflows.

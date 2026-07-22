@@ -86,6 +86,30 @@ The result contains field relevance and resolution assessments, critical/overall
 
 Completeness uses explicit field weights: blocking `100`, high `70`, medium `35`, and low `10`. Approved, confirmed, permitted accepted-assumption, and permitted safe-default values receive full credit. Unapproved inference receives at most half credit, unsafe defaults receive `0.75`, and missing or conflicted fields receive none. ADR-010 records the full deterministic ranking formula and interview limits.
 
+## Deterministic Extraction Engine
+
+Rule-based extraction is exported from `src/domain/extraction`:
+
+```ts
+import { extractCanonicalUpdates } from "@/domain/extraction";
+
+const result = extractCanonicalUpdates({
+  sources: [
+    {
+      sourceId: "source_brief",
+      kind: "master_prompt",
+      content: projectBrief,
+      capturedAt: "2026-07-22T12:00:00.000Z",
+    },
+  ],
+  existingProject,
+});
+```
+
+The engine accepts plain text, Master Prompts, uploaded notes, and previous AI conversations. It emits only Zod-validated canonical update proposals with confidence, evidence, source metadata, rule explanations, and explicit/inferred status. It merges exact duplicates, reports contradictions, and marks every proposal targeting an approved field as blocked. It does not mutate state or call an LLM.
+
+See `specs/04-deterministic-extraction-engine.md` for supported fields, confidence rules, and current vocabulary limitations.
+
 ## Local Review Package
 
 Generate an auditable handoff for another reviewer:
@@ -163,6 +187,7 @@ Follow `CODEX_LOCAL_SETUP.md` for local handoff guidance and update `context/06-
 - `specs/01-canonical-project-schema.md` — structured source-of-truth model
 - `specs/02-discovery-engine.md` — minimal interview and skip logic
 - `specs/03-six-file-rendering-contract.md` — deterministic generation rules
+- `specs/04-deterministic-extraction-engine.md` — rule-based intake normalization and conflict policy
 - `examples/` — Oxzire 3D Website and News Automation validation fixtures
 - `CODEX_LOCAL_SETUP.md` — local VS Code and Codex instructions
 

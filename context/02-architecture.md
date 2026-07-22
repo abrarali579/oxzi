@@ -25,6 +25,7 @@ The canonical structured project state is the source of truth. The six Markdown 
 - `components/` — reusable UI only
 - `domain/project/` — canonical project types, runtime validation, fixtures, and deterministic serialization
 - `domain/discovery/` — deterministic relevance, completeness, interview-skip, and question-ranking policy
+- `domain/extraction/` — deterministic source parsing, canonical update proposals, provenance, deduplication, and contradiction detection
 - `features/project-intake/` — input, import, and source parsing
 - `features/discovery/` — future discovery UI and workflow orchestration
 - `features/project-schema/` — future application workflows and validated canonical-state mutations
@@ -55,7 +56,8 @@ The canonical structured project state is the source of truth. The six Markdown 
 
 ```text
 Input or imported material
-→ extraction result
+→ deterministic canonical update proposals and conflicts
+→ validated mutation boundary
 → field-level evidence
 → canonical project state
 → deterministic completeness and ranked critical gaps
@@ -112,6 +114,7 @@ Local models connect through an OpenAI-compatible base URL. Provider-specific lo
 7. Failed generation cannot overwrite the latest approved project version.
 8. Long-running AI work must not execute inside a request handler without job tracking.
 9. Completeness and question priority are computed from versioned deterministic policy, never from provider-generated weights.
+10. Extraction cannot overwrite approved canonical values or silently resolve contradictory explicit sources.
 
 ## Initial Status Lifecycle
 

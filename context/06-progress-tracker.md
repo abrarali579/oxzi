@@ -6,7 +6,7 @@ Phase 3 — Canonical Domain and Discovery Foundations: In Progress
 
 ## Current Goal
 
-Establish deterministic, validated project and discovery domains before connecting extraction, persistence, or UI workflows.
+Establish deterministic, validated project, discovery, and extraction domains before connecting persistence, providers, or UI workflows.
 
 ## Completed
 
@@ -389,6 +389,78 @@ Completed on 2026-07-22.
 - Natural-language extraction, dynamic phrasing, answer application, persistence, and interview UI remain deferred.
 - New canonical fields must receive reviewed relevance and question policy; generic deterministic fallbacks prevent runtime failure but do not replace policy review.
 
+## Phase 3 Unit 3 — Deterministic Natural-Language Extraction Engine
+
+Completed on 2026-07-22.
+
+### Files Created
+
+- `src/domain/extraction/engine.ts`
+- `src/domain/extraction/engine.test.ts`
+- `src/domain/extraction/index.ts`
+- `src/domain/extraction/lexicon.ts`
+- `src/domain/extraction/parser.ts`
+- `src/domain/extraction/types.ts`
+- `specs/04-deterministic-extraction-engine.md`
+
+### Files Modified
+
+- `AGENTS.md`
+- `OXZI.md`
+- `README.md`
+- `PROJECT.md`
+- `DECISIONS.md`
+- `context/02-architecture.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Added validated input contracts for plain text, Master Prompts, uploaded notes, and previous AI conversations.
+- Added deterministic Unicode normalization, Markdown/inline heading parsing, list and sentence segmentation, and conversation-speaker tracking.
+- Added English and Bahasa Indonesia section aliases plus reviewed project-type, stack, platform, language, visual, integration, deployment, security, and privacy dictionaries.
+- Added canonical normalization for goals, target users, prioritized features, constraints, assumptions, integrations, visual direction, stack, risks, localization, deployment, and security/privacy requirements.
+- Added confidence, evidence, source, speaker, rule explanation, and explicit/inferred metadata to every extracted update.
+- Added exact duplicate merging with unique evidence, compatible list merging, stable identifiers, and deterministic output ordering.
+- Added scalar, exclusive-stack, and feature-versus-out-of-scope contradiction detection without silent confidence selection.
+- Added mandatory approved-field protection; proposals are marked blocked and canonical state is never mutated.
+- Added common credential redaction in retained evidence excerpts.
+- Recorded the proposal-only extraction boundary in ADR-011 and the dedicated extraction specification.
+
+### Test Coverage
+
+- Simple plain-text prompt
+- Large structured Master Prompt
+- Duplicate facts across multiple sources
+- Conflicting deployment and stack information
+- Missing information without fabricated updates
+- Multilingual English and Bahasa Indonesia input
+- Oxzire 3D Website scenario
+- News Automation scenario
+- Approved-field overwrite protection
+- Imported AI conversation speaker precedence
+- Deterministic repeated output
+
+### Verification Results
+
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings
+- `npm run test` — passed; 5 files and 39 tests
+- `npm run test:review` — passed; 14 tests
+- `npm run build` — passed; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed; typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+`npm run ci` passed formatting, type checking, linting, application tests, and Review Engine tests, then its nested sandboxed build hit the known Turbopack local-port restriction. The separately approved `npm run build` command passed immediately afterward. This was an execution-environment restriction, not an application failure.
+
+### Limitations and Deferred Work
+
+- Deterministic extraction is vocabulary-bound; unmatched phrasing remains unmatched rather than being guessed.
+- Complex negation, long-distance references, sarcasm, and intentional multi-framework or multi-database architectures can require human review.
+- Required nested canonical properties may use clearly marked inference when a source names an entity without enough detail.
+- Extracted safe proposals are not applied; source precedence, validated mutations, versioning, and merge behavior remain the next domain boundary.
+- LLM-assisted extraction, persistence, interview generation, and UI remain deferred.
+
 ## Current Phase
 
 Phase 3 — Canonical Domain and Discovery Foundations
@@ -397,9 +469,10 @@ Implementation sequence:
 
 1. Implement canonical Zod schemas and fixtures. — Complete
 2. Implement deterministic completeness scoring and question ranking. — Complete
-3. Define validated discovery-answer and canonical merge contracts.
-4. Build static New Project and Understanding Review flows.
-5. Add mocked zero-question and minimal-question scenarios.
+3. Implement deterministic natural-language extraction proposals. — Complete
+4. Define validated extraction/discovery-answer application and canonical merge contracts.
+5. Build static New Project and Understanding Review flows.
+6. Add mocked zero-question and minimal-question scenarios.
 
 ## Open Decisions for Later
 
@@ -413,4 +486,4 @@ These decisions do not block the current canonical-domain or discovery-foundatio
 
 ## Session Resume Context
 
-The next smallest unit is Phase 3 Unit 3: define validated discovery-answer structures and deterministic canonical merge/mutation rules before building the interview UI.
+The next smallest unit is Phase 3 Unit 4: define validated extraction/discovery-answer application and deterministic canonical merge/mutation rules before building the interview UI.

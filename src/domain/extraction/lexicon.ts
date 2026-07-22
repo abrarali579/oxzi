@@ -1,0 +1,250 @@
+import type { ExtractableFieldPath } from "./types";
+
+export const SECTION_ALIASES: Readonly<Record<string, ExtractableFieldPath>> = {
+  "project name": "identity.name",
+  name: "identity.name",
+  nama: "identity.name",
+  summary: "identity.oneLiner",
+  overview: "identity.oneLiner",
+  ringkasan: "identity.oneLiner",
+  "project type": "identity.projectType",
+  "jenis proyek": "identity.projectType",
+  problem: "business.problem",
+  masalah: "business.problem",
+  solution: "business.solution",
+  solusi: "business.solution",
+  goal: "business.goals",
+  goals: "business.goals",
+  objective: "business.goals",
+  objectives: "business.goals",
+  tujuan: "business.goals",
+  sasaran: "business.goals",
+  user: "business.targetUsers",
+  users: "business.targetUsers",
+  audience: "business.targetUsers",
+  "target user": "business.targetUsers",
+  "target users": "business.targetUsers",
+  pengguna: "business.targetUsers",
+  "target pengguna": "business.targetUsers",
+  audiens: "business.targetUsers",
+  scope: "scope.inScope",
+  "in scope": "scope.inScope",
+  cakupan: "scope.inScope",
+  "out of scope": "scope.outOfScope",
+  exclusions: "scope.outOfScope",
+  "di luar cakupan": "scope.outOfScope",
+  constraint: "scope.constraints",
+  constraints: "scope.constraints",
+  requirement: "scope.constraints",
+  requirements: "scope.constraints",
+  batasan: "scope.constraints",
+  kendala: "scope.constraints",
+  assumption: "scope.assumptionSummaries",
+  assumptions: "scope.assumptionSummaries",
+  asumsi: "scope.assumptionSummaries",
+  feature: "product.features",
+  features: "product.features",
+  capability: "product.features",
+  capabilities: "product.features",
+  fitur: "product.features",
+  "must have features": "product.features",
+  "must-have features": "product.features",
+  priorities: "scope.inScope",
+  priority: "scope.inScope",
+  prioritas: "scope.inScope",
+  platform: "product.platforms",
+  platforms: "product.platforms",
+  visual: "visual.visualKeywords",
+  design: "visual.visualKeywords",
+  style: "visual.visualKeywords",
+  "visual direction": "visual.visualKeywords",
+  desain: "visual.visualKeywords",
+  tampilan: "visual.visualKeywords",
+  personality: "visual.personality",
+  kepribadian: "visual.personality",
+  colors: "visual.colors",
+  colours: "visual.colors",
+  warna: "visual.colors",
+  themes: "visual.themes",
+  theme: "visual.themes",
+  tema: "visual.themes",
+  "avoid list": "visual.avoidList",
+  "design exclusions": "visual.avoidList",
+  "tech stack": "technical.preferredStack",
+  stack: "technical.preferredStack",
+  technologies: "technical.preferredStack",
+  technology: "technical.preferredStack",
+  teknologi: "technical.preferredStack",
+  integration: "technical.integrations",
+  integrations: "technical.integrations",
+  integrasi: "technical.integrations",
+  security: "technical.security",
+  keamanan: "technical.security",
+  privacy: "technical.privacy",
+  privasi: "technical.privacy",
+  deployment: "technical.deployment",
+  hosting: "technical.deployment",
+  deploy: "technical.deployment",
+  language: "quality.localization",
+  languages: "quality.localization",
+  localization: "quality.localization",
+  localisation: "quality.localization",
+  bahasa: "quality.localization",
+  lokalisasi: "quality.localization",
+  risk: "execution.risks",
+  risks: "execution.risks",
+  risiko: "execution.risks",
+};
+
+export type LexiconEntry = {
+  canonical: string;
+  terms: readonly string[];
+};
+
+export const PROJECT_TYPE_TERMS = [
+  {
+    canonical: "automation_system",
+    terms: [
+      "automation system",
+      "automated pipeline",
+      "workflow automation",
+      "sistem otomasi",
+      "otomasi",
+    ],
+  },
+  { canonical: "saas_application", terms: ["saas", "software as a service", "subscription app"] },
+  {
+    canonical: "internal_tool",
+    terms: ["internal tool", "admin tool", "back-office tool", "alat internal"],
+  },
+  {
+    canonical: "website",
+    terms: ["website", "web site", "portfolio site", "landing page", "situs web"],
+  },
+] as const;
+
+export const TECH_TERMS: readonly LexiconEntry[] = [
+  { canonical: "Next.js", terms: ["next.js", "nextjs"] },
+  { canonical: "React", terms: ["react"] },
+  { canonical: "Vue", terms: ["vue", "vue.js"] },
+  { canonical: "Svelte", terms: ["svelte", "sveltekit"] },
+  { canonical: "Angular", terms: ["angular"] },
+  { canonical: "TypeScript", terms: ["typescript"] },
+  { canonical: "JavaScript", terms: ["javascript"] },
+  { canonical: "Node.js", terms: ["node.js", "nodejs"] },
+  { canonical: "Python", terms: ["python"] },
+  { canonical: "PostgreSQL", terms: ["postgresql", "postgres"] },
+  { canonical: "MySQL", terms: ["mysql"] },
+  { canonical: "MongoDB", terms: ["mongodb", "mongo db"] },
+  { canonical: "Tailwind CSS", terms: ["tailwind css", "tailwind"] },
+  { canonical: "Zod", terms: ["zod"] },
+  { canonical: "Redis", terms: ["redis"] },
+  { canonical: "WebGL", terms: ["webgl"] },
+  { canonical: "Three.js", terms: ["three.js", "threejs"] },
+];
+
+export const LANGUAGE_TERMS: readonly LexiconEntry[] = [
+  { canonical: "English", terms: ["english", "inggris"] },
+  { canonical: "Bahasa Indonesia", terms: ["bahasa indonesia", "indonesian", "indonesia"] },
+  { canonical: "Spanish", terms: ["spanish", "español"] },
+  { canonical: "French", terms: ["french", "français"] },
+  { canonical: "German", terms: ["german", "deutsch"] },
+  { canonical: "Arabic", terms: ["arabic", "العربية"] },
+  { canonical: "Hindi", terms: ["hindi", "हिन्दी"] },
+  { canonical: "Japanese", terms: ["japanese", "日本語"] },
+];
+
+export const VISUAL_TERMS: readonly LexiconEntry[] = [
+  { canonical: "Minimal", terms: ["minimal", "minimalist", "minimalis"] },
+  { canonical: "Modern", terms: ["modern", "modern-looking", "modern-looking", "moderen"] },
+  { canonical: "Premium", terms: ["premium", "luxury", "mewah"] },
+  { canonical: "Cinematic", terms: ["cinematic", "sinematik"] },
+  { canonical: "Editorial", terms: ["editorial"] },
+  { canonical: "Calm", terms: ["calm", "tenang"] },
+  { canonical: "Playful", terms: ["playful", "ceria"] },
+  { canonical: "Technical", terms: ["technical", "teknis"] },
+  { canonical: "High information density", terms: ["high information density", "dense interface"] },
+];
+
+export const THEME_TERMS: readonly LexiconEntry[] = [
+  { canonical: "Dark", terms: ["dark mode", "dark theme", "tema gelap"] },
+  { canonical: "Light", terms: ["light mode", "light theme", "tema terang"] },
+  {
+    canonical: "Dark and light",
+    terms: ["dark and light", "light and dark", "both themes", "dua tema"],
+  },
+];
+
+export const PLATFORM_TERMS: readonly LexiconEntry[] = [
+  {
+    canonical: "Responsive web",
+    terms: ["responsive web", "responsive website", "mobile-first website"],
+  },
+  { canonical: "iOS", terms: ["ios", "iphone app"] },
+  { canonical: "Android", terms: ["android"] },
+  { canonical: "Desktop", terms: ["desktop app", "desktop application"] },
+  { canonical: "Background worker", terms: ["background worker", "worker service", "job worker"] },
+];
+
+export const INTEGRATION_TERMS: readonly LexiconEntry[] = [
+  { canonical: "Stripe", terms: ["stripe"] },
+  { canonical: "GitHub", terms: ["github"] },
+  { canonical: "Slack", terms: ["slack"] },
+  { canonical: "Supabase", terms: ["supabase"] },
+  { canonical: "OpenAI-compatible model", terms: ["openai", "openai-compatible", "local model"] },
+  { canonical: "Headless CMS", terms: ["headless cms", "contentful", "sanity cms", "strapi"] },
+  { canonical: "RSS feeds", terms: ["rss", "rss feeds"] },
+  { canonical: "News APIs", terms: ["news api", "news apis"] },
+  { canonical: "Transactional email", terms: ["transactional email", "sendgrid", "resend"] },
+  { canonical: "Publisher CMS", terms: ["publisher cms", "wordpress"] },
+];
+
+export const DEPLOYMENT_TERMS: readonly LexiconEntry[] = [
+  {
+    canonical: "Local-only deployment",
+    terms: ["local only", "local-only", "offline only", "hanya lokal"],
+  },
+  { canonical: "On-premises", terms: ["on premises", "on-premises", "on prem"] },
+  { canonical: "Self-hosted", terms: ["self hosted", "self-hosted"] },
+  { canonical: "Vercel", terms: ["vercel"] },
+  { canonical: "AWS", terms: ["aws", "amazon web services"] },
+  { canonical: "Azure", terms: ["azure"] },
+  { canonical: "Google Cloud", terms: ["google cloud", "gcp"] },
+];
+
+export const SECURITY_TERMS: readonly LexiconEntry[] = [
+  {
+    canonical: "Role-based access control",
+    terms: ["role-based access", "role based access", "rbac"],
+  },
+  {
+    canonical: "Server-side authorization",
+    terms: ["server-side authorization", "server side authorization"],
+  },
+  { canonical: "Encryption at rest", terms: ["encryption at rest", "encrypted at rest"] },
+  { canonical: "Rate limiting", terms: ["rate limiting", "rate-limit", "rate limit"] },
+  { canonical: "Single sign-on", terms: ["single sign-on", "single sign on", "sso"] },
+  {
+    canonical: "Multi-factor authentication",
+    terms: ["multi-factor", "multifactor", "mfa", "2fa"],
+  },
+  { canonical: "Audit logging", terms: ["audit log", "audit history", "audit trail"] },
+  {
+    canonical: "Human approval required",
+    terms: ["human approval", "editorial approval", "manual approval", "persetujuan manusia"],
+  },
+];
+
+export const PRIVACY_TERMS: readonly LexiconEntry[] = [
+  { canonical: "Data minimization", terms: ["data minimization", "minimum required data"] },
+  {
+    canonical: "User deletion support",
+    terms: ["right to deletion", "delete user data", "data deletion"],
+  },
+  {
+    canonical: "Local processing",
+    terms: ["local processing", "never leaves the device", "no cloud processing"],
+  },
+  { canonical: "Consent required", terms: ["explicit consent", "consent required"] },
+  { canonical: "GDPR", terms: ["gdpr"] },
+];

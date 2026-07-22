@@ -58,7 +58,7 @@ Do not silently resolve a material conflict. Report it and recommend the smalles
 
 ## Current Boundary
 
-Phase 1 is complete and Phase 2 implementation is in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for the current unit. Do not jump to later SaaS features unless the user explicitly requests them.
+Phases 1 and 2 are complete and Phase 3 domain foundations are in progress. Follow `PROJECT.md` for scope and `context/06-progress-tracker.md` for the current unit. Do not jump to later SaaS features unless the user explicitly requests them.
 
 ## Completion Standard
 

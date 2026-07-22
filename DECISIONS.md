@@ -100,3 +100,15 @@ Architecture multipliers are foundational `1.30`, structural `1.20`, local `1.08
 The interview is skipped only when critical completeness is at least `90`, blocking gaps and blocking conflicts are both zero, and no required approval remains. Typical interviews target two to five questions, urgent complex cases are capped at eight, known or safely defaulted values are never asked, and low-criticality details are deferred. Candidates remain one decision per question; related fields are not merged unless a future explicit answer-to-field contract proves that one answer can safely resolve every merged field.
 
 **Consequences:** The same validated canonical state always produces the same scores, ordering, and interview decision. Every candidate exposes its score factors, answer mode, options, and typing effort for auditability. Extraction, natural-language question generation, answer merging, UI, and persistence remain separate later boundaries.
+
+## ADR-011 — Deterministic Extraction Produces Proposals
+
+**Status:** Accepted — Phase 3
+
+**Decision:** The initial natural-language extraction engine is an AI-free deterministic rules boundary under `src/domain/extraction/`. It accepts timestamped plain text, Master Prompts, uploaded notes, and previous AI conversations and emits Zod-validated canonical field-update proposals. It never mutates canonical state directly.
+
+Every proposal carries bounded confidence, canonical evidence, source identity and type, conversation speaker when available, short rule explanations, and explicit or inferred status. User statements are explicit; imported assistant statements are inferred. Identical normalized values merge with unique evidence. Competing scalar or explicitly exclusive values become conflicts. Proposals targeting approved fields are always blocked, including duplicates that require no write.
+
+The extractor uses fixed English and Bahasa Indonesia section aliases, patterns, and reviewed dictionaries. Unmatched language remains unmatched. Source-provided capture timestamps and stable content-derived identifiers preserve deterministic output. Common credential-shaped values are redacted from evidence excerpts.
+
+**Consequences:** Rule extraction is auditable and usable offline but cannot claim general semantic understanding. The update application/mutation boundary must separately enforce source precedence, approval, versioning, and canonical consistency. LLM-assisted extraction may be added later only behind the same validated proposal contract; it cannot bypass evidence, conflicts, or approved-value protection.
