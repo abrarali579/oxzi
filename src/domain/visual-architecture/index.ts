@@ -50,7 +50,7 @@ export function generateMermaidDiagram(
  */
 export function generateFeatureDiagram(
   manifest: RepositoryManifest,
-  _clickBase?: string,
+  _clickBase?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
 ): string {
   const parsed = repositoryManifestSchema.parse(manifest);
   const lines: string[] = ["flowchart TB"];

@@ -1,4 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { vi, describe, expect, it } from "vitest";
+
+// Mock Prisma client before any domain/route imports resolve
+vi.mock("@/lib/db", () => ({
+  prisma: {
+    project: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+    },
+    organization: {
+      findUnique: vi.fn(),
+    },
+  },
+}));
+
 import { AuthError } from "@/lib/auth";
 import { apiError, apiSuccess } from "@/lib/api-response";
 

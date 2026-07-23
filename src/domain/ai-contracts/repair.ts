@@ -306,7 +306,6 @@ export function runRepairPipeline(
   //    Never silently invent data.
   // ──────────────────────────────────────────────────────────────
 
-  const _escalated = true;
   attempts[attempts.length - 1] = repairAttemptSchema.parse({
     ...attempts[attempts.length - 1]!,
     escalationStatus: "escalated",
