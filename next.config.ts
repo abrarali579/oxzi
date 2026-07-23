@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(import.meta.dirname ?? __dirname),
   },
+  serverExternalPackages: ["oxc-parser", "@oxc-parser/binding-wasm32-wasi"],
 };
 
 export default nextConfig;
