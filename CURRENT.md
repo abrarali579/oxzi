@@ -4,9 +4,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations + full product runtime including Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, Delivery, Internal UI, Auth, Organizations, and Billing runtime
+- Phase: v1.0.0 — release-ready. All deterministic engines, internal UI, auth, organizations, database, evaluation lab, benchmarks, and hardening complete.
 - Active unit: none
-- Last completed: Steps 1–13 — all core deterministic pipeline + internal UI + persistence + auth + orgs + billing (partial) + collaboration
+- Last completed: Steps 1–14 — full deterministic pipeline + UI + auth + orgs + evaluation lab + benchmarks + launch hardening
 - Next: await further instruction
 
 ## Implemented
@@ -26,6 +26,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Approval-gated Connected Agent Delivery with passport verification, human/system approval gate, and DeliveryTicket generation
 - Internal UI & Persistence with file-based JSON project store, CRUD API routes, project list/detail/new pages, six-file ZIP generation, and deterministic serialization
 - Authentication & Organizations with JWT-based login/signup, session management, Prisma/SQLite database, organization membership (owner/member roles), protected API middleware, and dashboard UI
+- Evaluation Lab & Benchmarks with deterministic metric collection, threshold-based regression detection, baseline comparison, and performance tests for all core engines
+- Launch Hardening with rate-limited API middleware, comprehensive env validation, integration tests covering full pipeline, .env.example documentation, and version bump to 1.0.0
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization

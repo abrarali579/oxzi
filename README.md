@@ -36,13 +36,31 @@ npm run test:review # Run focused Review Engine tests
 npm run ci         # Run the complete local CI validation sequence
 ```
 
-## Environment
+### Environment variables
 
-Copy `.env.example` to `.env.local` only when local overrides are needed. The current application accepts one optional, non-secret setting:
+Copy `.env.example` to `.env.local`:
 
-- `NEXT_PUBLIC_APP_URL` — canonical public application URL
+```bash
+cp .env.example .env.local
+```
 
-Empty values are treated as unset. Zod validates environment input when Next.js loads its configuration; validation errors report field names and reasons without echoing values. No production credentials are required in the current phase.
+Required variables:
+
+- `DATABASE_URL` — SQLite database path (default: `file:./prisma/oxzi.db`)
+- `JWT_SECRET` — secret key for JWT token signing (change in production)
+- `NEXT_PUBLIC_APP_URL` — canonical public application URL (optional)
+
+### Authentication
+
+OXZI uses JWT-based authentication with bcrypt password hashing. Users sign up and log in via `/auth/signup` and `/auth/login`. After authentication, users belong to organizations with owner/member roles. Projects are scoped to organizations. Session tokens expire after 7 days.
+
+### Database
+
+The Prisma ORM manages a SQLite database at `prisma/oxzi.db`. To reset or reinitialize:
+
+```bash
+npx prisma db push --accept-data-loss
+```
 
 ## Continuous Integration
 
@@ -197,5 +215,13 @@ Do not load the full Project Bible by default, and do not skip relevant dependen
 - `CODEX_LOCAL_SETUP.md` — local VS Code and Codex instructions
 
 ## Project Status
+
+Version `1.0.0`. Steps 1–13 of the authoritative V1 implementation sequence are complete. The core deterministic pipeline (extraction, discovery, governance, planning, Task Card compilation, context compilation, prompt rendering, evaluation, certification, repository parsing, convergence review, agent control plane, delivery) is fully implemented. Auth, organizations, database persistence, internal UI, and API routes are operational.
+
+Step 14 (current) adds launch hardening: rate limiting, environment validation, performance benchmarks, evaluation lab, and integration tests.
+
+Deferred: Stripe billing, real-time multiplayer, Prompt Program optimization, AI provider repair, full observability/experiments UI.
+
+See `CURRENT.md` for the complete implementation status.
 
 Phases 1 and 2 are complete. Phase 3 deterministic intelligence is in progress; future architecture capabilities are specified but not implemented. See `context/06-progress-tracker.md` for the current implementation state.

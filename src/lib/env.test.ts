@@ -7,6 +7,8 @@ describe("environment validation", () => {
     expect(parseEnvironment({ NEXT_PUBLIC_APP_URL: "" })).toEqual({
       NODE_ENV: "development",
       NEXT_PUBLIC_APP_URL: undefined,
+      DATABASE_URL: "file:./prisma/oxzi.db",
+      JWT_SECRET: "oxzi-dev-secret-change-in-production",
     });
   });
 
