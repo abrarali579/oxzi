@@ -680,3 +680,11 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** OXZI targets Cloud SaaS first for vibe coders, AI-assisted developers, agencies, and startup engineering teams. Self-hosted Enterprise is a future product mode for customers that need source code and company data to remain inside their own infrastructure, with customer-controlled models/providers, compliance, auditability, approval workflows, and governance. Core OXZI SaaS and orchestration engine remain closed-source by default.
 
 **Consequences:** Enterprise deployment requirements inform governance architecture but are not immediate runtime scope. Selected SDKs, schemas, integrations, templates, CLI utilities, community tools, public documentation, and educational content may later be open-sourced without publishing the core product IP.
+
+## ADR-083 — Normalized Task Card Runtime
+
+**Status:** Accepted — Task Card Compiler runtime foundation
+
+**Decision:** The Task Card Compiler deterministically converts one approved Implementation Slice into an agent-agnostic normalized Task Card. The Task Card captures task meaning, boundaries, constraints, acceptance criteria, validations, risk level, parent fingerprints, evidence, rollback, and artifact expectations. It does not render prompts, XML, YAML, JSON handoffs, or target-agent-specific instructions.
+
+**Consequences:** Prompt renderers and Context Packages remain downstream artifacts that consume the Task Card without changing its meaning. Protected boundaries override writable boundaries, malformed Task Cards produce blocking validation reports, and future delivery requires additional Context Compiler, workflow, Passport, approval, and adapter gates.

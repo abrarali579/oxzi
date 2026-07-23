@@ -16,7 +16,7 @@ Route from the task; follow dependencies and record widening.
 | Extraction | `specs/04-deterministic-extraction-engine.md`; `src/domain/extraction/` |
 | Knowledge Graph | `specs/05-knowledge-graph-engine.md`; `src/domain/knowledge-graph/` |
 | Context/efficiency | `specs/06-context-compiler.md`; `specs/10-efficiency-ledger.md` |
-| Task Cards/renderers | `specs/07-ai-task-card-prompt-compiler.md` |
+| Task Cards/renderers | `specs/07-ai-task-card-prompt-compiler.md`; `src/domain/task-card/` |
 | Review/audit | `specs/08-review-audit-analyzer.md`; `.review/` contract |
 | Visual architecture | `specs/09-visual-master-architecture-generator.md` |
 | Constitution/health | `specs/11-project-constitution.md`; `specs/12-specification-health-engine.md` |

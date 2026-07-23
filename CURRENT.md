@@ -6,8 +6,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Phase: deterministic foundations plus Specification Governance and Planning runtime
 - Active unit: none
-- Last completed: Roadmap and Documentation Reconciliation
-- Next: Task Card Compiler Runtime Foundation
+- Last completed: Task Card Compiler Runtime Foundation
+- Next: Context Compiler Runtime — canonical artifacts first
 
 ## Implemented
 
@@ -15,6 +15,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Canonical state, discovery/ranking, extraction, and Temporal Knowledge Graph `2.0.0`
 - Deterministic Constitution resolution/compliance, Specification normalization, structural/clarification/consistency/traceability/testability/freshness analysis, categorical health, readiness recommendations, controlled-living validation, and normalized Governance Reports
 - Deterministic Technical Plan normalization/governance, dependency-safe Implementation Slice derivation, plan/slice validation, traceability, categorical health, readiness recommendations, immutable version checks, and normalized reports
+- Deterministic Task Card compilation from approved Implementation Slices with strict file boundaries, constraints, acceptance criteria, validations, risk classification, and validation reports
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -24,7 +25,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Specified, Runtime Deferred
 
-- Constitution canonical storage; Task Card compiler and canonical-artifact Context Compiler v1
+- Constitution canonical storage and canonical-artifact Context Compiler v1
 - Code-aware context compilation, after Repository Parsing and Structural Intelligence
 - Prompt registries/optimization/evaluation, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; parsers/repository graph/structural execution

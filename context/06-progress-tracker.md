@@ -1,5 +1,57 @@
 # OXZI — Progress Tracker
 
+## Task Card Compiler Runtime Foundation
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `src/domain/task-card/schemas.ts`
+- `src/domain/task-card/utils.ts`
+- `src/domain/task-card/compiler.ts`
+- `src/domain/task-card/task-card-compiler.test.ts`
+- `src/domain/task-card/index.ts`
+
+### Files Modified
+
+- `CURRENT.md`
+- `PROJECT.md`
+- `OXZI.md`
+- `DECISIONS.md`
+- `context/00-context-map.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Added strict Zod contracts for normalized Task Cards, file boundaries, validation requirements, and Task Card validation reports.
+- Implemented deterministic Task Card compilation from one approved Implementation Slice, preserving exact Slice, Technical Plan, Specification, Constitution, evidence, acceptance, rollback, validation, artifact, and fingerprint traceability.
+- Added conservative file-boundary resolution with writable, read-only, and protected sets; protected entries include local secrets, generated review evidence, dependency/build outputs, Git metadata, and Slice-protected scope.
+- Mapped Slice scope, exclusions, risks, protected boundaries, validation commands, prerequisites, and optional Constitution rules into agent-agnostic Task Card meaning.
+- Added Task Card validation that reports malformed cards or protected-boundary overlaps as blocking findings instead of rendering an execution-ready artifact.
+- Added ADR-083 for normalized Task Card runtime ownership and downstream renderer/passport separation.
+
+### Validation Results
+
+- Focused Task Card compiler run — passed; 1 file and 7 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed with no warnings after removing unused test destructuring
+- `npm run test` — passed; 17 files and 251 tests
+- `npm run build` — passed outside the restricted sandbox; `/` and `/_not-found` prerendered as static routes
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+The first restricted-sandbox Review Engine run failed only because its internal Turbopack build could not bind a required local IPC port (`Operation not permitted`). The approved unchanged rerun outside that restriction passed.
+
+### Remaining Limits
+
+- No Context Package compiler, prompt renderer, Execution Passport certification, connected delivery, persistence, provider calls, UI, repository parsing, or code-aware context selection was implemented.
+- File boundaries are deterministic string/glob references from Slice scope. Repository-aware validation waits for Repository Parsing and Structural Intelligence.
+
+### Next Smallest Unit
+
+Implement Context Compiler Runtime v1 over canonical project artifacts and approved Task Cards. Keep code-aware context compilation, prompt rendering, Execution Passport certification, connected delivery, persistence, providers, and UI outside that unit.
+
 ## Roadmap and Documentation Reconciliation
 
 Completed on 2026-07-23.
