@@ -18,6 +18,42 @@ Completed on 2026-07-23.
 ### Files Modified
 
 - `CURRENT.md`
+
+---
+
+## Step 14 — Evaluation Lab, Benchmarks, and Launch Hardening
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `src/lib/evaluation/index.ts`
+- `data/baseline.ts`
+- `src/domain/evaluation/schema.ts`
+- `src/domain/evaluation/runner.ts`
+- `src/domain/evaluation/baseline.ts`
+- `src/domain/evaluation/token-ledger.ts`
+- `src/domain/evaluation/suites/extraction.suite.ts`
+- `src/domain/evaluation/suites/discovery.suite.ts`
+- `src/domain/evaluation/suites/context-compiler.suite.ts`
+- `src/app/api/evaluate/route.ts`
+- `src/__benchmarks__/context-compiler.bench.ts`
+- `src/__tests__/benchmarks/benchmarks.test.ts`
+- `src/__tests__/integration/pipeline.test.ts`
+- `src/__tests__/integration/flows.test.ts`
+- `docs/performance.md`
+- `docs/launch-checklist.md`
+
+### Files Modified
+
+- `src/middleware.ts`
+- `package.json`
+- `README.md`
+- `CURRENT.md`
+- `.env.example`
+- `src/lib/env.ts`
+- `src/lib/env.test.ts`
+- `context/06-progress-tracker.md`
 - `PROJECT.md`
 - `OXZI.md`
 - `DECISIONS.md`
