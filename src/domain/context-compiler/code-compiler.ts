@@ -1,17 +1,30 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { contentFingerprint, type JsonValue } from "../knowledge-graph";
-import { repositoryManifestSchema, type RepositoryManifest } from "../repository-intelligence";
+import {
+  repositoryManifestSchema,
+  type RepositoryManifest,
+  type FileNode,
+} from "../repository-intelligence";
 import { taskCardSchema } from "../task-card";
 import {
   codeContextItemSchema,
   compiledContextSchema,
   contextCompilerInputSchema,
   type CompiledContext,
+  type ContextSelectionReason,
 } from "./schemas";
 import { compileCanonicalContext } from "./compiler";
 
 const CONTEXT_COMPILER_V2_VERSION = "context-compiler-code-aware-v2.0.0";
+
+function fileNodeMap(manifest: RepositoryManifest): Map<string, FileNode> {
+  const map = new Map<string, FileNode>();
+  for (const file of manifest.files) {
+    map.set(file.filePath, file);
+  }
+  return map;
+}
 
 function firstDegreeImports(
   filePath: string,
@@ -68,12 +81,19 @@ export function compileCodeAwareContext(input: unknown): CompiledContext {
     for (const dep of deps) includePaths.add(dep);
   }
 
-  // Read the file contents from disk
-  const codeContextItems: { path: string; content: string; reason: string }[] = [];
+  // Read the file contents from disk with structural metadata
+  const codeContextItems: {
+    path: string;
+    content: string;
+    reason: ContextSelectionReason;
+    exports: string[];
+    imports: string[];
+  }[] = [];
   const rootPath = manifest.rootPath;
+  const nodes = fileNodeMap(manifest);
 
   for (const filePath of includePaths) {
-    let reason: string;
+    let reason: ContextSelectionReason;
     if (writableSet.has(filePath)) {
       reason = "task_code_file_writable";
     } else if (readOnlySet.has(filePath)) {
@@ -91,11 +111,18 @@ export function compileCodeAwareContext(input: unknown): CompiledContext {
       continue;
     }
 
+    // Attach structural metadata from the manifest's file nodes
+    const fileNode = nodes.get(filePath);
+    const exports = fileNode?.exports ?? [];
+    const imports = fileNode?.imports ?? [];
+
     codeContextItems.push(
       codeContextItemSchema.parse({
         path: filePath,
         content,
         reason,
+        exports,
+        imports,
       }),
     );
   }

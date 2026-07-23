@@ -48,7 +48,9 @@ export const codeContextItemSchema = z
   .object({
     path: nonempty,
     content: nonempty,
-    reason: nonempty,
+    reason: contextSelectionReasonSchema,
+    exports: z.array(nonempty).default([]),
+    imports: z.array(nonempty).default([]),
   })
   .strict();
 
@@ -77,11 +79,11 @@ export const compiledContextSchema = z
   })
   .strict()
   .superRefine((value, context) => {
-    if (value.sufficiency === "sufficient" && value.items.length === 0) {
+    if (value.sufficiency === "sufficient" && value.items.length === 0 && value.codeContext.length === 0) {
       context.addIssue({
         code: "custom",
         path: ["items"],
-        message: "Sufficient compiled context requires at least one included item",
+        message: "Sufficient compiled context requires at least one included item or code context entry",
       });
     }
   });
