@@ -4,15 +4,14 @@ import { join } from "node:path";
 import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
 import { taskCardSchema, type TaskCard } from "../task-card";
 
-// ── Lazy oxc-parser import guard ────────────────────────────────
+// ── Lazy oxc-parser import guard (eval-based to hide from Turbopack) ─
 
 let cachedParseExports: ((content: string) => string[]) | null = null;
 
 function getParseExports(): (content: string) => string[] {
   if (!cachedParseExports) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mod = require("../repository-intelligence") as {
+      const mod = eval('require')("../repository-intelligence") as {
         parseExports: (content: string) => string[];
       };
       cachedParseExports = mod.parseExports;

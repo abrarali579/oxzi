@@ -2,17 +2,16 @@ import { lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import { basename, extname, join, relative, resolve, sep } from "node:path";
 import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
 
-// ── Safe oxc-parser import (graceful fallback for Turbopack) ──────
+// ── Safe oxc-parser import (eval-based to hide from Turbopack) ──
 
-let oxcParser: typeof import("oxc-parser") | null = null;
+let oxcParser: unknown = null;
 let oxcLoadAttempted = false;
 
-function getOxcParser(): typeof import("oxc-parser") {
+function getOxcParser(): unknown {
   if (!oxcLoadAttempted) {
     oxcLoadAttempted = true;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      oxcParser = require("oxc-parser") as typeof import("oxc-parser");
+      oxcParser = eval('require')("oxc-parser");
     } catch {
       // Native WASM bindings unavailable — functions that need AST will return empty results
     }
@@ -29,9 +28,8 @@ function getOxcParser(): typeof import("oxc-parser") {
  */
 function parseASTSafe(filePath: string, content: string): { program: { body: Array<Record<string, unknown>> } } {
   try {
-    const parser = getOxcParser();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return parser.parseSync(filePath, content) as any;
+    const parser = getOxcParser() as { parseSync: (path: string, content: string) => { program: { body: Array<Record<string, unknown>> } } };
+    return parser.parseSync(filePath, content);
   } catch {
     return { program: { body: [] } };
   }

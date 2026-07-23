@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, type ReactNode } from "react";
+import MermaidDiagram from "@/app/components/MermaidDiagram";
 
 interface ProjectData {
   id: string;
@@ -530,9 +531,7 @@ export default function ProjectDetailPage() {
               </LoadingOverlay>
               {mapError && <ErrorBanner message={mapError} onRetry={handleLoadMap} />}
               {diagram && (
-                <div className="mermaid-container">
-                  {diagram}
-                </div>
+                <MermaidDiagram chart={diagram} />
               )}
             </div>
 
@@ -646,9 +645,7 @@ export default function ProjectDetailPage() {
                       <summary style={{ cursor: "pointer", fontSize: "0.75rem", color: "var(--accent)", fontWeight: 600 }}>
                         Reverse Proposal
                       </summary>
-                      <pre className="mermaid-container" style={{ marginTop: "0.375rem", padding: "0.5rem", maxHeight: "10rem", fontSize: "0.6875rem" }}>
-                        {finding.reverseProposal as string}
-                      </pre>
+                      <MermaidDiagram chart={finding.reverseProposal as string} maxHeight="10rem" />
                     </details>
                   )}
                   <div className="form-actions" style={{ marginTop: "0.5rem" }}>
