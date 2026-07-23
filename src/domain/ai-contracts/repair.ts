@@ -1,4 +1,5 @@
 import { contentFingerprint, type JsonValue } from "../knowledge-graph";
+import { callGateway, type GatewayRequest } from "../../lib/ai/gateway";
 import {
   aiContractDefinitionSchema,
   parseResultSchema,
@@ -11,6 +12,11 @@ import {
   type TypedCompletionResult,
 } from "./schemas";
 
+// ── Constants ──────────────────────────────────────────────────
+
+const MAX_MODEL_ASSISTED_RETRIES = 2;
+const REPAIR_TEMPERATURE = 0;
+
 // ── Helpers ────────────────────────────────────────────────────
 
 const suffix = (value: JsonValue) => contentFingerprint(value).replace("fp_f1_", "");
@@ -20,8 +26,8 @@ function generateId(prefix: string, seed: JsonValue): string {
 }
 
 /**
- * Compute a deterministic "repair prompt" instructing a model how to fix
- * specific validation errors found in its previous output.
+ * Construct a repair prompt that shows the AI its previous malformed output
+ * plus the exact Zod validation errors. Used for model-assisted repair.
  */
 export function buildRepairPrompt(
   originalOutput: string,
@@ -43,7 +49,7 @@ export function buildRepairPrompt(
     "",
     "### Original Output",
     "",
-    "```",
+    "```json",
     originalOutput,
     "```",
     "",
@@ -54,60 +60,14 @@ export function buildRepairPrompt(
     "### Requirements",
     "",
     "- Fix each validation error listed above.",
-    "- Return ONLY the corrected output in the exact same format as the original.",
+    "- Return ONLY the corrected JSON output in the exact same format.",
     "- Do not add explanations, notes, or commentary.",
     "- Preserve all fields and structure that were already correct.",
+    "- Ensure the output is valid JSON.",
   ].join("\n");
 }
 
-/**
- * Simulate a model call with a repair prompt.
- * In production this would call an actual AI gateway; here we return a
- * deterministic correction by applying known fix patterns.
- */
-export function callModelWithRepairPrompt(
-  originalOutput: string,
-  errors: ValidationError[],
-): string {
-  let corrected = originalOutput;
-
-  for (const error of errors) {
-    const path = error.path.join(".");
-    // Known fix: replace empty expected values with placeholders
-    if (
-      error.code === "too_small" &&
-      error.expected === "string" &&
-      corrected.includes(`"${path}": ""`)
-    ) {
-      corrected = corrected.replace(`"${path}": ""`, `"${path}": "placeholder"`);
-    }
-    // Known fix: replace missing enum values with first valid option
-    if (error.code === "invalid_enum_value") {
-      const match = error.message.match(/expected '([^']+)'/);
-      if (match?.[1]) {
-        corrected = corrected.replace(
-          new RegExp(`"${path}":\\s*"[^"]*"`),
-          `"${path}": "${match[1]}"`,
-        );
-      }
-    }
-    // Known fix: wrap bare strings in expected object structure
-    if (error.code === "invalid_type" && error.expected === "object") {
-      corrected = corrected.replace(
-        new RegExp(`"${escapeRegex(path)}":\\s*"[^"]*"`),
-        `"${path}": {}`,
-      );
-    }
-  }
-
-  return corrected;
-}
-
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-// ── Deterministic Normalization (stub from known_normalization) ─
+// ── Deterministic Normalization ─────────────────────────────────
 
 function deterministicNormalize(raw: string): {
   normalized: string;
@@ -121,6 +81,11 @@ function deterministicNormalize(raw: string): {
   if (jsonMatch?.[1]) {
     normalized = jsonMatch[1].trim();
     operations.push("extract_fenced_json");
+  }
+
+  // Trim harmless trailing whitespace
+  if (normalized !== raw.trim()) {
+    operations.push("trim_whitespace");
   }
 
   return { normalized, operations };
@@ -166,8 +131,11 @@ export interface RepairResult {
  * 1. Parse the raw AI output.
  * 2. If parse/validation passes, return success.
  * 3. If validation fails, apply deterministic normalization.
- * 4. If still failing, construct a repair prompt and "call the model again".
- * 5. Re-validate; if still failing, escalate to human review.
+ * 4. If still failing, construct a repair prompt and call the provider
+ *    gateway with temperature=0 for stability.
+ * 5. Re-validate; if still failing, retry up to MAX_MODEL_ASSISTED_RETRIES.
+ * 6. If all retries exhausted, mark invocation as BLOCKED and escalate
+ *    to human review — never silently invent data.
  */
 export function runRepairPipeline(
   contract: AiContractDefinition,
@@ -181,10 +149,13 @@ export function runRepairPipeline(
 
   const attempts: RepairAttempt[] = [];
 
-  // ── Step 1: Deterministic parse / normalization ─────────────
+  // ──────────────────────────────────────────────────────────────
+  // Step 1: Deterministic parse / normalization
+  // ──────────────────────────────────────────────────────────────
 
   const { normalized, operations: normOps } = deterministicNormalize(rawOutput);
-  const { parsed, errors } = tryParse(normalized);
+  let currentOutput = normalized;
+  let { parsed, errors } = tryParse(normalized);
 
   const firstParse: ParseResult = parseResultSchema.parse({
     invocationId,
@@ -218,7 +189,9 @@ export function runRepairPipeline(
     };
   }
 
-  // ── Step 2: Deterministic repair attempt ────────────────────
+  // ──────────────────────────────────────────────────────────────
+  // Step 2: Deterministic repair attempt
+  // ──────────────────────────────────────────────────────────────
 
   const detRepair: RepairAttempt = repairAttemptSchema.parse({
     id: generateId("repair_attempt", { invocationId, attempt: 1 }),
@@ -257,65 +230,85 @@ export function runRepairPipeline(
     };
   }
 
-  // ── Step 3: Model-assisted repair ────────────────────────────
+  // ──────────────────────────────────────────────────────────────
+  // Step 3: Model-assisted repair (up to MAX_MODEL_ASSISTED_RETRIES)
+  // ──────────────────────────────────────────────────────────────
 
-  const modelCorrected = callModelWithRepairPrompt(rawOutput, errors);
+  for (let retry = 0; retry < MAX_MODEL_ASSISTED_RETRIES; retry++) {
+    const repairPrompt = buildRepairPrompt(currentOutput, errors);
 
-  const { normalized: correctedNorm } = deterministicNormalize(modelCorrected);
-  const { parsed: correctedParsed, errors: correctedErrors } = tryParse(correctedNorm);
-
-  const modelRepair: RepairAttempt = repairAttemptSchema.parse({
-    id: generateId("repair_attempt", { invocationId, attempt: 2 }),
-    invocationId,
-    attemptNumber: 2,
-    method: "model_assisted",
-    originalHash: contentFingerprint(rawOutput),
-    repairedHash: correctedParsed ? contentFingerprint(correctedParsed as JsonValue) : null,
-    operations: ["extract_fenced_json", "trim_whitespace"],
-    confidence: correctedErrors.length === 0 ? 90 : 40,
-    validatorVersion: "typed-ai-validator-v1",
-    remainingErrors: correctedErrors,
-    result: correctedErrors.length === 0 ? "succeeded" : "failed",
-    escalationStatus: "none",
-  });
-  attempts.push(modelRepair);
-
-  // ── Step 4: Check result ─────────────────────────────────────
-
-  if (correctedErrors.length === 0) {
-    return {
-      completion: typedCompletionResultSchema.parse({
-        invocationId,
-        contractId: parsedContract.id,
-        status: "success",
-        parsedResult: parseResultSchema.parse({
-          invocationId,
-          status: "normalized",
-          parsedValue: correctedParsed as JsonValue,
-          rawResponseHash: contentFingerprint(modelCorrected),
-          parsedValueHash: contentFingerprint(correctedParsed as JsonValue),
-          parserVersion: "typed-ai-parser-v1",
-          normalizationOperations: ["extract_fenced_json", "trim_whitespace"],
-          validationErrors: [],
-        }),
-        repairAttempts: attempts,
-        repairLimit: parsedContract.retryPolicy.maxAttempts,
-        escalationStatus: "none",
-        partialState: null,
-        finalCertified: true,
-        normalizedOutputArtifactRef: `artifact:output:${invocationId}`,
-        evidenceRefs: ["evidence:model_assisted_repair"],
-      }),
-      attempts,
-      escalated: false,
+    // Call the provider gateway with temperature=0 for deterministic correction
+    const gatewayRequest: GatewayRequest = {
+      systemPrompt: "You are a JSON repair assistant. Fix validation errors precisely.",
+      userMessage: repairPrompt,
+      temperature: REPAIR_TEMPERATURE,
     };
+
+    const gatewayResponse = callGateway(gatewayRequest, { temperature: REPAIR_TEMPERATURE });
+
+    // Parse the gateway response
+    const { normalized: correctedNorm } = deterministicNormalize(gatewayResponse.content);
+    currentOutput = correctedNorm;
+    const result = tryParse(correctedNorm);
+    parsed = result.parsed;
+    errors = result.errors;
+
+    const modelRepair: RepairAttempt = repairAttemptSchema.parse({
+      id: generateId("repair_attempt", { invocationId, attempt: attempts.length + 1 }),
+      invocationId,
+      attemptNumber: attempts.length + 1,
+      method: "model_assisted",
+      originalHash: contentFingerprint(currentOutput),
+      repairedHash: parsed ? contentFingerprint(parsed as JsonValue) : null,
+      operations: ["extract_fenced_json", "trim_whitespace"],
+      confidence: errors.length === 0 ? 90 : 40 - retry * 15,
+      validatorVersion: "typed-ai-validator-v1",
+      remainingErrors: errors,
+      result: errors.length === 0 ? "succeeded" : "failed",
+      escalationStatus: "none",
+    });
+    attempts.push(modelRepair);
+
+    // If this retry succeeded, return success
+    if (errors.length === 0) {
+      return {
+        completion: typedCompletionResultSchema.parse({
+          invocationId,
+          contractId: parsedContract.id,
+          status: "success",
+          parsedResult: parseResultSchema.parse({
+            invocationId,
+            status: "normalized",
+            parsedValue: parsed as JsonValue,
+            rawResponseHash: contentFingerprint(gatewayResponse.content),
+            parsedValueHash: contentFingerprint(parsed as JsonValue),
+            parserVersion: "typed-ai-parser-v1",
+            normalizationOperations: ["extract_fenced_json", "trim_whitespace"],
+            validationErrors: [],
+          }),
+          repairAttempts: attempts,
+          repairLimit: parsedContract.retryPolicy.maxAttempts,
+          escalationStatus: "none",
+          partialState: null,
+          finalCertified: true,
+          normalizedOutputArtifactRef: `artifact:output:${invocationId}`,
+          evidenceRefs: ["evidence:model_assisted_repair"],
+        }),
+        attempts,
+        escalated: false,
+      };
+    }
   }
 
-  // ── Step 5: Escalate to human review ─────────────────────────
+  // ──────────────────────────────────────────────────────────────
+  // Step 4: Escalate to human review (BLOCKED)
+  //    After MAX_MODEL_ASSISTED_RETRIES failures, mark as BLOCKED.
+  //    Never silently invent data.
+  // ──────────────────────────────────────────────────────────────
 
   const escalated = true;
   attempts[attempts.length - 1] = repairAttemptSchema.parse({
-    ...modelRepair,
+    ...attempts[attempts.length - 1]!,
     escalationStatus: "escalated",
   });
 
@@ -328,11 +321,11 @@ export function runRepairPipeline(
         invocationId,
         status: "invalid",
         parsedValue: null,
-        rawResponseHash: contentFingerprint(modelCorrected),
+        rawResponseHash: contentFingerprint(currentOutput),
         parsedValueHash: null,
         parserVersion: "typed-ai-parser-v1",
         normalizationOperations: [],
-        validationErrors: correctedErrors,
+        validationErrors: errors,
       }),
       repairAttempts: attempts,
       repairLimit: parsedContract.retryPolicy.maxAttempts,
@@ -346,3 +339,4 @@ export function runRepairPipeline(
     escalated: true,
   };
 }
+

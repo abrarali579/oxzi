@@ -90,6 +90,12 @@ export default function ProjectDetailPage() {
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  // Drift state
+  const [driftFindings, setDriftFindings] = useState<Record<string, unknown>[]>([]);
+  const [driftSummary, setDriftSummary] = useState<Record<string, number> | null>(null);
+  const [driftLoading, setDriftLoading] = useState(false);
+  const [driftError, setDriftError] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/projects/${id}`)
@@ -220,6 +226,31 @@ export default function ProjectDetailPage() {
     } finally {
       setRestoring(false);
     }
+  }
+
+  async function handleScanDrift() {
+    setDriftLoading(true);
+    setDriftError(null);
+    try {
+      const res = await fetch(`/api/convergence/${id}`);
+      if (!res.ok) throw new Error("Drift scan failed");
+      const data = (await res.json()) as {
+        findings: Record<string, unknown>[];
+        summary: Record<string, number>;
+      };
+      setDriftFindings(data.findings);
+      setDriftSummary(data.summary);
+    } catch (err) {
+      setDriftError(err instanceof Error ? err.message : "Drift scan failed");
+    } finally {
+      setDriftLoading(false);
+    }
+  }
+
+  async function handleAcknowledgeDrift(findingId: string) {
+    setDriftFindings((prev) =>
+      prev.map((f) => (f.id === findingId ? { ...f, acknowledged: true } : f)),
+    );
   }
 
   async function handleDelete() {
@@ -380,6 +411,86 @@ export default function ProjectDetailPage() {
               whiteSpace: "pre", maxHeight: "20rem", overflowY: "auto",
             }}>
               {diagram}
+            </div>
+          )}
+        </div>
+
+        {/* ── Drift Detection ──────────────────────────────────── */}
+        <div className="detail-section">
+          <h2 className="detail-section-title">Code Drift Detection</h2>
+          <LoadingOverlay loading={driftLoading}>
+            <button className="btn btn-primary" onClick={handleScanDrift} disabled={driftLoading}>
+              {driftLoading ? "Scanning…" : driftFindings.length > 0 ? "Rescan Repository" : "Scan for Drift"}
+            </button>
+          </LoadingOverlay>
+          {driftError && <ErrorBanner message={driftError} onRetry={handleScanDrift} />}
+          {driftSummary && (
+            <div className="status-grid" style={{ marginTop: "0.75rem" }}>
+              <div className={`status-card ${driftSummary.overbuilt > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
+                <strong>{driftSummary.overbuilt}</strong> overbuilt
+              </div>
+              <div className={`status-card ${driftSummary.missing > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
+                <strong>{driftSummary.missing}</strong> missing
+              </div>
+              <div className={`status-card ${driftSummary.architectureDrift > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
+                <strong>{driftSummary.architectureDrift}</strong> arch. drift
+              </div>
+              <div className={`status-card ${driftSummary.outOfScope > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
+                <strong>{driftSummary.outOfScope}</strong> out-of-scope
+              </div>
+            </div>
+          )}
+          {driftFindings.length > 0 && (
+            <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {driftFindings.map((finding) => (
+                <div key={finding.id as string} style={{
+                  padding: "0.75rem", background: "var(--surface)",
+                  border: `1px solid ${finding.acknowledged ? "var(--line)" : "var(--accent)"}`,
+                  borderRadius: "0.5rem", fontSize: "0.85rem",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontWeight: 600 }}>{finding.drift as string}</span>
+                    <span style={{ color: "var(--muted)", fontSize: "0.75rem" }}>
+                      {finding.changeType as string} — {finding.filePath as string}
+                    </span>
+                  </div>
+                  <p style={{ margin: "0.25rem 0", color: "var(--muted)" }}>
+                    {finding.detail as string}
+                  </p>
+                  {(finding.reverseProposal as string) && (
+                    <details style={{ marginTop: "0.25rem" }}>
+                      <summary style={{ cursor: "pointer", fontSize: "0.75rem", color: "var(--accent)" }}>
+                        Reverse Proposal
+                      </summary>
+                      <pre style={{
+                        marginTop: "0.25rem", padding: "0.5rem", fontSize: "0.7rem",
+                        background: "rgba(0,0,0,0.03)", borderRadius: "0.25rem",
+                        whiteSpace: "pre-wrap", maxHeight: "10rem", overflowY: "auto",
+                      }}>
+                        {finding.reverseProposal as string}
+                      </pre>
+                    </details>
+                  )}
+                  <div className="form-actions" style={{ marginTop: "0.5rem", gap: "0.5rem" }}>
+                    {!finding.acknowledged && (
+                      <button className="btn btn-secondary"
+                        onClick={() => handleAcknowledgeDrift(finding.id as string)}
+                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                        Acknowledge
+                      </button>
+                    )}
+                    {finding.autoFixable as boolean && (
+                      <button className="btn btn-primary"
+                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                        Auto-Fix
+                      </button>
+                    )}
+                    {(finding.acknowledged as boolean) && (
+                      <span style={{ fontSize: "0.7rem", color: "var(--muted)" }}>Acknowledged</span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

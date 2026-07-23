@@ -15,6 +15,7 @@
     "review": "node scripts/generate-review.mjs",
     "test:review": "node --test scripts/generate-review.test.mjs",
     "evaluate": "node scripts/evaluate.mjs",
+    "optimize": "npx tsx src/scripts/optimize.ts",
     "ci": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run test:review && npm run build"
   },
   "dependencies": {
