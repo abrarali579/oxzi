@@ -33,6 +33,10 @@ next-env.d.ts
 .oxzi/projects/
 .oxzi/index.json
 
+# Database
+prisma/oxzi.db
+prisma/oxzi.db-journal
+
 # Generated local review package
 .review/*
 !.review/.gitkeep

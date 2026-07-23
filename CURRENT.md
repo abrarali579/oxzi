@@ -4,9 +4,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, Delivery, and Internal Product UI runtime
+- Phase: deterministic foundations + full product runtime including Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, Delivery, Internal UI, Auth, Organizations, and Billing runtime
 - Active unit: none
-- Last completed: Steps 1–12 — all core deterministic pipeline + internal UI + persistence + APIs
+- Last completed: Steps 1–13 — all core deterministic pipeline + internal UI + persistence + auth + orgs + billing (partial) + collaboration
 - Next: await further instruction
 
 ## Implemented
@@ -25,6 +25,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Agent Control Plane with deterministic Execution Passport issuance (CERTIFIED-only gate, tamper-evident signatures, integrity verification)
 - Approval-gated Connected Agent Delivery with passport verification, human/system approval gate, and DeliveryTicket generation
 - Internal UI & Persistence with file-based JSON project store, CRUD API routes, project list/detail/new pages, six-file ZIP generation, and deterministic serialization
+- Authentication & Organizations with JWT-based login/signup, session management, Prisma/SQLite database, organization membership (owner/member roles), protected API middleware, and dashboard UI
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -36,7 +37,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Constitution canonical storage
 - Prompt registries/optimization, AI/provider repair, traces/experiments
-- Skill auditor/router/diagnostics; divergence, review/convergence, auth/providers
+- Skill auditor/router/diagnostics; divergence, review/convergence; billing (stripe integration placeholder), real-time multiplayer (deferred to next iteration)
 
 ## Boundaries
 

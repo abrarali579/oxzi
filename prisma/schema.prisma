@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   Membership[]
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   Membership[]
+  projects      Project[]
+  subscriptions Subscription[]
+}
+
+model Membership {
+  id             String       @id @default(cuid())
+  role           String       @default("member") // owner | admin | member
+  userId         String
+  organizationId String
+  createdAt      DateTime     @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([userId, organizationId])
+}
+
+model Project {
+  id              String   @id
+  title           String
+  brief           String   @default("")
+  organizationId  String
+  ownerId         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  version         Int      @default(1)
+
+  // Serialized JSON payloads (migrated from file store)
+  canonicalState  String?  // JSON
+  discoveryResult String?  // JSON
+  extractionResult String? // JSON
+  generatedFiles  String?  // JSON
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Subscription {
+  id             String   @id @default(cuid())
+  organizationId String   @unique
+  plan           String   @default("free") // free | pro | enterprise
+  status         String   @default("active") // active | past_due | canceled
+  stripeCustomerId String? @unique
+  stripeSubscriptionId String?
+  currentPeriodEnd DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
