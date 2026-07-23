@@ -320,7 +320,7 @@ export const identitySchema = z
     name: stringField(),
     oneLiner: stringField(),
     projectType: projectFieldSchema(
-      z.enum(["website", "saas_application", "automation_system", "internal_tool", "other"]),
+      z.enum(["website", "saas_application", "mobile_app", "automation_system", "internal_tool", "other"]),
     ),
     industry: stringField(),
     currentStage: stringField(),

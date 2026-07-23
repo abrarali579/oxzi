@@ -14,7 +14,12 @@ export const PROJECT_SECTIONS = [
 export type ProjectSection = (typeof PROJECT_SECTIONS)[number];
 export type FieldPath = `${ProjectSection}.${string}`;
 export type ProjectType =
-  "website" | "saas_application" | "automation_system" | "internal_tool" | "other";
+  | "website"
+  | "saas_application"
+  | "mobile_app"
+  | "automation_system"
+  | "internal_tool"
+  | "other";
 
 export type ArchitectureImpact = "foundational" | "structural" | "local" | "cosmetic";
 export type QuestionCategory =

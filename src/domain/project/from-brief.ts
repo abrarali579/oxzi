@@ -2,6 +2,7 @@ import { oxzire3dWebsiteFixture } from "./fixtures";
 import { parseCanonicalProject, type CanonicalProject } from "./schema";
 import { evidenceIdSchema } from "./identifiers";
 import { extractCanonicalUpdates, type ExtractionResult } from "../extraction";
+import { bootstrapDomainDefaults } from "./domain-defaults";
 
 /**
  * Builds a draft CanonicalProject from just a title + free-text brief, then
@@ -118,6 +119,23 @@ export function buildCanonicalProjectFromBrief(
       }
     }
   }
+
+  // ── Apply domain-aware defaults for fields still missing after extraction ──
+  // Only fills fields that the brief didn't explicitly cover, using project type
+  // and keyword detection (e.g. "fitness" + "pregnant" → pregnancy workout app).
+  const bootstrapEvidenceId = evidenceIdSchema.parse("evidence_domain_bootstrap");
+  if (!clone.meta.evidence.some((e) => e.id === bootstrapEvidenceId)) {
+    clone.meta.evidence.push({
+      id: bootstrapEvidenceId,
+      sourceType: "prompt" as const,
+      sourceId: "source_domain_bootstrap",
+      excerpt: brief.slice(0, 500),
+      interpretation:
+        "Domain-aware defaults inferred from project type and keywords in the brief.",
+      createdAt: now,
+    });
+  }
+  bootstrapDomainDefaults(clone as CanonicalProject, brief);
 
   return { canonical: parseCanonicalProject(clone), extraction };
 }

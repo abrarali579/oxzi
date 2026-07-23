@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getProject, updateProject } from "@/lib/db";
+import { prisma } from "@/lib/db/client";
+import { getSession } from "@/lib/auth";
+import { getProject as getFileProject, updateProject as updateFileProject } from "@/lib/db";
 import { createZipBuffer } from "@/lib/utils/zip";
 import { buildCanonicalProjectFromBrief } from "@/domain/project/from-brief";
 import { analyzeDiscovery } from "@/domain/discovery";
@@ -221,22 +223,30 @@ function generateFilesFromAnalysis(
 
 export async function POST(_request: Request, context: RouteContext) {
   const { id } = await context.params;
-  const project = getProject(id);
+  const session = await getSession();
 
-  if (!project) {
+  // Try DB first (for authenticated users), then fall back to the file store —
+  // same dual-lookup pattern as taskcard/restore/history, so projects created
+  // via the authenticated Prisma-backed flow aren't 404'd here.
+  const dbProject = session ? await prisma.project.findUnique({ where: { id } }) : null;
+  const fileProject = dbProject ? null : getFileProject(id);
+  if (!dbProject && !fileProject) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
+  const isDbProject = dbProject !== null;
+  const title = dbProject ? dbProject.title : fileProject!.title;
+  const brief = dbProject ? dbProject.brief : fileProject!.brief;
 
   try {
     // 1. Build a CanonicalProject from the brief, with extraction updates
     //    already folded onto the matching fields
-    const { canonical, extraction } = buildCanonicalProjectFromBrief(project.title, project.brief);
+    const { canonical, extraction } = buildCanonicalProjectFromBrief(title, brief);
 
     // 2. Run discovery analysis on the enriched canonical project
     const discovery = analyzeDiscovery(canonical);
 
     // 3. Generate dynamic files from the analysis
-    const files = generateFilesFromAnalysis(project.title, project.brief, discovery, extraction);
+    const files = generateFilesFromAnalysis(title, brief, discovery, extraction);
 
     // 5. Save to project record
     const entries = Object.entries(files).map(([name, content]) => ({
@@ -245,13 +255,17 @@ export async function POST(_request: Request, context: RouteContext) {
     }));
 
     const zipBuffer = await createZipBuffer(entries);
-    updateProject(id, { generatedFiles: files });
+    if (isDbProject) {
+      await prisma.project.update({ where: { id }, data: { generatedFiles: JSON.stringify(files) } });
+    } else {
+      updateFileProject(id, { generatedFiles: files });
+    }
 
     return new NextResponse(new Uint8Array(zipBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(project.title)}-oxzi-files.zip"`,
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(title)}-oxzi-files.zip"`,
         "Content-Length": zipBuffer.length.toString(),
       },
     });

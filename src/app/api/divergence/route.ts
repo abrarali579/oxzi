@@ -2,18 +2,95 @@ import { NextResponse } from "next/server";
 import { runDivergence } from "@/domain/divergence";
 import { divergenceRequestSchema, cognitiveFrameSchema, divergenceCostEstimateSchema } from "@/domain/divergence/schemas";
 import { contentFingerprint } from "@/domain/knowledge-graph";
+import { prisma } from "@/lib/db/client";
+import { getSession } from "@/lib/auth";
+import { getProject as getFileProject } from "@/lib/db";
+import { buildCanonicalProjectFromBrief } from "@/domain/project/from-brief";
 import type { JsonValue } from "@/domain/knowledge-graph/types";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const fp = contentFingerprint({ request: "divergence" } as unknown as JsonValue).replace("fp_f1_", "").slice(0, 16);
-    const request = divergenceRequestSchema.parse({
+    // ── Parse projectId from request body ──────────────────────
+    let body: { projectId?: string };
+    try {
+      body = (await request.json()) as { projectId?: string };
+    } catch {
+      return NextResponse.json({ error: "projectId is required" }, { status: 400 });
+    }
+
+    const { projectId } = body;
+    if (!projectId) {
+      return NextResponse.json({ error: "projectId is required" }, { status: 400 });
+    }
+
+    // ── Load the real project ──────────────────────────────────
+    // Try DB first (for authenticated users), then fall back to the file store —
+    // same dual-lookup pattern as taskcard/restore/history, so projects created
+    // via the authenticated Prisma-backed flow aren't 404'd here.
+    const session = await getSession();
+    const dbProject = session ? await prisma.project.findUnique({ where: { id: projectId } }) : null;
+    const fileProject = dbProject ? null : getFileProject(projectId);
+    if (!dbProject && !fileProject) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+    const projectTitle = dbProject ? dbProject.title : fileProject!.title;
+    const projectBrief = dbProject ? dbProject.brief : fileProject!.brief;
+
+    // ── Build canonical state from title + brief ───────────────
+    const { canonical } = buildCanonicalProjectFromBrief(projectTitle, projectBrief);
+
+    // ── Derive request fields from canonical + project ─────────
+    const oneLiner = canonical.identity.oneLiner.status !== "missing" && canonical.identity.oneLiner.value
+      ? canonical.identity.oneLiner.value
+      : null;
+    const briefExcerpt = oneLiner
+      ? oneLiner.length > 200
+        ? `${oneLiner.slice(0, 200)}…`
+        : oneLiner
+      : null;
+    const decision = briefExcerpt
+      ? `Evaluate: ${briefExcerpt}`
+      : `Evaluate implementation approach for ${projectTitle}`;
+
+    const constraints =
+      canonical.scope.constraints.value && canonical.scope.constraints.value.length > 0
+        ? canonical.scope.constraints.value
+        : ["security", "performance", "maintainability"];
+
+    const acceptedFacts: string[] = (() => {
+      const facts: string[] = [];
+      const goals = canonical.business.goals.value;
+      if (goals && goals.length > 0) {
+        for (const g of goals) {
+          facts.push(`${g.name}: ${g.outcome}`);
+        }
+      }
+      if (facts.length === 0) {
+        return ["User authentication required", "Real-time updates needed"];
+      }
+      return facts;
+    })();
+
+    const fp = contentFingerprint({
+      projectId,
+      decision,
+      constraints,
+      acceptedFacts,
+    } as unknown as JsonValue)
+      .replace("fp_f1_", "")
+      .slice(0, 16);
+    // The divergence schema expects "project_" prefix, but the database stores
+    // project IDs with "proj_" prefix. Normalize for schema compatibility.
+    const schemaProjectId = projectId.startsWith("proj_")
+      ? `project_${projectId.slice(5)}`
+      : projectId;
+    const request_data = divergenceRequestSchema.parse({
       id: `divergence_request_${fp}`,
-      projectId: "project_divergence",
+      projectId: schemaProjectId,
       decisionTaskCardId: "task_card_divergence",
-      decision: "Evaluate implementation approach for high-risk feature",
-      constraints: ["security", "performance", "maintainability"],
-      acceptedFacts: ["User authentication required", "Real-time updates needed"],
+      decision,
+      constraints,
+      acceptedFacts,
       prohibitedOptions: ["Third-party auth providers", "WebSocket-free fallback"],
       evaluationCriteria: ["feasibility", "security", "performance", "maintainability"],
       uncertainty: ["Optimal data sync strategy", "Scaling requirements"],
@@ -78,7 +155,7 @@ export async function POST() {
       expectedDecisionValue: "high" as const,
     });
 
-    const report = runDivergence(request, frames, cost);
+    const report = runDivergence(request_data, frames, cost);
     return NextResponse.json({ report });
   } catch {
     return NextResponse.json({ error: "Divergence computation failed" }, { status: 500 });

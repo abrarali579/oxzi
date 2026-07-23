@@ -108,7 +108,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     architectureImpact: "foundational",
     question: "What kind of project is this?",
     answerMode: "single_select",
-    options: ["Website", "SaaS application", "Automation system", "Internal tool", "Other"],
+    options: ["Website", "SaaS application", "Mobile app", "Automation system", "Internal tool", "Other"],
     typingEffort: "none",
   },
   "business.problem": {
@@ -193,7 +193,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "high",
   },
   "product.roles": {
-    projectTypes: ["saas_application", "automation_system", "internal_tool"],
+    projectTypes: ["saas_application", "mobile_app", "automation_system", "internal_tool"],
     dependencies: ["business.targetUsers"],
     architectureImpact: "foundational",
     question: "Which user roles are required?",
@@ -202,7 +202,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "low",
   },
   "product.permissions": {
-    projectTypes: ["saas_application", "automation_system", "internal_tool"],
+    projectTypes: ["saas_application", "mobile_app", "automation_system", "internal_tool"],
     dependencies: ["product.roles"],
     architectureImpact: "foundational",
     category: "security_privacy",
@@ -291,7 +291,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "high",
   },
   "technical.dataEntities": {
-    projectTypes: ["saas_application", "automation_system", "internal_tool"],
+    projectTypes: ["saas_application", "mobile_app", "automation_system", "internal_tool"],
     dependencies: ["product.features"],
     architectureImpact: "foundational",
     question: "Which data must the system own?",
@@ -306,7 +306,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "high",
   },
   "technical.authentication": {
-    projectTypes: ["saas_application", "automation_system", "internal_tool"],
+    projectTypes: ["saas_application", "mobile_app", "automation_system", "internal_tool"],
     dependencies: ["product.roles", "product.permissions"],
     architectureImpact: "foundational",
     category: "security_privacy",
@@ -325,7 +325,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "none",
   },
   "technical.backgroundJobs": {
-    projectTypes: ["saas_application", "automation_system"],
+    projectTypes: ["saas_application", "mobile_app", "automation_system"],
     dependencies: ["product.features", "technical.integrations"],
     architectureImpact: "foundational",
     question: "Which work runs asynchronously?",
@@ -400,7 +400,7 @@ export const FIELD_RULES: Readonly<Partial<Record<FieldPath, FieldRule>>> = {
     typingEffort: "low",
   },
   "quality.seo": {
-    projectTypes: ["website", "saas_application"],
+    projectTypes: ["website", "saas_application", "mobile_app"],
     dependencies: ["product.contentRequirements"],
     question: "Which search visibility is required?",
     answerMode: "short_text",

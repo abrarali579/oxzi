@@ -9,7 +9,6 @@ export async function GET(_request: Request, context: RouteContext) {
 
   // In a real implementation, we'd load Task Cards from the project store.
   // For now, we build a default scan using the project's src/ directory.
-  // The repo root is the current working directory.
   const repoRoot = process.cwd();
   const srcDir = "src";
 
@@ -27,17 +26,22 @@ export async function GET(_request: Request, context: RouteContext) {
     // If we can't load project data, proceed with empty task cards
   }
 
-  // If no task cards loaded, create a minimal one from project boundaries
+  // Without Task Cards there are no boundaries to check — scanning would
+  // flag every file in src/ as "overbuilt", which is not actionable.
   if (taskCards.length === 0) {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/projects/${projectId}`);
-      if (res.ok) {
-        // We have the project but no structured task cards — create a default scan
-        // that at least detects overbuilt files
-      }
-    } catch {
-      // proceed with empty
-    }
+    return NextResponse.json({
+      findings: [],
+      scanTimestamp: new Date().toISOString(),
+      scanDurationMs: 0,
+      summary: {
+        total: 0,
+        overbuilt: 0,
+        missing: 0,
+        architectureDrift: 0,
+        outOfScope: 0,
+        autoFixable: 0,
+      },
+    });
   }
 
   const result = scanForDrift(projectId, taskCards, repoRoot, srcDir);

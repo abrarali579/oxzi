@@ -81,6 +81,7 @@ export const EXTRACTABLE_CANONICAL_VALUE_SCHEMAS = {
   "identity.projectType": z.enum([
     "website",
     "saas_application",
+    "mobile_app",
     "automation_system",
     "internal_tool",
     "other",

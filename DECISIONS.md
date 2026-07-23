@@ -706,3 +706,18 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 Fixed by adding `buildCanonicalProjectFromBrief()` (`src/domain/project/from-brief.ts`), a single shared builder used by both routes: it builds the draft canonical project, runs `extractCanonicalUpdates()` on the brief, and folds every update with `disposition: "proposed"` onto its matching field (`value`, `status`, `confidence`, `evidenceIds` taken directly from the update — never upgraded to human-confirmed truth) plus the matching evidence record into `meta.evidence`. Updates with `disposition: "blocked_conflict"` or `"blocked_approved"` are left untouched, consistent with the canonical-mutation approval rule (§4 of the OXZI product framework: no AI output silently mutates canonical truth).
 
 **Consequences:** `/generate` and `/visualize` now derive discovery stats (completeness, project type, resolved fields) from the same extraction-enriched canonical project instead of two disconnected code paths. Any future route that needs a `CanonicalProject` from a raw brief must reuse `buildCanonicalProjectFromBrief()` rather than re-copying the fixture-wipe pattern. This does not yet give users a way to review/approve proposed extraction updates before they're treated as canonical field state for discovery purposes — that human-approval step (per the Controlled Living Specs / canonical-mutation-approval rule) is still open and should land before this is relied on beyond MVP discovery/visualization.
+
+## ADR-086 — Two-Phase Extraction Approval Workflow
+
+**Status:** Accepted — UI/API wiring
+
+**Decision:** OXZI will implement a strict two-phase commit for natural-language extraction. Phase 1 (Proposal): `extractCanonicalUpdates()` runs and emits `ExtractionResult` with `proposed`, `blocked_conflict`, and `blocked_approved` updates. The UI displays these proposals as a list of toggles (Approve/Reject). Phase 2 (Commit): The user explicitly approves a subset (or all) of the proposed updates. The UI sends the approved update IDs to `PATCH /api/projects/[id]/canonical`. The backend validates them against the current `CanonicalProject` and applies them via a validated mutation, updating `canonicalState` in the project store.
+
+**Rationale:** The Controlled Living Specification (§13) mandates that AI output never silently mutates canonical truth. The extraction engine produces proposals, not mutations. Without a two-phase approval workflow, proposed updates are either silently applied (violating the policy) or ignored (wasting extraction). This ADR establishes the minimum viable approval path.
+
+**Consequences:**
+- `extractionResult` is stored in the project record after Phase 1 and presented to the user.
+- `PATCH /api/projects/[id]/canonical` becomes the single approved mutation path for extraction → canonical state.
+- The UI gains an "Extraction Review" section with per-update approve/reject toggles.
+- Only `disposition: "proposed"` updates are eligible for approval. `blocked_conflict` and `blocked_approved` updates are shown but cannot be approved.
+- This workflow is a prerequisite for the full dynamic pipeline (Task 3) — Task Cards must be compiled from approved canonical state, not raw extraction output.

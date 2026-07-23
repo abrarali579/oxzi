@@ -227,6 +227,18 @@ export default function ProjectDetailPage() {
   const [driftLoading, setDriftLoading] = useState(false);
   const [driftError, setDriftError] = useState<string | null>(null);
 
+  // Extraction review state (ADR-086)
+  const [extractionUpdates, setExtractionUpdates] = useState<Record<string, unknown>[]>([]);
+  const [extractionLoading, setExtractionLoading] = useState(false);
+  const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [approvedUpdateIds, setApprovedUpdateIds] = useState<Set<string>>(new Set());
+  const [applyingUpdates, setApplyingUpdates] = useState(false);
+
+  // Pipeline state (Task 3)
+  const [pipelineResult, setPipelineResult] = useState<Record<string, unknown> | null>(null);
+  const [pipelineLoading, setPipelineLoading] = useState(false);
+  const [pipelineError, setPipelineError] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/projects/${id}`)
@@ -381,6 +393,92 @@ export default function ProjectDetailPage() {
     setDriftFindings((prev) =>
       prev.map((f) => (f.id === findingId ? { ...f, acknowledged: true } : f)),
     );
+  }
+
+  // ── Extraction Review (ADR-086 Phase 1) ──────────────────
+
+  async function handleLoadExtraction() {
+    setExtractionLoading(true);
+    setExtractionError(null);
+    try {
+      const res = await fetch(`/api/projects/${id}/generate`, { method: "POST" });
+      if (!res.ok) throw new Error("Extraction failed");
+      // Re-fetch project to get stored extractionResult
+      const refresh = await fetch(`/api/projects/${id}`);
+      if (!refresh.ok) throw new Error("Failed to reload project");
+      const data = (await refresh.json()) as { project: ProjectData };
+      setProject(data.project);
+      if (data.project.extractionResult) {
+        const extraction = data.project.extractionResult as { updates?: Record<string, unknown>[] };
+        const updates = (extraction.updates ?? []).filter(
+          (u) => u.disposition === "proposed",
+        );
+        setExtractionUpdates(updates);
+        setApprovedUpdateIds(new Set(updates.map((u) => u.updateId as string)));
+      }
+    } catch (err) {
+      setExtractionError(err instanceof Error ? err.message : "Extraction failed");
+    } finally {
+      setExtractionLoading(false);
+    }
+  }
+
+  function toggleUpdateApproval(updateId: string) {
+    setApprovedUpdateIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(updateId)) next.delete(updateId);
+      else next.add(updateId);
+      return next;
+    });
+  }
+
+  async function handleApplyExtraction() {
+    if (approvedUpdateIds.size === 0) return;
+    setApplyingUpdates(true);
+    setExtractionError(null);
+    try {
+      const res = await fetch(`/api/projects/${id}/canonical`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approvedUpdateIds: [...approvedUpdateIds] }),
+      });
+      if (!res.ok) {
+        const errData = (await res.json()) as { error?: string };
+        throw new Error(errData.error ?? "Failed to apply updates");
+      }
+      // Refresh project data
+      const refresh = await fetch(`/api/projects/${id}`);
+      if (refresh.ok) {
+        const data = (await refresh.json()) as { project: ProjectData };
+        setProject(data.project);
+        setExtractionUpdates([]);
+        setApprovedUpdateIds(new Set());
+      }
+    } catch (err) {
+      setExtractionError(err instanceof Error ? err.message : "Failed to apply updates");
+    } finally {
+      setApplyingUpdates(false);
+    }
+  }
+
+  // ── Full Pipeline (Task 3) ───────────────────────────────
+
+  async function handleRunPipeline() {
+    setPipelineLoading(true);
+    setPipelineError(null);
+    try {
+      const res = await fetch(`/api/projects/${id}/pipeline`, { method: "POST" });
+      if (!res.ok) {
+        const errData = (await res.json()) as { error?: string };
+        throw new Error(errData.error ?? "Pipeline execution failed");
+      }
+      const data = (await res.json()) as Record<string, unknown>;
+      setPipelineResult(data);
+    } catch (err) {
+      setPipelineError(err instanceof Error ? err.message : "Pipeline failed");
+    } finally {
+      setPipelineLoading(false);
+    }
   }
 
   async function handleDelete() {
@@ -592,6 +690,111 @@ export default function ProjectDetailPage() {
           )}
         </div>
 
+        {/* ── Extraction Review (ADR-086 Phase 1) ──────────── */}
+        <div className="detail-section">
+          <SectionTitle icon="🔬" label="Extraction Review" />
+          <LoadingOverlay loading={extractionLoading} label="Extracting…">
+            <button className="btn btn-sm btn-primary" onClick={handleLoadExtraction} disabled={extractionLoading}>
+              {extractionLoading ? "Extracting…" : extractionUpdates.length > 0 ? "Re-run Extraction" : "Run Extraction"}
+            </button>
+          </LoadingOverlay>
+          {extractionError && <ErrorBanner message={extractionError} onRetry={handleLoadExtraction} />}
+
+          {extractionUpdates.length > 0 && (
+            <div style={{ marginTop: "0.75rem" }}>
+              <p style={{ fontSize: "0.8125rem", color: "var(--fg-muted)", marginBottom: "0.5rem" }}>
+                Review each extracted field. Toggle off any you want to reject.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem", maxHeight: "18rem", overflowY: "auto" }}>
+                {extractionUpdates.map((update) => (
+                  <div key={update.updateId as string}
+                    className="drift-finding"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0.75rem" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontWeight: 600, fontSize: "0.8125rem" }}>{(update.fieldPath as string)?.replace(/\./g, " › ")}</span>
+                      <span style={{ marginLeft: "0.5rem", fontSize: "0.75rem", color: "var(--fg-muted)" }}>
+                        → {typeof update.value === "string" ? update.value : JSON.stringify(update.value).slice(0, 80)}
+                      </span>
+                    </div>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.6875rem", cursor: "pointer", flexShrink: 0, marginLeft: "0.5rem" }}>
+                      <input
+                        type="checkbox"
+                        checked={approvedUpdateIds.has(update.updateId as string)}
+                        onChange={() => toggleUpdateApproval(update.updateId as string)}
+                      />
+                      Approve
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <div className="form-actions" style={{ marginTop: "0.75rem" }}>
+                <button className="btn btn-sm btn-accent" onClick={handleApplyExtraction} disabled={applyingUpdates || approvedUpdateIds.size === 0}>
+                  {applyingUpdates ? "Applying…" : `Apply ${approvedUpdateIds.size} Approved Update${approvedUpdateIds.size !== 1 ? "s" : ""}`}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Full Pipeline (Task 3) ────────────────────────── */}
+        <div className="detail-section">
+          <SectionTitle icon="🚀" label="Project Pipeline" />
+          <LoadingOverlay loading={pipelineLoading} label="Running pipeline…">
+            <button className="btn btn-primary" onClick={handleRunPipeline} disabled={pipelineLoading}>
+              {pipelineLoading ? "Running…" : "Run Full Pipeline"}
+            </button>
+          </LoadingOverlay>
+          {pipelineError && <ErrorBanner message={pipelineError} onRetry={handleRunPipeline} />}
+
+          {pipelineResult && (
+            <div style={{ marginTop: "0.75rem" }}>
+              {/* Governance health */}
+              {(pipelineResult.governance as Record<string, unknown>) && (() => {
+                const gov = pipelineResult.governance as Record<string, unknown>;
+                const health = gov.health as Record<string, unknown> | undefined;
+                const readiness = gov.readiness as Record<string, unknown> | undefined;
+                const discovery = pipelineResult.discovery as Record<string, unknown> | undefined;
+                const discComplete = discovery?.completeness as Record<string, number> | undefined;
+                return (
+                  <>
+                    <div className="status-grid" style={{ marginBottom: "0.75rem" }}>
+                      <div className={`status-card ${health?.status === "healthy" ? "done" : "pending"}`}>
+                        <span className="status-card-icon">{health?.status === "healthy" ? "✅" : "⚠️"}</span>
+                        <span className="status-card-label">Health: {health?.status as string ?? "unknown"}</span>
+                      </div>
+                      <div className={`status-card ${readiness?.decision === "readiness_recommended" ? "done" : "pending"}`}>
+                        <span className="status-card-icon">{readiness?.decision === "readiness_recommended" ? "✅" : "⏳"}</span>
+                        <span className="status-card-label">Readiness: {readiness?.decision as string ?? "unknown"}</span>
+                      </div>
+                    </div>
+                    {discovery && (
+                      <div style={{ fontSize: "0.8125rem", color: "var(--fg-muted)" }}>
+                        <strong>Completeness:</strong> {discComplete?.criticalCompleteness ?? "?"}% critical / {discComplete?.overallCompleteness ?? "?"}% overall
+                        {" · "}
+                        <strong>Questions:</strong> {discovery.questions as number ?? 0}
+                        {" · "}
+                        <strong>Updates:</strong> {pipelineResult.extractionUpdateCount as number ?? 0}
+                        {" · "}
+                        <strong>Warnings:</strong> {(pipelineResult.warnings as string[])?.length ?? 0}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+              {/* Warnings */}
+              {(pipelineResult.warnings as string[])?.length > 0 && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  {(pipelineResult.warnings as string[]).map((w, i) => (
+                    <div key={i} className="error-banner" style={{ marginTop: "0.25rem", padding: "0.375rem 0.75rem", fontSize: "0.75rem" }}>
+                      ⚠️ {w}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* ── History Timeline ───────────────────────────── */}
         {history.length > 0 && (
           <div className="detail-section">
@@ -645,7 +848,9 @@ export default function ProjectDetailPage() {
                       <summary style={{ cursor: "pointer", fontSize: "0.75rem", color: "var(--accent)", fontWeight: 600 }}>
                         Reverse Proposal
                       </summary>
-                      <MermaidDiagram chart={finding.reverseProposal as string} maxHeight="10rem" />
+                      <pre style={{ marginTop: "0.375rem", whiteSpace: "pre-wrap", fontSize: "0.75rem", lineHeight: 1.5, color: "var(--fg-muted)", background: "var(--bg-surface)", padding: "0.5rem", borderRadius: "6px", maxHeight: "10rem", overflowY: "auto" }}>
+                        {finding.reverseProposal as string}
+                      </pre>
                     </details>
                   )}
                   <div className="form-actions" style={{ marginTop: "0.5rem" }}>
