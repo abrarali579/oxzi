@@ -11,7 +11,7 @@ import { contentFingerprint, type JsonValue } from "../knowledge-graph";
 import {
   dispatchPromptProgram,
   DeliveryBlockedError,
-  InsufficientApprovalError,
+  HumanApprovalRecord,
   deliveryTicketSchema,
 } from ".";
 
@@ -41,7 +41,7 @@ const validProgram = renderPromptProgram({ taskCard, compiledContext, agentProfi
 const certification = certifyPromptProgram(evaluatePromptProgram(validProgram));
 const passport = issueExecutionPassport(certification, taskCard, agentProfile);
 
-function makeHumanRecord(overrides: Record<string, unknown> = {}) {
+function makeHumanRecord(overrides: Record<string, unknown> = {}): HumanApprovalRecord {
   const base = {
     approvedBy: "user:admin",
     approvedAt: new Date().toISOString(),

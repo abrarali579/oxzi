@@ -11,6 +11,7 @@ import {
   verifyPassportValidity,
   checkPassportScope,
   revokePassport,
+  type ExecutionPassport,
   PassportIssuanceError,
   PassportRevocationError,
   executionPassportSchema,
@@ -85,7 +86,7 @@ describe("Control Plane — Execution Passport", () => {
       ...passport,
       programId: "prompt_program_tampered_000000000000",
     };
-    const tamperResult = verifyPassportValidity(tampered as any);
+    const tamperResult = verifyPassportValidity(tampered as unknown as ExecutionPassport);
     expect(tamperResult.valid).toBe(false);
     expect(tamperResult.reason).toContain("tampered");
   });

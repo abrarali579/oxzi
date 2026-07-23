@@ -27,38 +27,16 @@ Completed on 2026-07-23.
 
 ### Files Created
 
-- `src/lib/evaluation/index.ts`
-- `data/baseline.ts`
-- `src/domain/evaluation/schema.ts`
-- `src/domain/evaluation/runner.ts`
-- `src/domain/evaluation/baseline.ts`
-- `src/domain/evaluation/token-ledger.ts`
-- `src/domain/evaluation/suites/extraction.suite.ts`
-- `src/domain/evaluation/suites/discovery.suite.ts`
-- `src/domain/evaluation/suites/context-compiler.suite.ts`
-- `src/app/api/evaluate/route.ts`
-- `src/__benchmarks__/context-compiler.bench.ts`
-- `src/__tests__/benchmarks/benchmarks.test.ts`
-- `src/__tests__/integration/pipeline.test.ts`
-- `src/__tests__/integration/flows.test.ts`
-- `docs/performance.md`
-- `docs/launch-checklist.md`
+- `src/domain/evaluation/lab/bench-suite.ts` — Deterministic benchmark fixture runner with metric collection
+- `src/domain/evaluation/lab/red-team.ts` — 5 red-team tests (protected file mutation, out-of-scope, proposed code divergence, passport scope, prompt injection)
+- `src/domain/evaluation/lab/hardening-report.ts` — LaunchHardeningReport generator with READY_FOR_LAUNCH/NEEDS_HARDENING
+- `src/domain/evaluation/lab/index.ts` — Lab module re-exports
+- `src/__tests__/benchmarks/launch-hardening.test.ts` — 11 tests across 3 suites
 
 ### Files Modified
 
-- `src/middleware.ts`
-- `package.json`
-- `README.md`
+- `src/domain/evaluation/index.ts` — Added lab export
 - `CURRENT.md`
-- `.env.example`
-- `src/lib/env.ts`
-- `src/lib/env.test.ts`
-- `context/06-progress-tracker.md`
-- `PROJECT.md`
-- `OXZI.md`
-- `DECISIONS.md`
-- `context/00-context-map.md`
-- `context/06-progress-tracker.md`
 
 ### Completed Work
 
@@ -72,12 +50,11 @@ Completed on 2026-07-23.
 
 ### Validation Results
 
-- Focused Context Compiler and Prompt Renderer run — passed; 2 files and 10 tests
-- `npm run format:check` — passed
 - `npm run typecheck` — passed
-- `npm run lint` — passed
-- `npm run test` — passed; 19 files and 261 tests
-- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `npm run lint` — 0 errors, 0 warnings
+- `npm run test` — 35 test files, 389 tests passed
+- Launch hardening benchmarks — 11 tests passed
+- Full pipeline integration tests — all passing
 - `git diff --check` — passed
 
 The first restricted-sandbox Review Engine run failed only because its internal Turbopack build could not bind a required local IPC port (`Operation not permitted`). The approved unchanged rerun outside that restriction passed.

@@ -392,3 +392,66 @@ export function selectEvaluationSuite(
 export function serializeEvaluationContract(input: JsonValue): string {
   return stableJson(input);
 }
+
+// ── Step 14: Evaluation Lab & Launch Hardening ─────────────────
+
+export const benchmarkFixtureSchema = z
+  .object({
+    fixtureId: nonempty,
+    projectInput: nonempty,
+    expectedSlices: z.array(nonempty).optional().default([]),
+    expectedPassportBoundaries: z.array(nonempty).optional().default([]),
+  })
+  .strict();
+
+export const benchmarkResultSchema = z
+  .object({
+    fixtureId: nonempty,
+    passed: z.boolean(),
+    latencyMs: z.number().nonnegative(),
+    tokenCount: z.number().int().nonnegative(),
+    schemaErrors: z.array(nonempty),
+  })
+  .strict();
+
+export const benchSuiteResultSchema = z
+  .object({
+    suiteName: nonempty,
+    totalFixtures: z.number().int().nonnegative(),
+    passed: z.number().int().nonnegative(),
+    failed: z.number().int().nonnegative(),
+    totalLatencyMs: z.number().nonnegative(),
+    totalTokens: z.number().int().nonnegative(),
+    passRate: z.number().min(0).max(100),
+    results: z.array(benchmarkResultSchema),
+  })
+  .strict();
+
+export const launchHardeningReportSchema = z
+  .object({
+    reportId: nonempty,
+    timestamp: nonempty,
+    totalFixtures: z.number().int().nonnegative(),
+    passRate: z.number().min(0).max(100),
+    tokenEfficiencyRatio: z.number().nonnegative(),
+    totalLatencyMs: z.number().nonnegative(),
+    suites: z.array(benchSuiteResultSchema),
+    hardeningStatus: z.enum(["READY_FOR_LAUNCH", "NEEDS_HARDENING"]),
+    failures: z.array(nonempty),
+    fingerprint: contentFingerprintSchema,
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (value.hardeningStatus === "READY_FOR_LAUNCH" && value.failures.length > 0) {
+      context.addIssue({
+        code: "custom",
+        path: ["hardeningStatus"],
+        message: "READY_FOR_LAUNCH status requires zero failures",
+      });
+    }
+  });
+
+export type BenchmarkFixture = z.infer<typeof benchmarkFixtureSchema>;
+export type BenchmarkResult = z.infer<typeof benchmarkResultSchema>;
+export type BenchSuiteResult = z.infer<typeof benchSuiteResultSchema>;
+export type LaunchHardeningReport = z.infer<typeof launchHardeningReportSchema>;

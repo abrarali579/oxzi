@@ -20,7 +20,6 @@ import { repositoryManifestSchema, type RepositoryManifest } from "../repository
 import {
   specToCodeConvergenceReportSchema,
   divergenceItemSchema,
-  convergenceItemSchema,
   convergenceMatrixSchema,
   type SpecToCodeConvergenceReport,
   type DivergenceItem,

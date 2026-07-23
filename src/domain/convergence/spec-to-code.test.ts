@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { contentFingerprint } from "../knowledge-graph";
-import { runSpecToCodeConvergence, type SpecToCodeInput } from "./spec-to-code";
+import { runSpecToCodeConvergence } from "./spec-to-code";
 
 // ── Shared Test Fixtures ────────────────────────────────────────
 

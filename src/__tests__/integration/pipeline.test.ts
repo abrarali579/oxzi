@@ -6,7 +6,7 @@ import { renderPromptProgram, serializePromptProgram } from "@/domain/prompt-ren
 import { implementationReadySpecificationFixture } from "@/domain/governance";
 import { approvedImplementationSlice } from "@/domain/planning";
 import { evaluatePromptProgram, certifyPromptProgram } from "@/domain/evaluation";
-import { issueExecutionPassport, verifyPassportValidity, checkPassportScope } from "@/domain/control-plane";
+import { issueExecutionPassport, verifyPassportValidity } from "@/domain/control-plane";
 import { createZipBuffer } from "@/lib/utils/zip";
 
 // ── Fixtures ────────────────────────────────────────────────────
