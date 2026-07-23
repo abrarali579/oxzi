@@ -3,7 +3,25 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
 import { taskCardSchema, type TaskCard } from "../task-card";
-import { parseExports } from "../repository-intelligence";
+
+// ── Lazy oxc-parser import guard ────────────────────────────────
+
+let cachedParseExports: ((content: string) => string[]) | null = null;
+
+function getParseExports(): (content: string) => string[] {
+  if (!cachedParseExports) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mod = require("../repository-intelligence") as {
+        parseExports: (content: string) => string[];
+      };
+      cachedParseExports = mod.parseExports;
+    } catch {
+      cachedParseExports = () => [];
+    }
+  }
+  return cachedParseExports;
+}
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -261,7 +279,7 @@ function detectArchitectureDrift(
 
     try {
       const content = readFileSync(fullPath, "utf-8");
-      const exports = parseExports(content);
+      const exports = getParseExports()(content);
 
       // Check if the Task Card goal mentions specific functions/classes
       // that should exist based on the file content
