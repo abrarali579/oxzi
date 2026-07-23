@@ -1,5 +1,60 @@
 # OXZI — Progress Tracker
 
+## Context Compiler v1 and Prompt Program Renderer
+
+Completed on 2026-07-23.
+
+### Files Created
+
+- `src/domain/context-compiler/schemas.ts`
+- `src/domain/context-compiler/compiler.ts`
+- `src/domain/context-compiler/context-compiler.test.ts`
+- `src/domain/context-compiler/index.ts`
+- `src/domain/prompt-renderer/schemas.ts`
+- `src/domain/prompt-renderer/renderer.ts`
+- `src/domain/prompt-renderer/prompt-renderer.test.ts`
+- `src/domain/prompt-renderer/index.ts`
+
+### Files Modified
+
+- `CURRENT.md`
+- `PROJECT.md`
+- `OXZI.md`
+- `DECISIONS.md`
+- `context/00-context-map.md`
+- `context/06-progress-tracker.md`
+
+### Completed Work
+
+- Implemented canonical-only Context Compiler v1 over normalized Task Cards and explicit canonical artifact inputs.
+- Added strict `CompiledContext`, `ContextItem`, and `ContextSelectionReason` schemas with inclusion reasons, omitted references, V1 limitation metadata, sufficiency, estimated minimum safe context size, and stable fingerprints.
+- Implemented deterministic selection for referenced Specifications, task acceptance criteria, accepted/project decisions when referenced, and applicable/global blocking Constitution rules.
+- Implemented a separate Prompt Program Renderer over Task Card, Compiled Context, and Agent Profile inputs.
+- Added strict `AgentProfile` and rendered `PromptProgram` schemas with target compatibility, input/output contracts, rendered prompt text, immutable state, meaning fingerprint, context fingerprint, version, and renderer fingerprint.
+- Preserved Task Card meaning and compiled-context identity across rendering; no prompt optimization, evaluation, certification, provider calls, Execution Passport, connected delivery, repository parsing, or UI was added.
+- Added ADR-084 for canonical-only context compilation and immutable Prompt Program rendering.
+
+### Validation Results
+
+- Focused Context Compiler and Prompt Renderer run — passed; 2 files and 10 tests
+- `npm run format:check` — passed
+- `npm run typecheck` — passed
+- `npm run lint` — passed
+- `npm run test` — passed; 19 files and 261 tests
+- `npm run review` — passed outside the restricted sandbox; captured typecheck, lint, build, and generated-output secret scan passed
+- `git diff --check` — passed
+
+The first restricted-sandbox Review Engine run failed only because its internal Turbopack build could not bind a required local IPC port (`Operation not permitted`). The approved unchanged rerun outside that restriction passed.
+
+### Remaining Limits
+
+- Context Compiler v1 does not parse source code, inspect repositories, traverse ASTs, perform structural search, or use semantic retrieval.
+- Prompt Program Renderer does not certify prompts, evaluate prompt quality, optimize examples, package Execution Passports, deliver to agents, or call providers.
+
+### Next Smallest Unit
+
+Implement Deterministic Prompt Evaluation / Certification over immutable Prompt Programs. Keep repository parsing, code-aware context compilation, connected delivery, persistence, providers, and UI outside that unit.
+
 ## Task Card Compiler Runtime Foundation
 
 Completed on 2026-07-23.

@@ -35,7 +35,7 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 Wave 2 — Specification Governance and Planning Runtime Foundation is complete.
 
-The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification governance, Technical Plan governance, independently verifiable Implementation Slice, and Task Card Compiler foundations are implemented without AI. Technical Plan Runtime and Implementation Slice Runtime are separate, independently testable implementation units. Workflow/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Canonical-artifact Context Compiler v1, parsers, code-aware context compilation, agent delivery, persistence, and UI remain future work.
+The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification governance, Technical Plan governance, independently verifiable Implementation Slice, Task Card Compiler, canonical Context Compiler v1, and Prompt Program Renderer foundations are implemented without AI. Technical Plan Runtime and Implementation Slice Runtime are separate, independently testable implementation units. Workflow/Passport, evaluation/divergence, Prompt Program optimization/evaluation, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Parsers, code-aware context compilation, agent delivery, persistence, and UI remain future work.
 
 ## Locked Stack
 
@@ -68,8 +68,8 @@ Status vocabulary: `implemented`, `implemented foundation only`, `approved and s
 - Wave 1 Unified Contracts and Temporal Graph — `implemented`; workflow/execution schemas are `implemented foundation only`
 - Wave 2 Specification Governance and Planning — deterministic governance, Technical Plan, and Implementation Slice runtimes `implemented`; canonical Constitution storage remains `planned`
 - Wave 3 Repository Intelligence — parser/structural contracts `implemented foundation only`; runtimes `approved and specified`
-- Wave 4 Context Intelligence — `approved and specified`
-- Wave 5 Prompt and Handoff — Task Card Compiler Runtime `implemented`; Prompt Program/Typed AI contracts `implemented foundation only`; renderers/runtime `approved and specified`; connected delivery `deferred`
+- Wave 4 Context Intelligence — canonical Context Compiler v1 `implemented`; code-aware integration remains `approved and specified`
+- Wave 5 Prompt and Handoff — Task Card Compiler Runtime and Prompt Program Renderer `implemented`; Prompt Program/Typed AI contracts `implemented foundation only`; optimization/evaluation runtime `approved and specified`; connected delivery `deferred`
 - Wave 6 Review and Convergence — `approved and specified`
 - Wave 7 Agent Control Plane — execution/observability/skill-diagnostic contracts `implemented foundation only`; runtime `planned`
 - Wave 8 Product Experience — `planned`

@@ -6,8 +6,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Phase: deterministic foundations plus Specification Governance and Planning runtime
 - Active unit: none
-- Last completed: Task Card Compiler Runtime Foundation
-- Next: Context Compiler Runtime — canonical artifacts first
+- Last completed: Context Compiler Runtime v1 and Prompt Program Renderer
+- Next: Deterministic Prompt Evaluation / Certification
 
 ## Implemented
 
@@ -16,6 +16,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Deterministic Constitution resolution/compliance, Specification normalization, structural/clarification/consistency/traceability/testability/freshness analysis, categorical health, readiness recommendations, controlled-living validation, and normalized Governance Reports
 - Deterministic Technical Plan normalization/governance, dependency-safe Implementation Slice derivation, plan/slice validation, traceability, categorical health, readiness recommendations, immutable version checks, and normalized reports
 - Deterministic Task Card compilation from approved Implementation Slices with strict file boundaries, constraints, acceptance criteria, validations, risk classification, and validation reports
+- Canonical-only Context Compiler v1 with sufficient-context metadata, inclusion reasons, limitation disclosure, and stable context fingerprints
+- Prompt Program Renderer for immutable agent-targeted prompt artifacts over Task Cards and compiled canonical context
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -25,9 +27,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Specified, Runtime Deferred
 
-- Constitution canonical storage and canonical-artifact Context Compiler v1
+- Constitution canonical storage
 - Code-aware context compilation, after Repository Parsing and Structural Intelligence
-- Prompt registries/optimization/evaluation, AI/provider repair, traces/experiments
+- Prompt registries/optimization/evaluation/certification, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; parsers/repository graph/structural execution
 - Divergence, review/convergence, agent control, persistence, UI, auth/providers
 

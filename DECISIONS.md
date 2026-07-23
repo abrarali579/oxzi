@@ -688,3 +688,11 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** The Task Card Compiler deterministically converts one approved Implementation Slice into an agent-agnostic normalized Task Card. The Task Card captures task meaning, boundaries, constraints, acceptance criteria, validations, risk level, parent fingerprints, evidence, rollback, and artifact expectations. It does not render prompts, XML, YAML, JSON handoffs, or target-agent-specific instructions.
 
 **Consequences:** Prompt renderers and Context Packages remain downstream artifacts that consume the Task Card without changing its meaning. Protected boundaries override writable boundaries, malformed Task Cards produce blocking validation reports, and future delivery requires additional Context Compiler, workflow, Passport, approval, and adapter gates.
+
+## ADR-084 — Canonical Context and Immutable Prompt Rendering
+
+**Status:** Accepted — Context Compiler and Prompt Renderer runtime foundation
+
+**Decision:** Context Compiler v1 compiles only canonical artifacts supplied through validated structured inputs, including Specifications, accepted project decisions, and Constitution rules. It records inclusion reasons, omitted references, V1 limitations, sufficiency, and stable fingerprints. The Prompt Program Renderer consumes a normalized Task Card, compiled canonical context, and target Agent Profile to produce an immutable rendered Prompt Program artifact.
+
+**Consequences:** V1 cannot claim code-aware context, repository parsing, AST traversal, structural search, or semantic retrieval. Prompt rendering cannot change Task Card meaning or compiled context identity; evaluation, certification, optimization, Execution Passport packaging, connected delivery, and provider calls remain downstream units.
