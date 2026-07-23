@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { apiSuccess, apiError } from "@/lib/api-response";
 import { parseRepository, isSizeBoundaryExceeded } from "@/domain/repository-intelligence";
 import { generateMermaidDiagram, generateFeatureDiagram } from "@/domain/visual-architecture";
 import { realpathSync } from "node:fs";
@@ -21,20 +20,20 @@ export async function GET(_request: Request, context: RouteContext) {
     const result = parseRepository({ rootPath });
 
     if (isSizeBoundaryExceeded(result)) {
-      return NextResponse.json(apiError(result.message), { status: 413 });
+      return NextResponse.json({ error: result.message }, { status: 413 });
     }
 
     const dependencyDiagram = generateMermaidDiagram(result);
     const featureDiagram = generateFeatureDiagram(result);
 
-    return NextResponse.json(apiSuccess({
+    return NextResponse.json({
       projectId: id,
       dependencyDiagram,
       featureDiagram,
       fileCount: result.files.length,
       edgeCount: result.edges.length,
-    }));
+    });
   } catch {
-    return NextResponse.json(apiError("Visualization failed"), { status: 500 });
+    return NextResponse.json({ error: "Visualization failed" }, { status: 500 });
   }
 }

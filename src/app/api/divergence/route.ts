@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { apiSuccess, apiError } from "@/lib/api-response";
 import { runDivergence } from "@/domain/divergence";
 import { divergenceRequestSchema, cognitiveFrameSchema, divergenceCostEstimateSchema } from "@/domain/divergence/schemas";
 import { contentFingerprint } from "@/domain/knowledge-graph";
@@ -9,7 +8,7 @@ import type { JsonValue } from "@/domain/knowledge-graph/types";
 export async function POST() {
   const session = await getSession();
   if (!session) {
-    return NextResponse.json(apiError("Not authenticated"), { status: 401 });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -88,8 +87,8 @@ export async function POST() {
     });
 
     const report = runDivergence(request, frames, cost);
-    return NextResponse.json(apiSuccess({ report }));
+    return NextResponse.json({ report });
   } catch {
-    return NextResponse.json(apiError("Divergence computation failed"), { status: 500 });
+    return NextResponse.json({ error: "Divergence computation failed" }, { status: 500 });
   }
 }

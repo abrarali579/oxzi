@@ -7,7 +7,6 @@ import {
   deleteProject as deleteFileProject,
 } from "@/lib/db";
 import type { ProjectRecord } from "@/lib/db";
-import { apiSuccess, apiError } from "@/lib/api-response";
 import {
   parseCanonicalState,
   parseDiscoveryResult,
@@ -27,8 +26,8 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       const dbProject = await prisma.project.findUnique({ where: { id } });
       if (dbProject) {
         await requireOrganizationAccess(session.userId, dbProject.organizationId);
-        return NextResponse.json(
-          apiSuccess({
+        return NextResponse.json({
+          project: {
             id: dbProject.id,
             title: dbProject.title,
             brief: dbProject.brief,
@@ -39,20 +38,20 @@ export async function GET(_request: NextRequest, context: RouteContext) {
             discoveryResult: parseDiscoveryResult(dbProject.discoveryResult),
             extractionResult: parseExtractionResult(dbProject.extractionResult),
             generatedFiles: parseGeneratedFiles(dbProject.generatedFiles),
-          }),
-        );
+          },
+        });
       }
     }
 
     // Fall back to file store
     const project = getFileProject(id);
     if (!project) {
-      return NextResponse.json(apiError("Project not found"), { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
-    return NextResponse.json(apiSuccess(project));
+    return NextResponse.json({ project });
   } catch (err) {
     if (err instanceof NextResponse) return err;
-    return NextResponse.json(apiError("Failed to load project"), { status: 500 });
+    return NextResponse.json({ error: "Failed to load project" }, { status: 500 });
   }
 }
 
@@ -84,8 +83,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
           data: updateData,
         });
 
-        return NextResponse.json(
-          apiSuccess({
+        return NextResponse.json({
+          project: {
             id: updated.id,
             title: updated.title,
             brief: updated.brief,
@@ -95,24 +94,24 @@ export async function PUT(request: NextRequest, context: RouteContext) {
             discoveryResult: parseDiscoveryResult(updated.discoveryResult),
             extractionResult: parseExtractionResult(updated.extractionResult),
             generatedFiles: parseGeneratedFiles(updated.generatedFiles),
-          }),
-        );
+          },
+        });
       }
     }
 
     // Fall back to file store
     const existing = getFileProject(id);
     if (!existing) {
-      return NextResponse.json(apiError("Project not found"), { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     const updates = body as Partial<Omit<ProjectRecord, "id" | "createdAt">>;
     const updated = updateFileProject(id, updates);
-    return NextResponse.json(apiSuccess(updated));
+    return NextResponse.json({ project: updated });
   } catch (err) {
     if (err instanceof NextResponse) return err;
     const message = err instanceof Error ? err.message : "Failed to update project";
-    return NextResponse.json(apiError(message), { status: 400 });
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -126,17 +125,17 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
       if (dbProject) {
         await requireOrganizationAccess(session.userId, dbProject.organizationId);
         await prisma.project.delete({ where: { id } });
-        return NextResponse.json(apiSuccess({ deleted: true }));
+        return NextResponse.json({ deleted: true });
       }
     }
 
     const deleted = deleteFileProject(id);
     if (!deleted) {
-      return NextResponse.json(apiError("Project not found"), { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
-    return NextResponse.json(apiSuccess({ deleted: true }));
+    return NextResponse.json({ deleted: true });
   } catch (err) {
     if (err instanceof NextResponse) return err;
-    return NextResponse.json(apiError("Failed to delete project"), { status: 500 });
+    return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
   }
 }
