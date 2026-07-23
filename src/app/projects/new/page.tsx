@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useRef, useEffect } from "react";
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -10,6 +10,16 @@ export default function NewProjectPage() {
   const [brief, setBrief] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-expand textarea
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = "auto";
+      ta.style.height = `${Math.max(ta.scrollHeight, 128)}px`;
+    }
+  }, [brief]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -24,7 +34,6 @@ export default function NewProjectPage() {
         body: JSON.stringify({ title: title.trim(), brief: brief.trim() }),
       });
 
-      // Guard: check Content-Type before calling res.json()
       const contentType = res.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const text = await res.text();
@@ -51,14 +60,12 @@ export default function NewProjectPage() {
   }
 
   return (
-    <main className="home-shell">
-      <section className="hero" aria-labelledby="new-title">
-        <div className="brand-mark" aria-hidden="true">
-          O
-        </div>
+    <main className="page-shell">
+      <div className="card">
+        <div className="brand-mark" aria-hidden="true">O</div>
         <p className="eyebrow">OXZI · New Project</p>
-        <h1 id="new-title">Tell OXZI what you are building.</h1>
-        <p className="hero-copy">A rough idea or full master prompt both work.</p>
+        <h1 className="page-title">Tell OXZI what you are building.</h1>
+        <p className="page-copy">A rough idea or full master prompt both work.</p>
 
         <form onSubmit={handleSubmit} className="project-form">
           <label className="field">
@@ -77,9 +84,10 @@ export default function NewProjectPage() {
           <label className="field">
             <span className="field-label">Brief or master prompt</span>
             <textarea
+              ref={textareaRef}
               className="field-input field-textarea"
               placeholder="Describe what you are building — goals, features, constraints..."
-              rows={6}
+              rows={5}
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
               disabled={saving}
@@ -90,14 +98,26 @@ export default function NewProjectPage() {
 
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={saving || !title.trim()}>
-              {saving ? "Creating…" : "Create project"}
+              {saving ? (
+                <>
+                  <span className="spinner" style={{ width: "0.875rem", height: "0.875rem", borderWidth: "2px" }} />
+                  Creating…
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Create project
+                </>
+              )}
             </button>
-            <Link href="/" className="btn btn-secondary">
+            <Link href="/" className="btn btn-ghost">
               Cancel
             </Link>
           </div>
         </form>
-      </section>
+      </div>
     </main>
   );
 }

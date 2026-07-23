@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useCallback, type ReactNode } from "react";
 
 interface ProjectData {
   id: string;
@@ -16,47 +16,43 @@ interface ProjectData {
   generatedFiles: Record<string, string> | null;
 }
 
-// ── Loading skeleton ──────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short", day: "numeric", year: "numeric",
+  });
+}
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+// ── Loading skeleton ───────────────────────────────────────
 
 function DetailSkeleton() {
   return (
-    <main className="home-shell">
-      <section className="hero">
+    <main className="page-shell">
+      <div className="card">
         <div className="brand-mark" aria-hidden="true">O</div>
-        <p className="eyebrow">OXZI · Project</p>
-        <div style={{ height: "2.5rem", width: "60%", background: "var(--line)", borderRadius: "0.5rem", marginTop: "1rem" }} />
-        <div style={{ height: "1rem", width: "40%", background: "var(--line)", borderRadius: "0.5rem", marginTop: "0.75rem" }} />
-      </section>
+        <p className="eyebrow" style={{ visibility: "hidden" }}>OXZI · Project</p>
+        <div className="skeleton skeleton-line skeleton-line-sm" style={{ marginTop: "0.75rem" }} />
+        <div className="skeleton skeleton-line skeleton-line-xs" style={{ marginTop: "0.5rem" }} />
+        <div className="skeleton skeleton-line" style={{ marginTop: "1.5rem", width: "90%" }} />
+        <div className="skeleton skeleton-line" style={{ width: "75%" }} />
+      </div>
     </main>
   );
 }
 
-// ── Loading overlay ───────────────────────────────────────────
-
-function LoadingOverlay({ children, loading }: { children: ReactNode; loading: boolean }) {
-  return (
-    <div style={{ position: "relative" }}>
-      {loading && (
-        <div style={{
-          position: "absolute", inset: 0, display: "grid", placeItems: "center",
-          background: "var(--surface)", borderRadius: "0.75rem", zIndex: 10,
-        }}>
-          <span style={{ color: "var(--accent)", fontWeight: 600 }}>Loading…</span>
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
-
-// ── Error banner ──────────────────────────────────────────────
+// ── Error banner ───────────────────────────────────────────
 
 function ErrorBanner({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div className="detail-section">
-      <p className="field-error">{message}</p>
+    <div className="error-banner" style={{ marginTop: "0.75rem" }}>
+      <p style={{ margin: 0, fontSize: "0.8125rem" }}>{message}</p>
       {onRetry && (
-        <button className="btn btn-secondary" onClick={onRetry} style={{ marginTop: "0.5rem" }}>
+        <button className="btn btn-xs btn-danger" onClick={onRetry} style={{ marginTop: "0.5rem" }}>
           Retry
         </button>
       )}
@@ -64,7 +60,142 @@ function ErrorBanner({ message, onRetry }: { message: string; onRetry?: () => vo
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────
+// ── Loading overlay ────────────────────────────────────────
+
+function LoadingOverlay({ children, loading, label = "Loading…" }: { children: ReactNode; loading: boolean; label?: string }) {
+  return (
+    <div className="loading-overlay">
+      {loading && (
+        <div className="loading-overlay-mask">
+          <div className="loading-spinner">
+            <span className="spinner" />
+            {label}
+          </div>
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+// ── Status badge ───────────────────────────────────────────
+
+type BadgeVariant = "green" | "amber" | "red" | "cyan" | "blue" | "muted";
+
+function StatusBadge({ variant = "muted", label, dot = true }: { variant?: BadgeVariant; label: string; dot?: boolean }) {
+  return (
+    <span className={`badge badge-${variant}`}>
+      {dot && <span className="badge-dot" />}
+      {label}
+    </span>
+  );
+}
+
+// ── Pipeline visualizer ────────────────────────────────────
+
+type PipelineStatus = "idle" | "active" | "done" | "warning" | "error";
+
+interface PipelineStep {
+  icon: string;
+  label: string;
+  status: PipelineStatus;
+}
+
+function PipelineVisualizer({ steps }: { steps: PipelineStep[] }) {
+  return (
+    <div className="pipeline">
+      {steps.map((step, i) => (
+        <div key={step.label} className="pipeline-step">
+          <div className={`pipeline-node ${step.status !== "idle" ? step.status : ""}`}>
+            {step.status === "done" ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : (
+              step.icon
+            )}
+          </div>
+          <span className="pipeline-label">{step.label}</span>
+          {i < steps.length - 1 && (
+            <div className="pipeline-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Code inspector card ────────────────────────────────────
+
+function CodeCard({ title, children, defaultCollapsed = false, fileName }: {
+  title: string; children: string; defaultCollapsed?: boolean; fileName?: string;
+}) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    copyToClipboard(children);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }, [children]);
+
+  return (
+    <div className="code-card">
+      <div className="code-card-header">
+        <span className="code-card-title">{fileName ? `${fileName} — ` : ""}{title}</span>
+        <div className="code-card-actions">
+          <button className="btn btn-xs btn-ghost" onClick={() => setCollapsed(!collapsed)}
+            title={collapsed ? "Expand" : "Collapse"}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+              style={{ transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 0.15s" }}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          <button className="btn btn-xs btn-ghost" onClick={handleCopy} title="Copy">
+            {copied ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className={`code-card-body ${collapsed ? "collapsed" : ""}`}>
+        {children}
+      </div>
+      {collapsed && (
+        <div style={{ textAlign: "center", padding: "0.25rem 0 0.5rem" }}>
+          <button className="btn btn-xs btn-ghost" onClick={() => setCollapsed(false)}>
+            Show more
+          </button>
+        </div>
+      )}
+      {copied && <div className="copy-toast">Copied!</div>}
+    </div>
+  );
+}
+
+// ── Detail section header ──────────────────────────────────
+
+function SectionTitle({ icon, label }: { icon?: string; label: string }) {
+  return (
+    <h2 className="detail-section-title">
+      {icon && <span className="detail-section-title-icon">{icon}</span>}
+      {label}
+    </h2>
+  );
+}
+
+// ── Main page ──────────────────────────────────────────────
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -125,7 +256,7 @@ export default function ProjectDetailPage() {
       .catch(() => { /* silent */ });
   }, [id]);
 
-  // ── Handlers ──────────────────────────────────────────────
+  // ── Handlers ────────────────────────────────────────────
 
   async function handleGenerate() {
     setGenerating(true);
@@ -183,7 +314,6 @@ export default function ProjectDetailPage() {
       });
       if (!res.ok) throw new Error("Task Card compilation failed");
       setDivergenceReport(null);
-      // Refresh project
       const refresh = await fetch(`/api/projects/${id}`);
       if (refresh.ok) {
         const data = (await refresh.json()) as { project: ProjectData };
@@ -246,7 +376,7 @@ export default function ProjectDetailPage() {
     }
   }
 
-  async function handleAcknowledgeDrift(findingId: string) {
+  function handleAcknowledgeDrift(findingId: string) {
     setDriftFindings((prev) =>
       prev.map((f) => (f.id === findingId ? { ...f, acknowledged: true } : f)),
     );
@@ -263,51 +393,78 @@ export default function ProjectDetailPage() {
     }
   }
 
-  // ── Render ────────────────────────────────────────────────
+  // ── Compute pipeline status ─────────────────────────────
+
+  const hasCanonical = project?.canonicalState !== null;
+  const hasGenerated = project?.generatedFiles !== null;
+
+  const pipelineSteps: PipelineStep[] = [
+    { icon: "📋", label: "Specification", status: hasCanonical ? "done" : "active" },
+    { icon: "📄", label: "Task Card", status: hasCanonical ? "done" : "idle" },
+    { icon: "✅", label: "Certification", status: hasCanonical ? "done" : "idle" },
+    { icon: "🔄", label: "Convergence", status: hasGenerated ? "done" : "idle" },
+    { icon: "🛂", label: "Passport", status: hasGenerated ? "done" : "idle" },
+  ];
+
+  // ── Render ──────────────────────────────────────────────
 
   if (loading) return <DetailSkeleton />;
 
   if (error || !project) {
     return (
-      <main className="home-shell">
-        <section className="hero">
-          <p className="field-error">{error ?? "Project not found"}</p>
-          <div className="form-actions" style={{ marginTop: "1.5rem" }}>
-            <Link href="/" className="btn btn-secondary">Back to projects</Link>
+      <main className="page-shell">
+        <div className="card" style={{ textAlign: "center" }}>
+          <div className="brand-mark" aria-hidden="true" style={{ margin: "0 auto 2.5rem" }}>O</div>
+          <p className="field-error" style={{ fontSize: "0.9375rem" }}>{error ?? "Project not found"}</p>
+          <div className="form-actions" style={{ justifyContent: "center" }}>
+            <Link href="/" className="btn btn-primary">Back to projects</Link>
           </div>
-        </section>
+        </div>
       </main>
     );
   }
 
-  const hasGenerated = project.generatedFiles !== null;
-  const hasCanonical = project.canonicalState !== null;
-
   return (
-    <main className="home-shell">
-      <section className="hero project-detail-hero" aria-labelledby="detail-title" style={{ maxWidth: "52rem" }}>
-        <div className="brand-mark" aria-hidden="true">O</div>
-        <p className="eyebrow">OXZI · Project</p>
-        <h1 id="detail-title" style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", maxWidth: "100%" }}>
-          {project.title}
-        </h1>
-        <div className="detail-meta">
-          <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
-          <span>·</span>
-          <span>Updated {new Date(project.updatedAt).toLocaleDateString()}</span>
+    <main className="page-shell page-shell-wide">
+      <div className="card-wide">
+        {/* ── Header ──────────────────────────────────────── */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
+          <div>
+            <p className="eyebrow" style={{ marginBottom: "0.5rem" }}>OXZI · Project Workspace</p>
+            <h1 className="page-title" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", maxWidth: "100%" }}>
+              {project.title}
+            </h1>
+            <div className="detail-meta">
+              <span>Created {formatDate(project.createdAt)}</span>
+              <span className="detail-meta-sep">·</span>
+              <span>Updated {formatDate(project.updatedAt)}</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "0.375rem", flexShrink: 0, flexWrap: "wrap" }}>
+            <StatusBadge variant={hasCanonical ? "green" : "amber"} label={hasCanonical ? "Active" : "Pending"} />
+            {driftSummary && driftSummary.architectureDrift > 0 && (
+              <StatusBadge variant="red" label="Drift detected" />
+            )}
+          </div>
         </div>
 
-        {/* Brief */}
+        {/* ── Pipeline Visualizer ─────────────────────────── */}
+        <div className="detail-section">
+          <SectionTitle icon="⚡" label="Pipeline" />
+          <PipelineVisualizer steps={pipelineSteps} />
+        </div>
+
+        {/* ── Brief ───────────────────────────────────────── */}
         {project.brief && (
           <div className="detail-section">
-            <h2 className="detail-section-title">Brief</h2>
+            <SectionTitle icon="📝" label="Brief" />
             <p className="detail-brief">{project.brief}</p>
           </div>
         )}
 
-        {/* Analysis Status */}
+        {/* ── Analysis Status ─────────────────────────────── */}
         <div className="detail-section">
-          <h2 className="detail-section-title">Analysis Status</h2>
+          <SectionTitle icon="📊" label="Analysis Status" />
           <div className="status-grid">
             <div className={`status-card ${hasCanonical ? "done" : "pending"}`}>
               <span className="status-card-icon">{hasCanonical ? "✅" : "⏳"}</span>
@@ -317,25 +474,95 @@ export default function ProjectDetailPage() {
               <span className="status-card-icon">{hasGenerated ? "✅" : "⏳"}</span>
               <span className="status-card-label">Six Files</span>
             </div>
+            <div className={`status-card ${divergenceReport ? "done" : "pending"}`}>
+              <span className="status-card-icon">{divergenceReport ? "✅" : "⏳"}</span>
+              <span className="status-card-label">Divergence</span>
+            </div>
+            <div className={`status-card ${driftFindings.length > 0 ? "done" : "pending"}`}>
+              <span className="status-card-icon">{driftFindings.length > 0 ? "⚠️" : "⏳"}</span>
+              <span className="status-card-label">Drift Scan</span>
+            </div>
           </div>
         </div>
 
-        {/* Generated Files */}
-        {hasGenerated && project.generatedFiles && (
-          <div className="detail-section">
-            <h2 className="detail-section-title">Generated Files</h2>
-            <ul className="file-list">
-              {Object.keys(project.generatedFiles).map((name) => (
-                <li key={name} className="file-list-item">📄 {name}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {/* ── Pipeline detail columns ─────────────────────── */}
+        <div className="detail-two-col" style={{ marginTop: "1.5rem" }}>
+          {/* ── Left column ─────────────────────────────────── */}
+          <div className="detail-grid">
+            {/* Canonical State */}
+            {project.canonicalState && (
+              <div className="detail-section" style={{ marginTop: 0 }}>
+                <SectionTitle icon="📋" label="Canonical State" />
+                <CodeCard title="canonicalState" defaultCollapsed>
+                  {JSON.stringify(project.canonicalState, null, 2)}
+                </CodeCard>
+              </div>
+            )}
 
-        {/* ── Divergent Reasoning ─────────────────────────────── */}
+            {/* Generated Files */}
+            {hasGenerated && project.generatedFiles && (
+              <div className="detail-section" style={{ marginTop: 0 }}>
+                <SectionTitle icon="📁" label="Generated Files" />
+                <ul className="file-list">
+                  {Object.keys(project.generatedFiles).map((name) => (
+                    <li key={name} className="file-list-item">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* ── Right column ────────────────────────────────── */}
+          <div className="detail-grid">
+            {/* Visual Map */}
+            <div className="detail-section" style={{ marginTop: 0 }}>
+              <SectionTitle icon="🗺️" label="Visual Architecture" />
+              <LoadingOverlay loading={mapLoading} label="Generating map…">
+                <button className="btn btn-sm btn-primary" onClick={handleLoadMap} disabled={mapLoading}>
+                  {mapLoading ? "Generating…" : diagram ? "Refresh Map" : "Generate Visual Map"}
+                </button>
+              </LoadingOverlay>
+              {mapError && <ErrorBanner message={mapError} onRetry={handleLoadMap} />}
+              {diagram && (
+                <div className="mermaid-container">
+                  {diagram}
+                </div>
+              )}
+            </div>
+
+            {/* Drift Detection */}
+            <div className="detail-section" style={{ marginTop: 0 }}>
+              <SectionTitle icon="🔍" label="Code Drift" />
+              <LoadingOverlay loading={driftLoading} label="Scanning…">
+                <button className="btn btn-sm btn-primary" onClick={handleScanDrift} disabled={driftLoading}>
+                  {driftLoading ? "Scanning…" : driftFindings.length > 0 ? "Rescan Repository" : "Scan for Drift"}
+                </button>
+              </LoadingOverlay>
+              {driftError && <ErrorBanner message={driftError} onRetry={handleScanDrift} />}
+              {driftSummary && (
+                <div className="status-grid" style={{ marginTop: "0.75rem" }}>
+                  {(["overbuilt", "missing", "architectureDrift", "outOfScope"] as const).map((key) => (
+                    <div key={key} className={`status-card ${driftSummary[key] > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.8125rem" }}>
+                      <span className="status-card-icon">{driftSummary[key] > 0 ? "⚠️" : "✅"}</span>
+                      <span className="status-card-label">{driftSummary[key]} {key.replace(/([A-Z])/g, " $1").toLowerCase().trim()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Divergent Reasoning ────────────────────────── */}
         <div className="detail-section">
-          <h2 className="detail-section-title">Divergent Reasoning</h2>
-          <LoadingOverlay loading={diverging}>
+          <SectionTitle icon="🧠" label="Divergent Reasoning" />
+          <LoadingOverlay loading={diverging} label="Analyzing…">
             <button className="btn btn-primary" onClick={handleDivergence} disabled={diverging}>
               {diverging ? "Analyzing…" : "Run Divergent Reasoning"}
             </button>
@@ -344,165 +571,130 @@ export default function ProjectDetailPage() {
           {divError && <ErrorBanner message={divError} />}
 
           {divergenceReport && (
-            <div className="divergence-modal" style={{
-              marginTop: "1rem", padding: "1rem", border: "1px solid var(--line)",
-              borderRadius: "0.75rem", background: "var(--background)",
-            }}>
-              <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem" }}>Divergence Report</h3>
+            <div style={{ marginTop: "1rem" }}>
               {(divergenceReport.candidates as Array<Record<string, unknown>>)?.map((c: Record<string, unknown>) => (
-                <div key={c.id as string} className="divergence-candidate" style={{
-                  padding: "0.75rem", marginBottom: "0.5rem",
-                  border: "1px solid var(--line)", borderRadius: "0.5rem",
-                }}>
-                  <p><strong>{c.title as string}</strong></p>
-                  <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{c.approach as string}</p>
-                  <button className="btn btn-primary" style={{ fontSize: "0.8rem", padding: "0.3rem 0.7rem" }}
+                <div key={c.id as string} className="candidate-card">
+                  <p className="candidate-card-title">{c.title as string}</p>
+                  <p className="candidate-card-desc">{c.approach as string}</p>
+                  <button className="btn btn-sm btn-accent"
                     onClick={() => handleApproveCandidate(c.id as string)}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
                     Approve & Create Task Card
                   </button>
                 </div>
               ))}
-              <button className="btn btn-secondary" onClick={() => setDivergenceReport(null)}
+              <button className="btn btn-sm btn-ghost" onClick={() => setDivergenceReport(null)}
                 style={{ marginTop: "0.5rem" }}>
-                Close
+                Dismiss
               </button>
             </div>
           )}
         </div>
 
-        {/* ── History Timeline ────────────────────────────────── */}
+        {/* ── History Timeline ───────────────────────────── */}
         {history.length > 0 && (
           <div className="detail-section">
-            <h2 className="detail-section-title">History (Version {historyVersion} of {history.length})</h2>
+            <SectionTitle icon="📜" label={`History (v${historyVersion} of ${history.length})`} />
             <input
               type="range" min={1} max={history.length} value={historyVersion}
               onChange={(e) => setHistoryVersion(Number(e.target.value))}
-              style={{ width: "100%", margin: "0.5rem 0" }}
+              className="slider"
+              aria-label="History version slider"
             />
-            <div className="history-detail" style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-              {history[historyVersion - 1] && (
-                <span>{history[historyVersion - 1]!.event} — {new Date(history[historyVersion - 1]!.timestamp).toLocaleString()}</span>
-              )}
+            <div className="history-timeline" style={{ marginTop: "0.5rem" }}>
+              {history.slice(-5).reverse().map((entry) => (
+                <div key={entry.version} className={`history-entry ${entry.version === historyVersion ? "drift-finding unacknowledged" : ""}`}
+                  style={{ cursor: "pointer" }} onClick={() => setHistoryVersion(entry.version)}>
+                  <span className="history-entry-version">#{entry.version}</span>
+                  <span className="history-entry-event">{entry.event}</span>
+                  <span className="history-entry-date">{formatDate(entry.timestamp)}</span>
+                </div>
+              ))}
             </div>
-            <div className="form-actions" style={{ marginTop: "0.5rem" }}>
-              <button className="btn btn-secondary" onClick={handleRestoreVersion} disabled={restoring}
-                style={{ fontSize: "0.8rem", padding: "0.3rem 0.7rem" }}>
+            <div className="form-actions" style={{ marginTop: "0.75rem" }}>
+              <button className="btn btn-sm btn-secondary" onClick={handleRestoreVersion} disabled={restoring}>
                 {restoring ? "Restoring…" : "Restore to this version"}
               </button>
             </div>
           </div>
         )}
 
-        {/* ── Visual Map ────────────────────────────────────────── */}
-        <div className="detail-section">
-          <h2 className="detail-section-title">Visual Architecture Map</h2>
-          <LoadingOverlay loading={mapLoading}>
-            <button className="btn btn-primary" onClick={handleLoadMap} disabled={mapLoading}>
-              {mapLoading ? "Generating…" : diagram ? "Refresh Map" : "Generate Visual Map"}
-            </button>
-          </LoadingOverlay>
-          {mapError && <ErrorBanner message={mapError} onRetry={handleLoadMap} />}
-          {diagram && (
-            <div className="mermaid-container" style={{
-              marginTop: "1rem", padding: "1rem", background: "var(--surface)",
-              border: "1px solid var(--line)", borderRadius: "0.75rem",
-              fontFamily: "monospace", fontSize: "0.75rem", overflowX: "auto",
-              whiteSpace: "pre", maxHeight: "20rem", overflowY: "auto",
-            }}>
-              {diagram}
-            </div>
-          )}
-        </div>
-
-        {/* ── Drift Detection ──────────────────────────────────── */}
-        <div className="detail-section">
-          <h2 className="detail-section-title">Code Drift Detection</h2>
-          <LoadingOverlay loading={driftLoading}>
-            <button className="btn btn-primary" onClick={handleScanDrift} disabled={driftLoading}>
-              {driftLoading ? "Scanning…" : driftFindings.length > 0 ? "Rescan Repository" : "Scan for Drift"}
-            </button>
-          </LoadingOverlay>
-          {driftError && <ErrorBanner message={driftError} onRetry={handleScanDrift} />}
-          {driftSummary && (
-            <div className="status-grid" style={{ marginTop: "0.75rem" }}>
-              <div className={`status-card ${driftSummary.overbuilt > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
-                <strong>{driftSummary.overbuilt}</strong> overbuilt
-              </div>
-              <div className={`status-card ${driftSummary.missing > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
-                <strong>{driftSummary.missing}</strong> missing
-              </div>
-              <div className={`status-card ${driftSummary.architectureDrift > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
-                <strong>{driftSummary.architectureDrift}</strong> arch. drift
-              </div>
-              <div className={`status-card ${driftSummary.outOfScope > 0 ? "pending" : "done"}`} style={{ padding: "0.5rem", fontSize: "0.85rem" }}>
-                <strong>{driftSummary.outOfScope}</strong> out-of-scope
-              </div>
-            </div>
-          )}
-          {driftFindings.length > 0 && (
-            <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {/* ── Drift findings detail ───────────────────────── */}
+        {driftFindings.length > 0 && (
+          <div className="detail-section">
+            <SectionTitle icon="📋" label="Drift Findings" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
               {driftFindings.map((finding) => (
-                <div key={finding.id as string} style={{
-                  padding: "0.75rem", background: "var(--surface)",
-                  border: `1px solid ${finding.acknowledged ? "var(--line)" : "var(--accent)"}`,
-                  borderRadius: "0.5rem", fontSize: "0.85rem",
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontWeight: 600 }}>{finding.drift as string}</span>
-                    <span style={{ color: "var(--muted)", fontSize: "0.75rem" }}>
-                      {finding.changeType as string} — {finding.filePath as string}
+                <div key={finding.id as string}
+                  className={`drift-finding ${!finding.acknowledged ? "unacknowledged" : ""}`}>
+                  <div className="drift-finding-header">
+                    <span className="drift-finding-label">{finding.drift as string}</span>
+                    <span className="drift-finding-meta">
+                      <StatusBadge
+                        variant={finding.changeType === "overbuilt" ? "amber" : finding.changeType === "architecture_drift" ? "red" : "blue"}
+                        label={(finding.changeType as string)?.replace(/_/g, " ")}
+                        dot={false}
+                      />
+                      <span style={{ marginLeft: "0.375rem" }}>{finding.filePath as string}</span>
                     </span>
                   </div>
-                  <p style={{ margin: "0.25rem 0", color: "var(--muted)" }}>
-                    {finding.detail as string}
-                  </p>
+                  <p className="drift-finding-detail">{finding.detail as string}</p>
                   {(finding.reverseProposal as string) && (
                     <details style={{ marginTop: "0.25rem" }}>
-                      <summary style={{ cursor: "pointer", fontSize: "0.75rem", color: "var(--accent)" }}>
+                      <summary style={{ cursor: "pointer", fontSize: "0.75rem", color: "var(--accent)", fontWeight: 600 }}>
                         Reverse Proposal
                       </summary>
-                      <pre style={{
-                        marginTop: "0.25rem", padding: "0.5rem", fontSize: "0.7rem",
-                        background: "rgba(0,0,0,0.03)", borderRadius: "0.25rem",
-                        whiteSpace: "pre-wrap", maxHeight: "10rem", overflowY: "auto",
-                      }}>
+                      <pre className="mermaid-container" style={{ marginTop: "0.375rem", padding: "0.5rem", maxHeight: "10rem", fontSize: "0.6875rem" }}>
                         {finding.reverseProposal as string}
                       </pre>
                     </details>
                   )}
-                  <div className="form-actions" style={{ marginTop: "0.5rem", gap: "0.5rem" }}>
+                  <div className="form-actions" style={{ marginTop: "0.5rem" }}>
                     {!finding.acknowledged && (
-                      <button className="btn btn-secondary"
-                        onClick={() => handleAcknowledgeDrift(finding.id as string)}
-                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                      <button className="btn btn-xs btn-secondary"
+                        onClick={() => handleAcknowledgeDrift(finding.id as string)}>
                         Acknowledge
                       </button>
                     )}
-                    {finding.autoFixable as boolean && (
-                      <button className="btn btn-primary"
-                        style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
-                        Auto-Fix
-                      </button>
-                    )}
                     {(finding.acknowledged as boolean) && (
-                      <span style={{ fontSize: "0.7rem", color: "var(--muted)" }}>Acknowledged</span>
+                      <span style={{ fontSize: "0.6875rem", color: "var(--fg-muted)" }}>
+                        <StatusBadge variant="green" label="Acknowledged" dot={false} />
+                      </span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* ── Actions ──────────────────────────────────────────── */}
-        <div className="form-actions" style={{ marginTop: "2rem" }}>
-          <button className="btn btn-primary" onClick={handleGenerate} disabled={generating}>
-            {generating ? "Generating…" : hasGenerated ? "Regenerate & Download ZIP" : "Generate Six Files & Download"}
-          </button>
-          <button className="btn btn-danger" onClick={handleDelete}>Delete project</button>
-          <Link href="/" className="btn btn-secondary">Back</Link>
+        {/* ── Actions ─────────────────────────────────────── */}
+        <div className="detail-section" style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem", marginTop: "2rem" }}>
+          <div className="form-actions">
+            <button className="btn btn-primary" onClick={handleGenerate} disabled={generating}>
+              {generating ? (
+                <>
+                  <span className="spinner" style={{ width: "0.875rem", height: "0.875rem", borderWidth: "2px" }} />
+                  Generating…
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  {hasGenerated ? "Regenerate & Download ZIP" : "Generate Six Files & Download"}
+                </>
+              )}
+            </button>
+            <button className="btn btn-danger" onClick={handleDelete}>Delete project</button>
+            <Link href="/" className="btn btn-ghost">Back</Link>
+          </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
