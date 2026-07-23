@@ -25,6 +25,9 @@ export const contextSelectionReasonSchema = z.enum([
   "task_constraint_reference",
   "task_evidence_reference",
   "global_blocking_constitution_rule",
+  "task_code_file_writable",
+  "task_code_file_readonly",
+  "task_code_dependency_first_degree",
 ]);
 
 export const contextItemSchema = z
@@ -41,13 +44,22 @@ export const contextItemSchema = z
   })
   .strict();
 
+export const codeContextItemSchema = z
+  .object({
+    path: nonempty,
+    content: nonempty,
+    reason: nonempty,
+  })
+  .strict();
+
 export const compiledContextSchema = z
   .object({
     id: compiledContextIdSchema,
     taskCardId: taskCardIdSchema,
     taskCardFingerprint: contentFingerprintSchema,
-    mode: z.literal("canonical_v1"),
+    mode: z.enum(["canonical_v1", "code_aware_v2"]),
     items: z.array(contextItemSchema),
+    codeContext: z.array(codeContextItemSchema).default([]),
     resolvedSpecificationIds: z.array(specificationIdSchema),
     omittedRefs: refs,
     limitationRefs: refs,
@@ -55,8 +67,8 @@ export const compiledContextSchema = z
     metadata: z
       .object({
         compilerVersion: nonempty,
-        canonicalOnly: z.literal(true),
-        codeAwareCompilation: z.literal(false),
+        canonicalOnly: z.boolean(),
+        codeAwareCompilation: z.boolean(),
         inclusionPolicy: nonempty,
         minimumSafeContextEstimate: z.number().int().nonnegative(),
       })
@@ -80,6 +92,7 @@ export const contextCompilerInputSchema = z
     specifications: z.array(specificationSchema),
     decisions: z.array(decisionSchema).default([]),
     constitutionRules: z.array(constitutionRuleSchema).default([]),
+    repositoryManifest: z.unknown().optional(),
   })
   .strict();
 

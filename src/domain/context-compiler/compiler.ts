@@ -223,6 +223,7 @@ export function compileCanonicalContext(input: unknown): CompiledContext {
     taskCardFingerprint: taskCard.fingerprint,
     mode: "canonical_v1" as const,
     items: orderedItems,
+    codeContext: [],
     resolvedSpecificationIds: specification ? [specification.id] : [],
     omittedRefs: sortedUnique(omittedRefs),
     limitationRefs,
