@@ -1,7 +1,41 @@
 import { lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import { basename, extname, join, relative, resolve, sep } from "node:path";
-import { parseSync } from "oxc-parser";
 import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
+
+// ── Safe oxc-parser import (graceful fallback for Turbopack) ──────
+
+let oxcParser: typeof import("oxc-parser") | null = null;
+let oxcLoadAttempted = false;
+
+function getOxcParser(): typeof import("oxc-parser") {
+  if (!oxcLoadAttempted) {
+    oxcLoadAttempted = true;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      oxcParser = require("oxc-parser") as typeof import("oxc-parser");
+    } catch {
+      // Native WASM bindings unavailable — functions that need AST will return empty results
+    }
+  }
+  if (!oxcParser) {
+    throw new Error("oxc-parser native bindings not available");
+  }
+  return oxcParser;
+}
+
+/**
+ * Safe wrapper around oxc-parser's parseSync.
+ * Returns an empty AST when native bindings are unavailable (e.g. in Turbopack dev).
+ */
+function parseASTSafe(filePath: string, content: string): { program: { body: Array<Record<string, unknown>> } } {
+  try {
+    const parser = getOxcParser();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return parser.parseSync(filePath, content) as any;
+  } catch {
+    return { program: { body: [] } };
+  }
+}
 import {
   dependencyEdgeSchema,
   fileNodeSchema,
@@ -141,7 +175,7 @@ export function parseFileAST(
   imports: string[];
 } {
   const lines = buildLineStarts(content);
-  const parsed = parseSync(filePath, content);
+  const parsed = parseASTSafe(filePath, content);
   const symbols: SymbolRecord[] = [];
   const relationships: StructuralRelationship[] = [];
   const exportNames: string[] = [];
@@ -405,7 +439,7 @@ export function queryStructuralRules(
   };
 }[] {
   const lines = buildLineStarts(content);
-  const parsed = parseSync(filePath, content);
+  const parsed = parseASTSafe(filePath, content);
   const body = parsed.program.body ?? [];
   const results: { type: string; name: string; range: ReturnType<typeof makeSourceRange> }[] = [];
 
