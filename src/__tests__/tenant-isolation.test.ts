@@ -51,7 +51,16 @@ describe("Tenant Isolation", () => {
   it("requireProjectAccess exists and returns a promise", async () => {
     const { requireProjectAccess } = await import("@/lib/project-access");
     expect(typeof requireProjectAccess).toBe("function");
-    const result = requireProjectAccess("test-id");
-    expect(result).toBeInstanceOf(Promise);
+    // Calling it in Vitest throws because Next.js request scope is absent.
+    // Verify the contract: it throws a NextResponse-like object on failure.
+    try {
+      await requireProjectAccess("test-id");
+      // Should not reach here
+      expect(true).toBe(false);
+    } catch (err) {
+      expect(err).toBeDefined();
+      const resp = err as { status?: number; statusText?: string };
+      expect(resp.status).toBe(401);
+    }
   });
 });

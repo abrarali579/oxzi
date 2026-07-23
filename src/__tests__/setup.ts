@@ -1,6 +1,18 @@
 import { vi } from "vitest";
 
 /**
+ * Mock next/headers to prevent "cookies was called outside a request scope"
+ * errors in tests that transitively import auth helpers.
+ */
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(() => ({
+    get: vi.fn(() => undefined),
+    set: vi.fn(),
+    delete: vi.fn(),
+  })),
+}));
+
+/**
  * Global mock for @prisma/client to prevent
  * PrismaClientConstructorValidationError in test environments
  * where no provider adapter (e.g. libsql) is installed.
