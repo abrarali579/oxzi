@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface ProjectData {
   id: string;
@@ -82,7 +82,6 @@ export default function ProjectDetailPage() {
   // History state
   const [history, setHistory] = useState<{ version: number; timestamp: string; event: string }[]>([]);
   const [historyVersion, setHistoryVersion] = useState(1);
-  const [historyLoading, setHistoryLoading] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
   // Visual map state
