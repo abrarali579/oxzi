@@ -81,7 +81,7 @@ export async function POST() {
       deepeningCount: 0,
       deepeningTokens: 0,
       orchestrationOverheadTokens: 150,
-      totalEstimatedTokens: 1750,
+      totalEstimatedTokens: 1950,
       latencyEstimateMs: null,
       expectedDecisionValue: "high" as const,
     });
