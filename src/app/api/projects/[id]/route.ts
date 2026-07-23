@@ -7,120 +7,136 @@ import {
   deleteProject as deleteFileProject,
 } from "@/lib/db";
 import type { ProjectRecord } from "@/lib/db";
+import { apiSuccess, apiError } from "@/lib/api-response";
+import {
+  parseCanonicalState,
+  parseDiscoveryResult,
+  parseExtractionResult,
+  parseGeneratedFiles,
+} from "@/lib/db/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
-  const session = await getSession();
+  try {
+    const { id } = await context.params;
+    const session = await getSession();
 
-  // Try DB first (for authenticated users)
-  if (session) {
-    const dbProject = await prisma.project.findUnique({ where: { id } });
-    if (dbProject) {
-      await requireOrganizationAccess(session.userId, dbProject.organizationId);
-      return NextResponse.json({
-        project: {
-          id: dbProject.id,
-          title: dbProject.title,
-          brief: dbProject.brief,
-          createdAt: dbProject.createdAt.toISOString(),
-          updatedAt: dbProject.updatedAt.toISOString(),
-          canonicalState: dbProject.canonicalState ? JSON.parse(dbProject.canonicalState) : null,
-          discoveryResult: dbProject.discoveryResult ? JSON.parse(dbProject.discoveryResult) : null,
-          extractionResult: dbProject.extractionResult
-            ? JSON.parse(dbProject.extractionResult)
-            : null,
-          generatedFiles: dbProject.generatedFiles ? JSON.parse(dbProject.generatedFiles) : null,
-        },
-      });
+    // Try DB first (for authenticated users)
+    if (session) {
+      const dbProject = await prisma.project.findUnique({ where: { id } });
+      if (dbProject) {
+        await requireOrganizationAccess(session.userId, dbProject.organizationId);
+        return NextResponse.json(
+          apiSuccess({
+            id: dbProject.id,
+            title: dbProject.title,
+            brief: dbProject.brief,
+            createdAt: dbProject.createdAt.toISOString(),
+            updatedAt: dbProject.updatedAt.toISOString(),
+            version: dbProject.version,
+            canonicalState: parseCanonicalState(dbProject.canonicalState),
+            discoveryResult: parseDiscoveryResult(dbProject.discoveryResult),
+            extractionResult: parseExtractionResult(dbProject.extractionResult),
+            generatedFiles: parseGeneratedFiles(dbProject.generatedFiles),
+          }),
+        );
+      }
     }
-  }
 
-  // Fall back to file store
-  const project = getFileProject(id);
-  if (!project) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    // Fall back to file store
+    const project = getFileProject(id);
+    if (!project) {
+      return NextResponse.json(apiError("Project not found"), { status: 404 });
+    }
+    return NextResponse.json(apiSuccess(project));
+  } catch (err) {
+    if (err instanceof NextResponse) return err;
+    return NextResponse.json(apiError("Failed to load project"), { status: 500 });
   }
-  return NextResponse.json({ project });
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
-  const session = await getSession();
-
-  // Try DB update (for authenticated users)
-  if (session) {
-    const dbProject = await prisma.project.findUnique({ where: { id } });
-    if (dbProject) {
-      await requireOrganizationAccess(session.userId, dbProject.organizationId);
-      const body = (await request.json()) as Record<string, unknown>;
-      const updateData: Record<string, unknown> = {};
-      if (body.title !== undefined) updateData.title = body.title as string;
-      if (body.brief !== undefined) updateData.brief = body.brief as string;
-      if (body.canonicalState !== undefined)
-        updateData.canonicalState = JSON.stringify(body.canonicalState);
-      if (body.discoveryResult !== undefined)
-        updateData.discoveryResult = JSON.stringify(body.discoveryResult);
-      if (body.extractionResult !== undefined)
-        updateData.extractionResult = JSON.stringify(body.extractionResult);
-      if (body.generatedFiles !== undefined)
-        updateData.generatedFiles = JSON.stringify(body.generatedFiles);
-
-      const updated = await prisma.project.update({
-        where: { id },
-        data: updateData,
-      });
-
-      return NextResponse.json({
-        project: {
-          id: updated.id,
-          title: updated.title,
-          brief: updated.brief,
-          createdAt: updated.createdAt.toISOString(),
-          updatedAt: updated.updatedAt.toISOString(),
-          canonicalState: updated.canonicalState ? JSON.parse(updated.canonicalState) : null,
-          discoveryResult: updated.discoveryResult ? JSON.parse(updated.discoveryResult) : null,
-          extractionResult: updated.extractionResult ? JSON.parse(updated.extractionResult) : null,
-          generatedFiles: updated.generatedFiles ? JSON.parse(updated.generatedFiles) : null,
-        },
-      });
-    }
-  }
-
-  // Fall back to file store
-  const existing = getFileProject(id);
-  if (!existing) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
-  }
-
   try {
+    const { id } = await context.params;
     const body = (await request.json()) as Record<string, unknown>;
+
+    // Try DB update (for authenticated users)
+    const session = await getSession();
+    if (session) {
+      const dbProject = await prisma.project.findUnique({ where: { id } });
+      if (dbProject) {
+        await requireOrganizationAccess(session.userId, dbProject.organizationId);
+        const updateData: Record<string, unknown> = {};
+        if (body.title !== undefined) updateData.title = body.title as string;
+        if (body.brief !== undefined) updateData.brief = body.brief as string;
+        if (body.canonicalState !== undefined)
+          updateData.canonicalState = JSON.stringify(body.canonicalState);
+        if (body.discoveryResult !== undefined)
+          updateData.discoveryResult = JSON.stringify(body.discoveryResult);
+        if (body.extractionResult !== undefined)
+          updateData.extractionResult = JSON.stringify(body.extractionResult);
+        if (body.generatedFiles !== undefined)
+          updateData.generatedFiles = JSON.stringify(body.generatedFiles);
+
+        const updated = await prisma.project.update({
+          where: { id },
+          data: updateData,
+        });
+
+        return NextResponse.json(
+          apiSuccess({
+            id: updated.id,
+            title: updated.title,
+            brief: updated.brief,
+            createdAt: updated.createdAt.toISOString(),
+            updatedAt: updated.updatedAt.toISOString(),
+            canonicalState: parseCanonicalState(updated.canonicalState),
+            discoveryResult: parseDiscoveryResult(updated.discoveryResult),
+            extractionResult: parseExtractionResult(updated.extractionResult),
+            generatedFiles: parseGeneratedFiles(updated.generatedFiles),
+          }),
+        );
+      }
+    }
+
+    // Fall back to file store
+    const existing = getFileProject(id);
+    if (!existing) {
+      return NextResponse.json(apiError("Project not found"), { status: 404 });
+    }
+
     const updates = body as Partial<Omit<ProjectRecord, "id" | "createdAt">>;
     const updated = updateFileProject(id, updates);
-    return NextResponse.json({ project: updated });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update project";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json(apiSuccess(updated));
+  } catch (err) {
+    if (err instanceof NextResponse) return err;
+    const message = err instanceof Error ? err.message : "Failed to update project";
+    return NextResponse.json(apiError(message), { status: 400 });
   }
 }
 
 export async function DELETE(_request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
-  const session = await getSession();
+  try {
+    const { id } = await context.params;
+    const session = await getSession();
 
-  if (session) {
-    const dbProject = await prisma.project.findUnique({ where: { id } });
-    if (dbProject) {
-      await requireOrganizationAccess(session.userId, dbProject.organizationId);
-      await prisma.project.delete({ where: { id } });
-      return NextResponse.json({ success: true });
+    if (session) {
+      const dbProject = await prisma.project.findUnique({ where: { id } });
+      if (dbProject) {
+        await requireOrganizationAccess(session.userId, dbProject.organizationId);
+        await prisma.project.delete({ where: { id } });
+        return NextResponse.json(apiSuccess({ deleted: true }));
+      }
     }
-  }
 
-  const deleted = deleteFileProject(id);
-  if (!deleted) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    const deleted = deleteFileProject(id);
+    if (!deleted) {
+      return NextResponse.json(apiError("Project not found"), { status: 404 });
+    }
+    return NextResponse.json(apiSuccess({ deleted: true }));
+  } catch (err) {
+    if (err instanceof NextResponse) return err;
+    return NextResponse.json(apiError("Failed to delete project"), { status: 500 });
   }
-  return NextResponse.json({ success: true });
 }

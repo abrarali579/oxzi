@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { describe, expect, it, afterEach } from "vitest";
 
 import { contentFingerprint } from "../knowledge-graph";
-import { parseRepository } from "../repository-intelligence";
+import { parseRepository, isSizeBoundaryExceeded } from "../repository-intelligence";
 import { compileCodeAwareContext } from ".";
 import { implementationReadySpecificationFixture } from "../governance";
 import { compileTaskCard } from "../task-card";
@@ -45,7 +45,9 @@ describe("Code-aware Context Compiler V2", () => {
     write(base, "config/settings.ts", "export const DEBUG = false;");
 
     // Parse the directory to get a RepositoryManifest
-    const manifest = parseRepository({ rootPath: base });
+    const parseResult = parseRepository({ rootPath: base });
+    if (isSizeBoundaryExceeded(parseResult)) throw new Error("Unexpected size limit");
+    const manifest = parseResult;
 
     // Build a task card with specific file boundaries referencing the parsed files
     const taskCard = {
@@ -125,7 +127,9 @@ describe("Code-aware Context Compiler V2", () => {
     write(base, "src/feature.ts", "export const feat = true;");
     write(base, "config/secret.ts", "export const SECRET = 'hidden';");
 
-    const manifest = parseRepository({ rootPath: base });
+    const parseResult = parseRepository({ rootPath: base });
+    if (isSizeBoundaryExceeded(parseResult)) throw new Error("Unexpected size limit");
+    const manifest = parseResult;
     const taskCard = {
       taskCardId: "task_card_protected_test" as const,
       sourceSliceId: "slice_feature_1" as const,
@@ -191,7 +195,9 @@ describe("Code-aware Context Compiler V2", () => {
     write(base, "src/helpers.ts", "export function helper() { return 42; }");
     write(base, "src/unrelated.ts", "export const unrelated = true;");
 
-    const manifest = parseRepository({ rootPath: base });
+    const parseResult = parseRepository({ rootPath: base });
+    if (isSizeBoundaryExceeded(parseResult)) throw new Error("Unexpected size limit");
+    const manifest = parseResult;
     const taskCard = {
       taskCardId: "task_card_imports_test" as const,
       sourceSliceId: "slice_imports_1" as const,
@@ -278,7 +284,9 @@ describe("Code-aware Context Compiler V2", () => {
     const base = createTempDir();
     write(base, "src/existing.ts", "export const ok = true;");
 
-    const manifest = parseRepository({ rootPath: base });
+    const parseResult = parseRepository({ rootPath: base });
+    if (isSizeBoundaryExceeded(parseResult)) throw new Error("Unexpected size limit");
+    const manifest = parseResult;
     const taskCard = {
       taskCardId: "task_card_missing_test" as const,
       sourceSliceId: "slice_missing_1" as const,

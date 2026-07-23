@@ -40,6 +40,7 @@ model Membership {
   organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, organizationId])
+  @@index([organizationId])
 }
 
 model Project {
@@ -59,6 +60,11 @@ model Project {
   generatedFiles  String?  // JSON
 
   organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([createdAt])
+  @@index([organizationId, createdAt])
 }
 
 model Subscription {
@@ -73,4 +79,7 @@ model Subscription {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([status])
+  @@index([organizationId, status])
 }

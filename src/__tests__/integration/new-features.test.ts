@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it, afterEach } from "vitest";
 import {
-  parseRepository, parseExports, parseImports,
+  parseRepository, parseExports, parseImports, isSizeBoundaryExceeded,
 } from "@/domain/repository-intelligence";
 import { generateMermaidDiagram, generateFeatureDiagram } from "@/domain/visual-architecture";
 import { runDivergence, activateDivergence } from "@/domain/divergence";
@@ -126,6 +126,7 @@ describe("Integration: Visual Map Generation", () => {
     write(base, "src/helpers.ts", "export function helper() { return 42; }");
 
     const manifest = parseRepository({ rootPath: base });
+    if (isSizeBoundaryExceeded(manifest)) throw new Error("Unexpected size limit");
     const depDiagram = generateMermaidDiagram(manifest);
     expect(depDiagram).toContain("flowchart LR");
     expect(depDiagram).toContain("Legend");

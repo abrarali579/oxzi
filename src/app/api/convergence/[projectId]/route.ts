@@ -37,7 +37,6 @@ export async function GET(_request: Request, context: RouteContext) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/projects/${projectId}`);
       if (res.ok) {
-        const { project } = await res.json() as { project: { generatedFiles?: Record<string, string>; canonicalState?: Record<string, unknown> } };
         // We have the project but no structured task cards — create a default scan
         // that at least detects overbuilt files
       }

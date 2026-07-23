@@ -42,6 +42,32 @@ const ALWAYS_EXCLUDED_FILES = new Set([
 
 const PARSABLE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts"]);
 
+// ── Hard Limits & OOM Protection ──────────────────────────────────
+
+/** Maximum number of files to traverse per scan. */
+export const MAX_FILES_PER_SCAN = 5_000;
+
+/** Maximum total AST content bytes to parse per scan. */
+export const MAX_AST_CONTENT_BYTES = 50 * 1024 * 1024; // 50 MB
+
+/**
+ * Error type emitted when repository size exceeds configured limits.
+ */
+export interface SizeBoundaryExceeded {
+  kind: "SizeBoundaryExceeded";
+  message: string;
+  limit: { maxFiles: number; maxContentBytes: number };
+  actual: { filesScanned: number; contentBytesRead: number };
+}
+
+export function isSizeBoundaryExceeded(err: unknown): err is SizeBoundaryExceeded {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    (err as SizeBoundaryExceeded).kind === "SizeBoundaryExceeded"
+  );
+}
+
 // ── AST-based parsing (V2) ──────────────────────────────────────
 
 interface AstNode {
@@ -487,12 +513,18 @@ export interface TraverseOptions {
   additionalExclusions?: string[];
 }
 
-export function traverseDirectory(options: TraverseOptions): string[] {
+export function traverseDirectory(options: TraverseOptions): { files: string[]; truncated: boolean } {
   const { rootPath, additionalExclusions = [] } = options;
   const absoluteRoot = resolve(rootPath);
   const results: string[] = [];
+  let truncated = false;
 
   function walk(dirPath: string) {
+    if (results.length >= MAX_FILES_PER_SCAN) {
+      truncated = true;
+      return;
+    }
+
     let entries: string[];
     try {
       entries = readdirSync(dirPath);
@@ -501,6 +533,10 @@ export function traverseDirectory(options: TraverseOptions): string[] {
     }
 
     for (const entry of entries) {
+      if (results.length >= MAX_FILES_PER_SCAN) {
+        truncated = true;
+        break;
+      }
       const fullPath = join(dirPath, entry);
       if (shouldExclude(fullPath, absoluteRoot)) continue;
       if (additionalExclusions.some((pattern) => fullPath.includes(pattern))) continue;
@@ -520,7 +556,7 @@ export function traverseDirectory(options: TraverseOptions): string[] {
   }
 
   walk(absoluteRoot);
-  return results.sort();
+  return { files: results.sort(), truncated };
 }
 
 // ── Parsing ---------------------------------------------------------
@@ -612,15 +648,44 @@ export interface ParseRepositoryOptions {
   additionalExclusions?: string[];
 }
 
-export function parseRepository(options: ParseRepositoryOptions): RepositoryManifest {
+export function parseRepository(
+  options: ParseRepositoryOptions,
+): RepositoryManifest | SizeBoundaryExceeded {
   const { rootPath, additionalExclusions = [] } = options;
   const absoluteRoot = realpathSync(resolve(rootPath));
 
-  const filePaths = traverseDirectory({ rootPath: absoluteRoot, additionalExclusions });
+  const { files: filePaths, truncated } = traverseDirectory({ rootPath: absoluteRoot, additionalExclusions });
 
-  const fileNodes = filePaths.map((filePath) =>
-    parseFileNode({ filePath, rootPath: absoluteRoot }),
-  );
+  // Enforce hard limit: max files (check truncation or over-limit)
+  if (truncated || filePaths.length > MAX_FILES_PER_SCAN) {
+    return {
+      kind: "SizeBoundaryExceeded",
+      message: `Repository scan exceeded maximum file limit of ${MAX_FILES_PER_SCAN} files (found ${filePaths.length}).`,
+      limit: { maxFiles: MAX_FILES_PER_SCAN, maxContentBytes: MAX_AST_CONTENT_BYTES },
+      actual: { filesScanned: filePaths.length, contentBytesRead: 0 },
+    };
+  }
+
+  const fileNodes: FileNode[] = [];
+  let contentBytesRead = 0;
+
+  for (const filePath of filePaths) {
+    const stats = lstatSync(filePath);
+    contentBytesRead += stats.size;
+
+    // Enforce hard limit: max total content size
+    if (contentBytesRead > MAX_AST_CONTENT_BYTES) {
+      return {
+        kind: "SizeBoundaryExceeded",
+        message: `Repository scan exceeded maximum AST content limit of ${MAX_AST_CONTENT_BYTES} bytes (read ~${contentBytesRead} bytes across ${fileNodes.length + 1} files).`,
+        limit: { maxFiles: MAX_FILES_PER_SCAN, maxContentBytes: MAX_AST_CONTENT_BYTES },
+        actual: { filesScanned: filePaths.length, contentBytesRead },
+      };
+    }
+
+    fileNodes.push(parseFileNode({ filePath, rootPath: absoluteRoot }));
+  }
+
   const edges = resolveDependencyEdges(fileNodes);
 
   return repositoryManifestSchema.parse({

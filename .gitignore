@@ -40,3 +40,4 @@ prisma/oxzi.db-journal
 # Generated local review package
 .review/*
 !.review/.gitkeep
+repo_dump.txt

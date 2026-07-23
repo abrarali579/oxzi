@@ -8,6 +8,7 @@ import {
   parseFileNode,
   parseRepository,
   resolveDependencyEdges,
+  isSizeBoundaryExceeded,
   traverseDirectory,
   resolveImportPath,
   parseExports,
@@ -125,7 +126,8 @@ describe("traverseDirectory", () => {
     write(base, ".review/output.json", "fake");
     write(base, "src/.hidden/internal.ts", "hidden");
 
-    const files = traverseDirectory({ rootPath: base });
+    const result = traverseDirectory({ rootPath: base });
+    const files = result.files;
 
     expect(files).toContain(join(base, "src/index.ts"));
     expect(files).toContain(join(base, "src/utils/helper.ts"));
@@ -268,7 +270,9 @@ describe("parseRepository integration", () => {
     write(base, "node_modules/zod/index.ts", "fake library");
     write(base, ".git/HEAD", "ref: main");
 
-    const manifest = parseRepository({ rootPath: base });
+    const result = parseRepository({ rootPath: base });
+    expect(isSizeBoundaryExceeded(result)).toBe(false);
+    const manifest = result as Exclude<typeof result, { kind: "SizeBoundaryExceeded" }>;
 
     // Validate against schema
     expect(() => repositoryManifestSchema.parse(manifest)).not.toThrow();
@@ -305,7 +309,9 @@ describe("parseRepository integration", () => {
 
   it("handles an empty directory gracefully", () => {
     const base = createTempDir();
-    const manifest = parseRepository({ rootPath: base });
+    const result = parseRepository({ rootPath: base });
+    expect(isSizeBoundaryExceeded(result)).toBe(false);
+    const manifest = result as Exclude<typeof result, { kind: "SizeBoundaryExceeded" }>;
     expect(manifest.files).toEqual([]);
     expect(manifest.edges).toEqual([]);
   });
@@ -316,11 +322,12 @@ describe("parseRepository integration", () => {
     write(base, "src/should-skip.ts", "export const y = 2;");
     write(base, "lib/extra.ts", "export const z = 3;");
 
-    const manifest = parseRepository({
+    const result = parseRepository({
       rootPath: base,
       additionalExclusions: ["should-skip"],
     });
-
+    expect(isSizeBoundaryExceeded(result)).toBe(false);
+    const manifest = result as Exclude<typeof result, { kind: "SizeBoundaryExceeded" }>;
     const filePaths = manifest.files.map((f) => f.filePath);
     expect(filePaths).toContain("src/index.ts");
     expect(filePaths).not.toContain("src/should-skip.ts");

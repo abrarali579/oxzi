@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
 import { taskCardSchema, type TaskCard } from "../task-card";
-import { parseExports, parseImports } from "../repository-intelligence";
+import { parseExports } from "../repository-intelligence";
 
 // ── Types ──────────────────────────────────────────────────────
 
