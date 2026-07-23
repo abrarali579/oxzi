@@ -31,7 +31,7 @@ model Organization {
 
 model Membership {
   id             String       @id @default(cuid())
-  role           String       @default("member") // owner | admin | member
+  role           String       @default("member") // owner | admin | member | viewer
   userId         String
   organizationId String
   createdAt      DateTime     @default(now())

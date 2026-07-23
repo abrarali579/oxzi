@@ -7,7 +7,13 @@ import { implementationReadySpecificationFixture } from "../governance";
 import { approvedImplementationSlice } from "../planning";
 import { evaluatePromptProgram, certifyPromptProgram } from "../evaluation";
 import { issueExecutionPassport } from "../control-plane";
-import { dispatchPromptProgram, DeliveryBlockedError, deliveryTicketSchema } from ".";
+import { contentFingerprint, type JsonValue } from "../knowledge-graph";
+import {
+  dispatchPromptProgram,
+  DeliveryBlockedError,
+  InsufficientApprovalError,
+  deliveryTicketSchema,
+} from ".";
 
 const taskCard = compileTaskCard({
   slice: approvedImplementationSlice,
@@ -34,6 +40,27 @@ const agentProfile = {
 const validProgram = renderPromptProgram({ taskCard, compiledContext, agentProfile });
 const certification = certifyPromptProgram(evaluatePromptProgram(validProgram));
 const passport = issueExecutionPassport(certification, taskCard, agentProfile);
+
+function makeHumanRecord(overrides: Record<string, unknown> = {}) {
+  const base = {
+    approvedBy: "user:admin",
+    approvedAt: new Date().toISOString(),
+    method: "human" as const,
+    role: "admin" as const,
+    organizationId: "org_test",
+  };
+  const merged = { ...base, ...overrides };
+  // Only auto-compute signature if not explicitly overridden
+  if (!overrides.signature) {
+    const sig = contentFingerprint({
+      approvedBy: merged.approvedBy,
+      role: merged.role,
+      organizationId: merged.organizationId,
+    } as unknown as JsonValue);
+    return { ...merged, signature: sig };
+  }
+  return merged as unknown as ReturnType<typeof makeHumanRecord>;
+}
 
 describe("Agent Delivery — Dispatch Runtime", () => {
   it("generates a valid DeliveryTicket when approved", () => {
@@ -92,4 +119,52 @@ describe("Agent Delivery — Dispatch Runtime", () => {
     });
     expect(ticket.approval?.method).toBe("system_auto");
   });
+
+  // ── Step 11: Approval gate risk-based tests ────────────────
+
+  it("returns pending_approval for high-risk task without human approval record", () => {
+    const ticket = dispatchPromptProgram(passport, "Codex", undefined, undefined, "high");
+    expect(ticket.status).toBe("pending_approval");
+    expect(ticket.payloadSummary).toContain("high-risk");
+  });
+
+  it("blocks high-risk task with insufficient role (member instead of admin)", () => {
+    const record = makeHumanRecord({ role: "member" });
+    expect(() => dispatchPromptProgram(passport, "Codex", { approved: true }, record, "high")).toThrow(
+      DeliveryBlockedError,
+    );
+  });
+
+  it("blocks high-risk task with forged approval signature", () => {
+    const record = makeHumanRecord({ signature: "forged_sig" });
+    expect(() => dispatchPromptProgram(passport, "Codex", { approved: true }, record, "high")).toThrow(
+      DeliveryBlockedError,
+    );
+  });
+
+  it("dispatches high-risk task with valid admin approval record", () => {
+    const record = makeHumanRecord();
+    const ticket = dispatchPromptProgram(passport, "Codex", { approved: true, approvedBy: "user:admin", method: "human" }, record, "high");
+    expect(ticket.status).toBe("dispatched");
+    expect(ticket.approvalState).toBe("APPROVED");
+  });
+
+  it("dispatches critical-risk task only with owner role", () => {
+    const record = makeHumanRecord({ role: "owner" });
+    const ticket = dispatchPromptProgram(passport, "Codex", { approved: true, approvedBy: "user:owner", method: "human" }, record, "critical");
+    expect(ticket.status).toBe("dispatched");
+  });
+
+  it("blocks critical-risk task with admin role (needs owner)", () => {
+    const record = makeHumanRecord({ role: "admin" });
+    expect(() => dispatchPromptProgram(passport, "Codex", { approved: true }, record, "critical")).toThrow(
+      DeliveryBlockedError,
+    );
+  });
+
+  it("low-risk task dispatches without explicit human approval record", () => {
+    const ticket = dispatchPromptProgram(passport, "Codex", { approved: true, approvedBy: "auto:pipeline" }, undefined, "low");
+    expect(ticket.status).toBe("dispatched");
+  });
 });
+

@@ -96,7 +96,7 @@ export async function getOrganizationMemberships(userId: string) {
 export async function requireOrganizationAccess(
   userId: string,
   organizationId: string,
-  allowedRoles: string[] = ["owner", "admin", "member"],
+  allowedRoles: string[] = ["owner", "admin", "member", "viewer"],
 ): Promise<{ role: string }> {
   const membership = await prisma.membership.findUnique({
     where: { userId_organizationId: { userId, organizationId } },
@@ -104,4 +104,14 @@ export async function requireOrganizationAccess(
   if (!membership) throw new AuthError("Not a member of this organization");
   if (!allowedRoles.includes(membership.role)) throw new AuthError("Insufficient permissions");
   return { role: membership.role };
+}
+
+/**
+ * Require ADMIN or OWNER role — used for high-risk dispatch approvals.
+ */
+export async function requireAdminOrOwner(
+  userId: string,
+  organizationId: string,
+): Promise<{ role: string }> {
+  return requireOrganizationAccess(userId, organizationId, ["owner", "admin"]);
 }
