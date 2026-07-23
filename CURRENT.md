@@ -50,6 +50,12 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Prompt registries/optimization, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; divergence, review/convergence; billing (stripe integration placeholder), real-time multiplayer (deferred to next iteration)
 
+## Recent Fixes (MVP hardening, not a new unit)
+
+- Auth hard-gates removed from `history`/`taskcard`/`restore`/`traces` routes (no anonymous fallback existed, unlike sibling routes — broke the generate → diverge → approve loop for anyone not logged in). Mermaid diagrams got a click-to-expand modal (CSS was force-shrinking complex diagrams illegible). See commits `d1fc058`, `3f79c73`.
+- `/generate` and `/visualize` now share `buildCanonicalProjectFromBrief()` (`src/domain/project/from-brief.ts`), which runs the extraction engine on the brief and folds proposed updates onto canonical fields before discovery runs. Previously both routes discarded extraction output and ran discovery against an all-`"missing"` clone, so the Visual Map was empty regardless of brief content. See ADR-085.
+- Open: no UI to review/approve proposed extraction updates before they feed discovery — still MVP-grade, not the full Controlled Living Specs approval flow.
+
 ## Boundaries
 
 - Canonical state alone is approved truth; graphs, prompts, traces, AI results, structural matches, and ideas are derived evidence/proposals.
