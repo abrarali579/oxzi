@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
 import { scanForDrift, type ConvergenceFinding } from "@/domain/convergence";
 import { taskCardSchema, type TaskCard } from "@/domain/task-card";
 
@@ -7,10 +6,6 @@ type RouteContext = { params: Promise<{ projectId: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   const { projectId } = await context.params;
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
 
   // In a real implementation, we'd load Task Cards from the project store.
   // For now, we build a default scan using the project's src/ directory.

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
 import { getProject } from "@/lib/db";
 import { analyzeDiscovery } from "@/domain/discovery";
 import {
@@ -56,10 +55,6 @@ function generateDiscoveryDiagram(
 
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
 
   try {
     const project = getProject(id);

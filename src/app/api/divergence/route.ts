@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
 import { runDivergence } from "@/domain/divergence";
 import { divergenceRequestSchema, cognitiveFrameSchema, divergenceCostEstimateSchema } from "@/domain/divergence/schemas";
 import { contentFingerprint } from "@/domain/knowledge-graph";
 import type { JsonValue } from "@/domain/knowledge-graph/types";
 
 export async function POST() {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
-
   try {
-    // Build a divergence request for a high-risk slice — Zod validates
-    // the branded types at runtime via the schema parse.
-    const fp = contentFingerprint({ userId: session.userId } as unknown as JsonValue).replace("fp_f1_", "").slice(0, 16);
+    const fp = contentFingerprint({ request: "divergence" } as unknown as JsonValue).replace("fp_f1_", "").slice(0, 16);
     const request = divergenceRequestSchema.parse({
       id: `divergence_request_${fp}`,
       projectId: "project_divergence",
