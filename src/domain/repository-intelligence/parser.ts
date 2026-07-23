@@ -1,13 +1,22 @@
 import { lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import { basename, extname, join, relative, resolve, sep } from "node:path";
-import { stableJson, type JsonValue } from "../knowledge-graph";
+import { parseSync } from "oxc-parser";
+import { contentFingerprint, stableJson, type JsonValue } from "../knowledge-graph";
 import {
   dependencyEdgeSchema,
   fileNodeSchema,
   repositoryManifestSchema,
+  sourceRangeSchema,
+  parsedFileIdSchema,
+  repositorySymbolIdSchema,
+  structuralRelationshipIdSchema,
+  symbolRecordSchema,
+  structuralRelationshipSchema,
   type DependencyEdge,
   type FileNode,
   type RepositoryManifest,
+  type SymbolRecord,
+  type StructuralRelationship,
 } from "./schemas";
 
 // ── Exclusion -------------------------------------------------------
@@ -33,18 +42,397 @@ const ALWAYS_EXCLUDED_FILES = new Set([
 
 const PARSABLE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts"]);
 
-const EXPORT_PATTERNS = [
-  /^\s*export\s+(?:default\s+)?(?:function|class|interface|type|enum|const|let|var|abstract\s+class|async\s+function)\s+(\w+)/gm,
-  /^\s*export\s+default\s+(\w+)/gm,
-  /^\s*export\s*\{([^}]+)\}/gm,
-  /^\s*export\s*\*\s*from\s+['"]([^'"]+)['"]/gm,
-  /^\s*export\s*\{[^}]*\}\s*from\s+['"]([^'"]+)['"]/gm,
-];
+// ── AST-based parsing (V2) ──────────────────────────────────────
 
-const IMPORT_PATTERNS = [
-  /^\s*import\s+(?:type\s+)?(?:\{[^}]*\}|\*\s+as\s+\w+|\w+(?:\s*,\s*(?:\{[^}]*\}|\*\s+as\s+\w+|\w+))?)\s+from\s+['"]([^'"]+)['"]/gm,
-  /^\s*import\s+(?:type\s+)?['"]([^'"]+)['"]/gm,
-];
+interface AstNode {
+  type: string;
+  start: number;
+  end: number;
+  [key: string]: unknown;
+}
+
+function toSourcePosition(pos: number, lines: number[]): { line: number; column: number } {
+  // Binary search to find which line this position falls on
+  let low = 0;
+  let high = lines.length - 1;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    if (lines[mid]! <= pos) low = mid;
+    else high = mid - 1;
+  }
+  const lineStart = lines[low]!;
+  return { line: low + 1, column: pos - lineStart };
+}
+
+function buildLineStarts(content: string): number[] {
+  const starts = [0];
+  for (let i = 0; i < content.length; i++) {
+    if (content[i] === "\n") starts.push(i + 1);
+  }
+  return starts;
+}
+
+function makeSourceRange(
+  start: number,
+  end: number,
+  lines: number[],
+): {
+  start: { line: number; column: number; byte: number };
+  end: { line: number; column: number; byte: number };
+} {
+  return sourceRangeSchema.parse({
+    start: { ...toSourcePosition(start, lines), byte: start },
+    end: { ...toSourcePosition(end, lines), byte: end },
+  });
+}
+
+function nodeName(node: AstNode): string {
+  if (node.type === "ExportNamedDeclaration" || node.type === "ExportDefaultDeclaration") {
+    const decl = node.declaration as AstNode | undefined;
+    if (decl?.type === "VariableDeclaration") {
+      const vars = decl.declarations as AstNode[] | undefined;
+      if (vars?.[0]?.id) return ((vars[0].id as AstNode).name as string) ?? "";
+    }
+    if (
+      decl?.type === "FunctionDeclaration" ||
+      decl?.type === "ClassDeclaration" ||
+      decl?.type === "TSInterfaceDeclaration" ||
+      decl?.type === "TSTypeAliasDeclaration"
+    ) {
+      return ((decl.id as AstNode | undefined)?.name as string) ?? "";
+    }
+  }
+  return "";
+}
+
+export function parseFileAST(
+  content: string,
+  filePath: string,
+): {
+  symbols: SymbolRecord[];
+  relationships: StructuralRelationship[];
+  exports: string[];
+  imports: string[];
+} {
+  const lines = buildLineStarts(content);
+  const parsed = parseSync(filePath, content);
+  const symbols: SymbolRecord[] = [];
+  const relationships: StructuralRelationship[] = [];
+  const exportNames: string[] = [];
+  const importSpecifiers: string[] = [];
+  const fileId = parsedFileIdSchema.parse(
+    `parsed_file_${contentFingerprint({ filePath }).replace("fp_f1_", "").slice(0, 16)}`,
+  );
+
+  const body = parsed.program.body ?? [];
+
+  for (const stmt of body) {
+    const node = stmt as AstNode;
+
+    // ── Imports ───────────────────────────────────────────────
+    if (node.type === "ImportDeclaration") {
+      const source = node.source as AstNode | undefined;
+      const specifier = (source?.value as string) ?? "";
+      if (specifier) importSpecifiers.push(specifier);
+
+      // Create symbol for each import specifier
+      const specifiers = node.specifiers as AstNode[] | undefined;
+      if (specifiers) {
+        for (const spec of specifiers) {
+          const local = spec.local as AstNode | undefined;
+          const name = (local?.name as string) ?? "";
+          if (name) {
+            symbols.push(
+              symbolRecordSchema.parse({
+                id: repositorySymbolIdSchema.parse(
+                  `repo_symbol_${contentFingerprint({ fileId, name }).replace("fp_f1_", "").slice(0, 16)}`,
+                ),
+                parsedFileId: fileId,
+                name,
+                qualifiedName: name,
+                kind: "variable",
+                range: makeSourceRange(node.start!, node.end!, lines),
+                exported: false,
+                sourceEvidenceRefs: [`ast:${filePath}`],
+                fingerprint: contentFingerprint({ fileId, name }),
+              }),
+            );
+          }
+        }
+      }
+
+      // Create relationship for the import
+      relationships.push(
+        structuralRelationshipSchema.parse({
+          id: structuralRelationshipIdSchema.parse(
+            `structural_edge_${contentFingerprint({ fileId, source: specifier }).replace("fp_f1_", "").slice(0, 16)}`,
+          ),
+          parsedFileId: fileId,
+          fromSymbolId: repositorySymbolIdSchema.parse(
+            `repo_symbol_${contentFingerprint({ fileId, name: "__module__" }).replace("fp_f1_", "").slice(0, 16)}`,
+          ),
+          toSymbolId: null,
+          unresolvedTarget: specifier,
+          type: "imports",
+          range: makeSourceRange(node.start!, node.end!, lines),
+          derivationMethod: "parsed_structure",
+          confidence: 100,
+          evidenceRefs: [`ast:${filePath}`],
+          freshness: "current",
+        }),
+      );
+    }
+
+    // ── Exports ───────────────────────────────────────────────
+    if (node.type === "ExportNamedDeclaration" || node.type === "ExportDefaultDeclaration") {
+      const name = nodeName(node);
+      if (name) exportNames.push(name);
+
+      // Handle export specifier lists: export { greet, VERSION }
+      const specifiers = node.specifiers as AstNode[] | undefined;
+      if (specifiers && specifiers.length > 0) {
+        for (const spec of specifiers) {
+          const local = spec.local as AstNode | undefined;
+          const exported = spec.exported as AstNode | undefined;
+          const exportName = (exported?.name as string) ?? (local?.name as string) ?? "";
+          if (exportName) exportNames.push(exportName);
+
+          if (exportName) {
+            symbols.push(
+              symbolRecordSchema.parse({
+                id: repositorySymbolIdSchema.parse(
+                  `repo_symbol_${contentFingerprint({ fileId, name: `export_${exportName}` })
+                    .replace("fp_f1_", "")
+                    .slice(0, 16)}`,
+                ),
+                parsedFileId: fileId,
+                name: exportName,
+                qualifiedName: exportName,
+                kind: "variable",
+                range: makeSourceRange(node.start!, node.end!, lines),
+                exported: true,
+                sourceEvidenceRefs: [`ast:${filePath}`],
+                fingerprint: contentFingerprint({ fileId, name: `export_${exportName}` }),
+              }),
+            );
+
+            relationships.push(
+              structuralRelationshipSchema.parse({
+                id: structuralRelationshipIdSchema.parse(
+                  `structural_edge_${contentFingerprint({ fileId, name: `export_${exportName}` })
+                    .replace("fp_f1_", "")
+                    .slice(0, 16)}`,
+                ),
+                parsedFileId: fileId,
+                fromSymbolId: repositorySymbolIdSchema.parse(
+                  `repo_symbol_${contentFingerprint({ fileId, name: `export_${exportName}` })
+                    .replace("fp_f1_", "")
+                    .slice(0, 16)}`,
+                ),
+                toSymbolId: null,
+                unresolvedTarget: exportName,
+                type: "exports",
+                range: makeSourceRange(node.start!, node.end!, lines),
+                derivationMethod: "parsed_structure",
+                confidence: 100,
+                evidenceRefs: [`ast:${filePath}`],
+                freshness: "current",
+              }),
+            );
+          }
+        }
+      }
+
+      // Create symbol for export
+      if (name) {
+        symbols.push(
+          symbolRecordSchema.parse({
+            id: repositorySymbolIdSchema.parse(
+              `repo_symbol_${contentFingerprint({ fileId, name: `export_${name}` })
+                .replace("fp_f1_", "")
+                .slice(0, 16)}`,
+            ),
+            parsedFileId: fileId,
+            name,
+            qualifiedName: name,
+            kind: node.type === "ExportDefaultDeclaration" ? "function" : "variable",
+            range: makeSourceRange(node.start!, node.end!, lines),
+            exported: true,
+            sourceEvidenceRefs: [`ast:${filePath}`],
+            fingerprint: contentFingerprint({ fileId, name: `export_${name}` }),
+          }),
+        );
+
+        // Create relationship for the export
+        relationships.push(
+          structuralRelationshipSchema.parse({
+            id: structuralRelationshipIdSchema.parse(
+              `structural_edge_${contentFingerprint({ fileId, name: `export_${name}` })
+                .replace("fp_f1_", "")
+                .slice(0, 16)}`,
+            ),
+            parsedFileId: fileId,
+            fromSymbolId: symbolRecordSchema.parse(symbols[symbols.length - 1]!).id,
+            toSymbolId: null,
+            unresolvedTarget: name,
+            type: "exports",
+            range: makeSourceRange(node.start!, node.end!, lines),
+            derivationMethod: "parsed_structure",
+            confidence: 100,
+            evidenceRefs: [`ast:${filePath}`],
+            freshness: "current",
+          }),
+        );
+      }
+
+      // Check for re-exports (export ... from '...')
+      const source = node.source as AstNode | undefined;
+      if (source?.value) {
+        importSpecifiers.push(source.value as string);
+      }
+    }
+
+    // ── Function/class declarations (non-exported) ────────────
+    if (node.type === "FunctionDeclaration" || node.type === "ClassDeclaration") {
+      const id = node.id as AstNode | undefined;
+      const name = (id?.name as string) ?? "";
+      if (name) {
+        symbols.push(
+          symbolRecordSchema.parse({
+            id: repositorySymbolIdSchema.parse(
+              `repo_symbol_${contentFingerprint({ fileId, name }).replace("fp_f1_", "").slice(0, 16)}`,
+            ),
+            parsedFileId: fileId,
+            name,
+            qualifiedName: name,
+            kind: node.type === "FunctionDeclaration" ? "function" : "class",
+            range: makeSourceRange(node.start!, node.end!, lines),
+            exported: false,
+            sourceEvidenceRefs: [`ast:${filePath}`],
+            fingerprint: contentFingerprint({ fileId, name }),
+          }),
+        );
+      }
+    }
+
+    // ── Call expressions (for console.log detection etc.) ─────
+    if (node.type === "ExpressionStatement") {
+      const expr = node.expression as AstNode | undefined;
+      if (expr?.type === "CallExpression") {
+        const callee = expr.callee as AstNode | undefined;
+        if (callee?.type === "MemberExpression") {
+          const obj = callee.object as AstNode | undefined;
+          const prop = callee.property as AstNode | undefined;
+          const fullName = `${(obj as AstNode | undefined)?.name ?? ""}.${(prop as AstNode | undefined)?.name ?? ""}`;
+          if (fullName) {
+            symbols.push(
+              symbolRecordSchema.parse({
+                id: repositorySymbolIdSchema.parse(
+                  `repo_symbol_${contentFingerprint({ fileId, name: fullName }).replace("fp_f1_", "").slice(0, 16)}`,
+                ),
+                parsedFileId: fileId,
+                name: fullName,
+                qualifiedName: fullName,
+                kind: "function",
+                range: makeSourceRange(node.start!, node.end!, lines),
+                exported: false,
+                sourceEvidenceRefs: [`ast:${filePath}`],
+                fingerprint: contentFingerprint({ fileId, name: fullName }),
+              }),
+            );
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    symbols,
+    relationships,
+    exports: [...new Set(exportNames)].sort(),
+    imports: [...new Set(importSpecifiers)].sort(),
+  };
+}
+
+// ── Structural Query ─────────────────────────────────────────────
+
+export interface StructuralQueryPattern {
+  type:
+    | "call_expression"
+    | "import_declaration"
+    | "export_declaration"
+    | "function_declaration"
+    | "class_declaration";
+  calleeName?: string;
+}
+
+export function queryStructuralRules(
+  content: string,
+  filePath: string,
+  pattern: StructuralQueryPattern,
+): {
+  type: string;
+  name: string;
+  range: {
+    start: { line: number; column: number; byte: number };
+    end: { line: number; column: number; byte: number };
+  };
+}[] {
+  const lines = buildLineStarts(content);
+  const parsed = parseSync(filePath, content);
+  const body = parsed.program.body ?? [];
+  const results: { type: string; name: string; range: ReturnType<typeof makeSourceRange> }[] = [];
+
+  for (const stmt of body) {
+    const node = stmt as AstNode;
+
+    if (pattern.type === "call_expression") {
+      if (node.type === "ExpressionStatement") {
+        const expr = node.expression as AstNode | undefined;
+        if (expr?.type === "CallExpression") {
+          const callee = expr.callee as AstNode | undefined;
+          let name = "";
+          if (callee?.type === "MemberExpression") {
+            const obj = callee.object as AstNode | undefined;
+            const prop = callee.property as AstNode | undefined;
+            name = `${(obj as AstNode | undefined)?.name ?? ""}.${(prop as AstNode | undefined)?.name ?? ""}`;
+          } else if (callee?.type === "Identifier") {
+            name = (callee.name as string) ?? "";
+          }
+          if (!pattern.calleeName || name === pattern.calleeName) {
+            results.push({
+              type: "call_expression",
+              name,
+              range: makeSourceRange(node.start!, node.end!, lines),
+            });
+          }
+        }
+      }
+    }
+
+    if (pattern.type === "import_declaration" && node.type === "ImportDeclaration") {
+      const source = node.source as AstNode | undefined;
+      results.push({
+        type: "import_declaration",
+        name: (source?.value as string) ?? "",
+        range: makeSourceRange(node.start!, node.end!, lines),
+      });
+    }
+
+    if (
+      pattern.type === "export_declaration" &&
+      (node.type === "ExportNamedDeclaration" || node.type === "ExportDefaultDeclaration")
+    ) {
+      results.push({
+        type: "export_declaration",
+        name: nodeName(node),
+        range: makeSourceRange(node.start!, node.end!, lines),
+      });
+    }
+  }
+
+  return results;
+}
 
 function isHidden(pathSegment: string): boolean {
   return pathSegment.startsWith(".") && pathSegment !== "." && pathSegment !== "..";
@@ -62,35 +450,14 @@ function shouldExclude(absolutePath: string, root: string): boolean {
   return false;
 }
 
-// ── Parsing helpers ------------------------------------------------
+// ── Parsing helpers (V2 AST-based) ─────────────────────────────
 
 export function parseExports(content: string): string[] {
-  const exports = new Set<string>();
-  for (const pattern of EXPORT_PATTERNS) {
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(content)) !== null) {
-      if (match[1]) {
-        const parts = match[1].split(",").map((part) => part.trim());
-        for (const part of parts) {
-          const name = part.replace(/\s+as\s+\w+$/, "").trim();
-          if (name) exports.add(name);
-        }
-      }
-    }
-  }
-  return [...exports].sort();
+  return parseFileAST(content, "inline.ts").exports;
 }
 
 export function parseImports(content: string): string[] {
-  const imports = new Set<string>();
-  for (const pattern of IMPORT_PATTERNS) {
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(content)) !== null) {
-      const specifier = match[1]?.trim();
-      if (specifier) imports.add(specifier);
-    }
-  }
-  return [...imports];
+  return parseFileAST(content, "inline.ts").imports;
 }
 
 export function resolveImportPath(
@@ -177,8 +544,9 @@ export function parseFileNode(options: ParseFileOptions) {
   let imports: string[] = [];
 
   if (isParsable) {
-    exports = parseExports(content);
-    imports = parseImports(content);
+    const ast = parseFileAST(content, relativePath);
+    exports = ast.exports;
+    imports = ast.imports;
   }
 
   return fileNodeSchema.parse({
