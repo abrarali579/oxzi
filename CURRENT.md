@@ -36,6 +36,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Parser/snapshot/file/symbol/query/rule/preview/update contracts and cache helpers
 - **Core Intelligence Wave** — AST parsing V2 (oxc-parser), Time Machine (version history API), Visual Architecture (Mermaid diagrams), Divergent Reasoning engine, Observability trace/span capture runtime
 - Integration tests for divergence, visual map, history, trace capture, and AST parser features
+- **Active AI & Convergence Wave** — Prompt Program Optimization Runtime (candidate generation, experiment runner, promotion gate), Typed AI Model-Assisted Repair Pipeline (deterministic + model-assisted repair with escalation), Spec-to-Code Continuous Convergence Engine (Git-based drift detection, reverse proposals, convergence findings)
 
 ## Specified, Runtime Deferred
 

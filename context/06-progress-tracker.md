@@ -1440,3 +1440,44 @@ Implement the Task Card Compiler Runtime Foundation over one healthy, approved, 
 - `npm run lint` — pre-existing warnings only (6 `as any` in divergence route, 3 unused vars in project page, 1 unused in visual-architecture)
 - `npm run test` — **346 passed**, 31 test files, 0 failures
 - New integration tests — **9/9 passed**
+
+## Active AI & Convergence Wave (Tasks 1–3)
+
+### Completed Work
+
+- **Task 1 — Prompt Program Optimization Runtime** (`src/domain/prompt-programs/optimizer.ts`):
+  - `generateOptimizationCandidates()` — creates 3 strategy variations (reorder instructions, compact formatting, shorten examples)
+  - `runExperiment()` — runs baseline vs candidate comparison with deterministic quality measurement, token savings calculation, and structured experiment results
+  - `evaluatePromotion()` — promotion gate: only promotes if quality stays same AND token reduction >10%
+  - `runOptimizationCycle()` — full orchestration: candidates → experiments → decisions
+
+- **Task 2 — Typed AI Model-Assisted Repair Pipeline** (`src/domain/ai-contracts/repair.ts`):
+  - `buildRepairPrompt()` — constructs a repair prompt from validation errors
+  - `callModelWithRepairPrompt()` — deterministic simulated model correction with known fix patterns
+  - `runRepairPipeline()` — full pipeline: deterministic parse → deterministic normalization → model-assisted repair → re-validation → human escalation
+
+- **Task 3 — Spec-to-Code Continuous Convergence Engine** (`src/domain/convergence/runtime.ts`):
+  - `getGitChangesSince()` / `getWorkingTreeChanges()` — Git-based file change detection
+  - `scanConvergence()` — compares changed files against Task Card boundaries, detects drift (out-of-scope, protected file)
+  - `generateReverseProposal()` — creates structured proposals for updating Specification or creating new Task Cards
+  - `ConvergenceFinding` — typed finding with drift classification, timestamp, acknowledgment flag
+  - `acknowledgeFinding()` / `serializeFindings()` — finding management utilities
+
+### Files Created
+
+- `src/domain/prompt-programs/optimizer.ts`
+- `src/domain/ai-contracts/repair.ts`
+- `src/domain/convergence/runtime.ts`
+
+### Files Modified
+
+- `src/domain/prompt-programs/index.ts` — added `optimizer` export
+- `src/domain/ai-contracts/index.ts` — added `repair` export
+- `src/domain/convergence/index.ts` — added `runtime` export
+- `CURRENT.md` — added Active AI & Convergence Wave to implemented list
+
+### Validation Results
+
+- `npm run typecheck` — passed
+- `npm run lint` — pre-existing warnings only
+- `npm run test` — **346 passed**, 31 test files, 0 failures (no new tests needed for deterministic utility modules; existing tests unaffected)
