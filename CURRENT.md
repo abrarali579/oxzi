@@ -4,10 +4,10 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations plus Specification Governance and Planning runtime
+- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation and Certification runtime
 - Active unit: none
-- Last completed: Context Compiler Runtime v1 and Prompt Program Renderer
-- Next: Deterministic Prompt Evaluation / Certification
+- Last completed: Context Compiler Runtime v1, Prompt Program Renderer, Deterministic Prompt Evaluation / Certification (Step 6)
+- Next: Repository Parsing and Structural Intelligence (Step 7)
 
 ## Implemented
 
@@ -18,6 +18,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Deterministic Task Card compilation from approved Implementation Slices with strict file boundaries, constraints, acceptance criteria, validations, risk classification, and validation reports
 - Canonical-only Context Compiler v1 with sufficient-context metadata, inclusion reasons, limitation disclosure, and stable context fingerprints
 - Prompt Program Renderer for immutable agent-targeted prompt artifacts over Task Cards and compiled canonical context
+- Deterministic Prompt Evaluation and Certification runtime with assertion resolution, section/token/contract evaluation, and certification gate
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -29,7 +30,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Constitution canonical storage
 - Code-aware context compilation, after Repository Parsing and Structural Intelligence
-- Prompt registries/optimization/evaluation/certification, AI/provider repair, traces/experiments
+- Prompt registries/optimization, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; parsers/repository graph/structural execution
 - Divergence, review/convergence, agent control, persistence, UI, auth/providers
 

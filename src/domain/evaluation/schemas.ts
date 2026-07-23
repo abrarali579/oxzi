@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { contentFingerprintSchema, stableJson, type JsonValue } from "../knowledge-graph";
+import { timestampSchema } from "../project";
+import { renderedPromptProgramIdSchema } from "../prompt-renderer";
 import {
   agentProfileRevisionReferenceSchema,
   executionIdSchema,
@@ -320,6 +322,53 @@ export const releaseDecisionSchema = z
         message: "Promotion requires meaning preservation and approval",
       });
   });
+
+export const promptEvaluationAssertionSchema = z
+  .object({
+    ruleId: nonempty,
+    passed: z.boolean(),
+    hardGate: z.boolean(),
+    message: nonempty,
+    evaluatorRef: nonempty,
+  })
+  .strict();
+
+export const promptEvaluationReportSchema = z
+  .object({
+    targetProgramId: renderedPromptProgramIdSchema,
+    timestamp: timestampSchema,
+    assertions: z.array(promptEvaluationAssertionSchema).min(1),
+    totalPassed: z.number().int().nonnegative(),
+    totalFailed: z.number().int().nonnegative(),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (value.totalPassed + value.totalFailed !== value.assertions.length)
+      context.addIssue({
+        code: "custom",
+        path: ["totalPassed", "totalFailed"],
+        message: "Total passed and failed assertion counts must equal the assertion count",
+      });
+    if (value.totalFailed !== value.assertions.filter((entry) => !entry.passed).length)
+      context.addIssue({
+        code: "custom",
+        path: ["totalFailed"],
+        message: "totalFailed must match the number of failed assertions",
+      });
+  });
+
+export const promptCertificationSchema = z
+  .object({
+    certificationId: promptCertificationIdSchema,
+    programId: renderedPromptProgramIdSchema,
+    status: z.enum(["CERTIFIED", "REJECTED"]),
+    reason: nonempty,
+  })
+  .strict();
+
+export type PromptEvaluationAssertion = z.infer<typeof promptEvaluationAssertionSchema>;
+export type PromptEvaluationReport = z.infer<typeof promptEvaluationReportSchema>;
+export type PromptCertification = z.infer<typeof promptCertificationSchema>;
 
 type EvaluationRiskLevel = "low" | "medium" | "high" | "critical";
 export function selectEvaluationSuite(
