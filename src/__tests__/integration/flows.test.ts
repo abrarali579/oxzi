@@ -6,7 +6,7 @@ import { renderPromptProgram } from "@/domain/prompt-renderer";
 import { implementationReadySpecificationFixture } from "@/domain/governance";
 import { approvedImplementationSlice } from "@/domain/planning";
 import { evaluatePromptProgram, certifyPromptProgram } from "@/domain/evaluation";
-import { issueExecutionPassport, verifyPassportValidity } from "@/domain/control-plane";
+import { issueExecutionPassport, verifyPassportValidity, checkPassportScope } from "@/domain/control-plane";
 import { createZipBuffer } from "@/lib/utils/zip";
 import { analyzeDiscovery } from "@/domain/discovery";
 import { extractCanonicalUpdates } from "@/domain/extraction";
@@ -29,13 +29,13 @@ const compiledContext = compileCanonicalContext({
 });
 
 const agentProfile = {
-  id: "agent_profile_codex" as const,
+  id: "agent_profile_codex",
   name: "Codex",
   capabilities: ["patch_edits", "shell_validation", "artifact_reports"],
   maxTokens: 20000,
-  supportedPromptStyles: ["agent_optimized" as const],
+  supportedPromptStyles: ["agent_optimized"],
   supportsArtifacts: true,
-};
+} as unknown as Parameters<typeof issueExecutionPassport>[2];
 
 describe("Integration: Extraction Flow", () => {
   it("extracts canonical updates from a project brief", () => {
@@ -101,8 +101,9 @@ describe("Integration: Prompt Render Flow", () => {
   it("issues and verifies an execution passport", () => {
     const program = renderPromptProgram({ taskCard, compiledContext, agentProfile });
     const cert = certifyPromptProgram(evaluatePromptProgram(program));
-    const passport = issueExecutionPassport(cert);
-    expect(verifyPassportValidity(passport)).toBe(true);
+    const passport = issueExecutionPassport(cert, taskCard, agentProfile);
+    const result = verifyPassportValidity(passport);
+    expect(result.valid).toBe(true);
   });
 });
 

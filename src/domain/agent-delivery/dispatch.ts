@@ -27,9 +27,10 @@ export function dispatchPromptProgram(
   const parsedPassport = executionPassportSchema.parse(passport);
 
   // Step 1: Verify passport signature integrity
-  if (!verifyPassportValidity(parsedPassport)) {
+  const verification = verifyPassportValidity(parsedPassport);
+  if (!verification.valid) {
     throw new DeliveryBlockedError(
-      "Passport signature verification failed — the passport may have been tampered with.",
+      `Passport verification failed: ${verification.reason ?? "unknown reason"}`,
     );
   }
 

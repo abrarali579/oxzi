@@ -23,17 +23,17 @@ const compiledContext = compileCanonicalContext({
   ),
 });
 const agentProfile = {
-  id: "agent_profile_codex" as const,
+  id: "agent_profile_codex",
   name: "Codex",
   capabilities: ["patch_edits", "shell_validation", "artifact_reports"],
   maxTokens: 20000,
-  supportedPromptStyles: ["agent_optimized" as const],
+  supportedPromptStyles: ["agent_optimized"],
   supportsArtifacts: true,
-};
+} as unknown as Parameters<typeof issueExecutionPassport>[2];
 
 const validProgram = renderPromptProgram({ taskCard, compiledContext, agentProfile });
 const certification = certifyPromptProgram(evaluatePromptProgram(validProgram));
-const passport = issueExecutionPassport(certification);
+const passport = issueExecutionPassport(certification, taskCard, agentProfile);
 
 describe("Agent Delivery — Dispatch Runtime", () => {
   it("generates a valid DeliveryTicket when approved", () => {

@@ -6,7 +6,7 @@ import { renderPromptProgram, serializePromptProgram } from "@/domain/prompt-ren
 import { implementationReadySpecificationFixture } from "@/domain/governance";
 import { approvedImplementationSlice } from "@/domain/planning";
 import { evaluatePromptProgram, certifyPromptProgram } from "@/domain/evaluation";
-import { issueExecutionPassport, verifyPassportValidity } from "@/domain/control-plane";
+import { issueExecutionPassport, verifyPassportValidity, checkPassportScope } from "@/domain/control-plane";
 import { createZipBuffer } from "@/lib/utils/zip";
 
 // ── Fixtures ────────────────────────────────────────────────────
@@ -27,13 +27,13 @@ const compiledContext = compileCanonicalContext({
 });
 
 const agentProfile = {
-  id: "agent_profile_codex" as const,
+  id: "agent_profile_codex",
   name: "Codex",
   capabilities: ["patch_edits", "shell_validation", "artifact_reports"],
   maxTokens: 20000,
-  supportedPromptStyles: ["agent_optimized" as const],
+  supportedPromptStyles: ["agent_optimized"],
   supportsArtifacts: true,
-};
+} as unknown as Parameters<typeof issueExecutionPassport>[2];
 
 describe("Integration: Full Pipeline Flow", () => {
   it("completes the full deterministic pipeline end-to-end", () => {
@@ -52,12 +52,13 @@ describe("Integration: Full Pipeline Flow", () => {
     expect(certification.status).toBe("CERTIFIED");
 
     // Step 4: Issue Execution Passport
-    const passport = issueExecutionPassport(certification);
+    const passport = issueExecutionPassport(certification, taskCard, agentProfile);
     expect(passport.passportId).toMatch(/^cp_passport_/);
     expect(passport.programId).toBe(program.programId);
 
     // Step 5: Verify passport integrity
-    expect(verifyPassportValidity(passport)).toBe(true);
+    const result = verifyPassportValidity(passport);
+    expect(result.valid).toBe(true);
 
     // Step 6: Serialize round-trip stability
     const serialized = serializePromptProgram(program);
@@ -121,6 +122,6 @@ describe("Integration: Full Pipeline Flow", () => {
     const certification = certifyPromptProgram(evaluationReport);
     expect(certification.status).toBe("REJECTED");
 
-    expect(() => issueExecutionPassport(certification)).toThrow();
+    expect(() => issueExecutionPassport(certification, taskCard, agentProfile)).toThrow();
   });
 });
