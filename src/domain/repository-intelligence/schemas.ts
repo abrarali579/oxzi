@@ -407,6 +407,61 @@ export function createParsedFileFingerprint(input: {
   return contentFingerprint(input).toString();
 }
 
+// ── Step 7: Repository Parsing & Structural Intelligence V1 ──────────────
+
+export const fileNodeSchema = z
+  .object({
+    filePath: nonempty,
+    size: z.number().int().nonnegative(),
+    extension: z
+      .string()
+      .regex(/^\.[a-z0-9]+$/i)
+      .nullable(),
+    modifiedAt: timestampSchema,
+    exports: z.array(nonempty),
+    imports: z.array(nonempty),
+    opaque: z.boolean(),
+  })
+  .strict();
+
+export const dependencyEdgeSchema = z
+  .object({
+    sourcePath: nonempty,
+    targetPath: nonempty,
+    isExternal: z.boolean(),
+  })
+  .strict();
+
+export const repositoryManifestSchema = z
+  .object({
+    rootPath: nonempty,
+    timestamp: timestampSchema,
+    files: z.array(fileNodeSchema),
+    edges: z.array(dependencyEdgeSchema),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    const paths = new Set(value.files.map((file) => file.filePath));
+    value.edges.forEach((edge, index) => {
+      if (!paths.has(edge.sourcePath))
+        context.addIssue({
+          code: "custom",
+          path: ["edges", index, "sourcePath"],
+          message: `Edge sourcePath "${edge.sourcePath}" not found in file nodes`,
+        });
+      if (!edge.isExternal && !paths.has(edge.targetPath))
+        context.addIssue({
+          code: "custom",
+          path: ["edges", index, "targetPath"],
+          message: `Edge targetPath "${edge.targetPath}" not found in file nodes`,
+        });
+    });
+  });
+
+export type FileNode = z.infer<typeof fileNodeSchema>;
+export type DependencyEdge = z.infer<typeof dependencyEdgeSchema>;
+export type RepositoryManifest = z.infer<typeof repositoryManifestSchema>;
+
 export function assessParsedFileCache(
   input: unknown,
   expected: {
