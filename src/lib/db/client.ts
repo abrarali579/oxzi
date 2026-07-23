@@ -1,12 +1,14 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createSafeClient(): PrismaClient {
   try {
-    return new PrismaClient({
-      log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    const adapter = new PrismaLibSql({
+      url: process.env.DATABASE_URL ?? "file:./prisma/oxzi.db",
     });
+    return new PrismaClient({ adapter });
   } catch {
     // Fallback stub for unit test environments missing DB driver adapters
     return new Proxy({} as PrismaClient, {
