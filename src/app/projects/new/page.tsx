@@ -24,12 +24,25 @@ export default function NewProjectPage() {
         body: JSON.stringify({ title: title.trim(), brief: brief.trim() }),
       });
 
+      // Guard: check Content-Type before calling res.json()
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        throw new Error(
+          `Server returned non-JSON response (${res.status}): ${text.slice(0, 100)}...`,
+        );
+      }
+
+      const data = await res.json() as { project?: { id: string }; error?: string };
+
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
         throw new Error(data.error ?? "Failed to create project");
       }
 
-      const data = (await res.json()) as { project: { id: string } };
+      if (!data.project?.id) {
+        throw new Error("Server did not return a project ID");
+      }
+
       router.push(`/projects/${data.project.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

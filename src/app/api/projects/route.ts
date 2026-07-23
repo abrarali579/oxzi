@@ -39,9 +39,21 @@ export async function POST(request: NextRequest) {
         brief?: string;
         organizationId?: string;
       };
-      const orgId = body.organizationId;
+
+      // Resolve orgId: prefer explicit, fall back to user's first membership
+      let orgId = body.organizationId;
       if (!orgId) {
-        return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+        const memberships = await prisma.membership.findMany({
+          where: { userId: session.userId },
+          take: 1,
+        });
+        if (memberships.length === 0) {
+          return NextResponse.json(
+            { error: "User does not belong to any organization. Provide an organizationId." },
+            { status: 400 },
+          );
+        }
+        orgId = memberships[0]!.organizationId;
       }
       await requireOrganizationAccess(session.userId, orgId);
       const title = body.title?.trim() || "Untitled Project";
