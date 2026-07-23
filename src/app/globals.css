@@ -150,3 +150,247 @@ h1 {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Home actions ─────────────────────────────────────────────── */
+
+.home-actions {
+  margin-top: 2.5rem;
+}
+
+.section-heading {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.project-list-section {
+  width: min(100%, 46rem);
+  margin-top: 2rem;
+}
+
+.project-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.project-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--foreground);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.project-card-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.project-card-date {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  color: var(--foreground);
+  background: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: transparent;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--line);
+}
+
+.btn-danger {
+  color: #c33;
+  border-color: #c33;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c33;
+  color: #fff;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* ── Forms ─────────────────────────────────────────────────────── */
+
+.project-form {
+  margin-top: 2.5rem;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field-textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.field-error {
+  margin: 0.5rem 0;
+  color: #c33;
+  font-size: 0.85rem;
+}
+
+/* ── Project detail ────────────────────────────────────────────── */
+
+.project-detail-hero h1 {
+  max-width: 100%;
+}
+
+.detail-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.detail-section {
+  margin-top: 2rem;
+}
+
+.detail-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.detail-brief {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--foreground);
+  white-space: pre-wrap;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--background);
+  font-size: 0.85rem;
+}
+
+.status-card.done {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.status-card.pending {
+  opacity: 0.7;
+}
+
+.status-card-icon {
+  font-size: 1rem;
+}
+
+.status-card-label {
+  font-weight: 500;
+}
+
+.file-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-list-item {
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  font-family: "SF Mono", "Fira Code", monospace;
+}

@@ -29,6 +29,10 @@ next-env.d.ts
 # Vercel
 .vercel
 
+# Runtime data
+.oxzi/projects/
+.oxzi/index.json
+
 # Generated local review package
 .review/*
 !.review/.gitkeep

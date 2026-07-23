@@ -9,6 +9,6 @@ describe("OXZI homepage", () => {
 
     expect(markup).toContain("OXZI · Project Genesis");
     expect(markup).toContain("Describe the project once.");
-    expect(markup).toContain("Phase 2 foundation is ready");
+    expect(markup).toContain("New project");
   });
 });

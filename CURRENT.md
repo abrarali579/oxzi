@@ -4,9 +4,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, and Delivery runtime
+- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, Delivery, and Internal Product UI runtime
 - Active unit: none
-- Last completed: Context Compiler Runtime v1, Prompt Program Renderer, Deterministic Prompt Evaluation / Certification (Step 6), Repository Parsing & Structural Intelligence (Step 7), Code-aware Context Compiler V2 & Convergence Review (Steps 8 & 9), Agent Control Plane & Delivery (Steps 10 & 11)
+- Last completed: Steps 1–12 — all core deterministic pipeline + internal UI + persistence + APIs
 - Next: await further instruction
 
 ## Implemented
@@ -24,6 +24,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Spec-to-Code Convergence Review runtime with deterministic boundary compliance gates (protected file and out-of-scope detection), approval/rejection certification
 - Agent Control Plane with deterministic Execution Passport issuance (CERTIFIED-only gate, tamper-evident signatures, integrity verification)
 - Approval-gated Connected Agent Delivery with passport verification, human/system approval gate, and DeliveryTicket generation
+- Internal UI & Persistence with file-based JSON project store, CRUD API routes, project list/detail/new pages, six-file ZIP generation, and deterministic serialization
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -35,7 +36,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Constitution canonical storage
 - Prompt registries/optimization, AI/provider repair, traces/experiments
-- Skill auditor/router/diagnostics; divergence, review/convergence, persistence, UI, auth/providers
+- Skill auditor/router/diagnostics; divergence, review/convergence, auth/providers
 
 ## Boundaries
 
