@@ -15,7 +15,7 @@ import { buildCanonicalProjectFromBrief } from "@/domain/project/from-brief";
 import { parseCanonicalProject, type CanonicalProject } from "@/domain/project";
 import { analyzeDiscovery } from "@/domain/discovery";
 import { evaluateSpecificationGovernance } from "@/domain/governance/evaluate";
-import { contentFingerprint, type JsonValue } from "@/domain/knowledge-graph";
+import { contentFingerprint, canonicalProjectFingerprint, type JsonValue } from "@/domain/knowledge-graph";
 import type { GovernanceReport, SpecificationGovernanceInput } from "@/domain/governance";
 import type { ExtractionResult } from "@/domain/extraction";
 import { getProject, updateProject } from "@/lib/db";
@@ -227,7 +227,7 @@ function buildGovernanceInput(canonical: CanonicalProject): SpecificationGoverna
     revision: {
       lifecycle: "readiness_requested" as const,
       canonicalVersionId: canonical.metadata.version.id,
-      canonicalFingerprint: contentFingerprint(canonical as unknown as JsonValue),
+      canonicalFingerprint: canonicalProjectFingerprint(canonical),
       createdAt: now,
       approvedAt: null,
       supersededAt: null,
