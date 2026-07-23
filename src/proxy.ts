@@ -30,7 +30,7 @@ if (typeof setInterval !== "undefined") {
   }, 5 * 60_000);
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Rate limiting for API routes (exempt auth pages)
