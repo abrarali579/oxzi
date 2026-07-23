@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { contentFingerprint } from "../knowledge-graph";
+import { contentFingerprint, type JsonValue } from "../knowledge-graph";
 import { repositoryManifestSchema, type RepositoryManifest } from "../repository-intelligence";
 import { taskCardSchema } from "../task-card";
 import {

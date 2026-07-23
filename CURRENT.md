@@ -4,9 +4,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, and Convergence Review runtime
+- Phase: deterministic foundations plus Specification Governance, Planning, Prompt Evaluation, Certification, Repository Parsing, Code-aware Compilation, Convergence Review, Agent Control Plane, and Delivery runtime
 - Active unit: none
-- Last completed: Context Compiler Runtime v1, Prompt Program Renderer, Deterministic Prompt Evaluation / Certification (Step 6), Repository Parsing & Structural Intelligence (Step 7), Code-aware Context Compiler V2 & Convergence Review (Steps 8 & 9)
+- Last completed: Context Compiler Runtime v1, Prompt Program Renderer, Deterministic Prompt Evaluation / Certification (Step 6), Repository Parsing & Structural Intelligence (Step 7), Code-aware Context Compiler V2 & Convergence Review (Steps 8 & 9), Agent Control Plane & Delivery (Steps 10 & 11)
 - Next: await further instruction
 
 ## Implemented
@@ -22,6 +22,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Repository Parsing & Structural Intelligence V1 with static AST/regex file traversal, import/export extraction, dependency graph resolution, and strict exclusion patterns
 - Code-aware Context Compiler V2 with RepositoryManifest integration, file-content extraction from TaskCard boundaries, first-degree import resolution, and protected-file isolation
 - Spec-to-Code Convergence Review runtime with deterministic boundary compliance gates (protected file and out-of-scope detection), approval/rejection certification
+- Agent Control Plane with deterministic Execution Passport issuance (CERTIFIED-only gate, tamper-evident signatures, integrity verification)
+- Approval-gated Connected Agent Delivery with passport verification, human/system approval gate, and DeliveryTicket generation
 - Workflow/execution/evaluation/divergence contract schemas
 - Prompt Program/version/example/optimization/promotion contracts
 - Typed AI parse/validation/repair/partial-result contracts and known normalization
@@ -33,7 +35,7 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 - Constitution canonical storage
 - Prompt registries/optimization, AI/provider repair, traces/experiments
-- Skill auditor/router/diagnostics; divergence, review/convergence, agent control, persistence, UI, auth/providers
+- Skill auditor/router/diagnostics; divergence, review/convergence, persistence, UI, auth/providers
 
 ## Boundaries
 
