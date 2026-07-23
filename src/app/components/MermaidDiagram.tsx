@@ -30,15 +30,15 @@ export default function MermaidDiagram({ chart, maxHeight = "24rem" }: { chart: 
         const mermaid = await import("mermaid");
         mermaid.default.initialize({
           startOnLoad: false,
-          theme: "dark",
+          theme: "base",
           themeVariables: {
             background: "transparent",
-            primaryColor: "#18181b",
-            primaryBorderColor: "#34d399",
-            primaryTextColor: "#f1f1f3",
-            lineColor: "#34d399",
-            secondaryColor: "#0d0f12",
-            tertiaryColor: "#141619",
+            primaryColor: "#e0f7fa",
+            primaryBorderColor: "#06b6d4",
+            primaryTextColor: "#0c1f26",
+            lineColor: "#0891b2",
+            secondaryColor: "#f0fdfa",
+            tertiaryColor: "#eef2ff",
           },
         });
 
