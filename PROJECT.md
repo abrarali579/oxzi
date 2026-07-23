@@ -8,11 +8,11 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Target Users
 
-- Founders planning software, websites, automation systems, content products, or internal tools
-- Solo builders working with Codex, Cursor, Claude Code, or similar agents
+- Vibe coders and founders planning software, websites, automation systems, content products, or internal tools
+- Solo builders and AI-assisted developers working with Codex, Cursor, Claude Code, or similar agents
 - Agencies producing repeatable briefs and technical specifications
-- Product teams that need persistent architecture, visual direction, decisions, and progress memory
-- AI-assisted developers who need a reliable project handoff
+- Startup engineering teams that need persistent architecture, visual direction, decisions, and progress memory
+- Later enterprise buyers that need privacy-first governance for confidential code and company data
 
 ## Core Workflow
 
@@ -35,7 +35,7 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 Wave 2 — Specification Governance and Planning Runtime Foundation is complete.
 
-The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification governance, Technical Plan governance, and independently verifiable Implementation Slice foundations are implemented without AI. Workflow, Task Card/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Task Card compilation, parsers, context compilation, agent delivery, persistence, and UI remain future work.
+The deterministic canonical, discovery, extraction, Temporal Knowledge Graph, Constitution resolution, Specification governance, Technical Plan governance, and independently verifiable Implementation Slice foundations are implemented without AI. Technical Plan Runtime and Implementation Slice Runtime are separate, independently testable implementation units. Workflow, Task Card/Passport, evaluation/divergence, Prompt Program, Typed AI, observability, selective-skill/diagnostic, and repository-intelligence schemas remain contract foundations. Task Card compilation, canonical-artifact Context Compiler v1, parsers, code-aware context compilation, agent delivery, persistence, and UI remain future work.
 
 ## Locked Stack
 
@@ -58,7 +58,7 @@ The broader MVP architecture retains PostgreSQL, Supabase Auth and Storage, Zod 
 
 The expanded MVP direction includes project intake, minimal discovery, canonical state, a derived Knowledge Graph, constitutional governance, specification health, controlled specifications and planning, independent slices, deterministic six-file generation, safe context compilation, reviewable Task Cards, Execution Passports, dual review, convergence findings, visual architecture, versioning, and portable Markdown/ZIP export. Cloud and local OpenAI-compatible models remain behind one provider-neutral boundary. Efficiency work is quality-gated and includes workflow, artifact, review, repair, and handoff overhead.
 
-OXZI does not execute project code. The initial product excludes autonomous full-project coding, real-time multiplayer collaboration, billing enforcement, direct repository creation, and automatic deployment. Connected-agent delivery is a future optional integration that requires the configured approval policy. Prompt-performance telemetry and global training reuse are deferred and may never use private project data without explicit consent.
+OXZI does not execute project code. The initial product excludes autonomous full-project coding, real-time multiplayer collaboration, billing enforcement, direct repository creation, and automatic deployment. Connected-agent delivery is a future optional integration that requires the configured approval policy. Internal Product UI may begin once the core deterministic pipeline is stable; authentication, billing, teams, and multiplayer remain deferred to a later SaaS phase. Prompt-performance telemetry and global training reuse are deferred and may never use private project data without explicit consent.
 
 ## Implementation Waves
 
@@ -77,6 +77,49 @@ Status vocabulary: `implemented`, `implemented foundation only`, `approved and s
 - Wave 10 Evaluation and Launch — evaluation/divergence/experiment contracts `implemented foundation only`; Assertion Registry, suites, certifications, optimization/release, red-team/Bench, trace viewer, divergence runtime, benchmarks, and UI are `approved and specified` or `planned`
 
 The complete unit sequence and status vocabulary are maintained in [context/06-progress-tracker.md](context/06-progress-tracker.md).
+
+## Authoritative V1 Implementation Sequence
+
+1. Technical Plan Runtime
+2. Implementation Slice Runtime
+3. Task Card Compiler Runtime
+4. Context Compiler Runtime — canonical artifacts first
+5. Prompt Program Renderer
+6. Deterministic Prompt Evaluation / Certification
+7. Repository Parsing + Structural Intelligence
+8. Code-aware Context Compiler Integration
+9. Review + Spec-to-Code Convergence
+10. Agent Control Plane + Execution Passport
+11. Approval-gated Connected Agent Delivery
+12. Internal Product UI + Basic Persistence + APIs
+13. Authentication, Billing, Teams, and Multiplayer
+14. Evaluation Lab, Benchmarks, and Launch Hardening
+
+Context Compiler v1 compiles canonical project artifacts only. Code-aware context compilation starts later, after Repository Parsing and Structural Intelligence can supply validated structural evidence.
+
+## Deployment and Commercial Strategy
+
+OXZI's near-term market is vibe coders, AI-assisted developers, agencies, and startup engineering teams. The same governance-first architecture can later support enterprise buyers that are reluctant to send confidential code or company data to external frontier-model providers.
+
+Deployment modes:
+
+- Cloud SaaS — managed OXZI service for fast onboarding and subscription-based access.
+- Self-hosted Enterprise — future product mode deployed inside customer infrastructure so sensitive source code and company data can remain inside the organization. It supports customer-controlled models and providers, privacy, compliance, auditability, approval workflows, and governance, but is not immediate runtime scope.
+
+Source and IP strategy:
+
+- Core OXZI SaaS and orchestration engine remain closed-source; full source is not published publicly by default.
+- Selected SDKs, schemas, integrations, templates, CLI utilities, or community tools may later be open-sourced.
+- Public documentation and educational content may support adoption without exposing core product IP.
+
+## Post-v1 Opportunities
+
+- Multi-model orchestration
+- Example optimization and fine-tuning workflows
+- Prompt Program / Skill marketplace
+- Plugin and MCP ecosystem
+- Enterprise governance expansion
+- Analytics and cost optimization
 
 ## Detailed Context
 

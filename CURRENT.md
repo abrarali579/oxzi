@@ -4,9 +4,9 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Product and Phase
 
-- Phase: deterministic foundations plus Specification Governance runtime
+- Phase: deterministic foundations plus Specification Governance and Planning runtime
 - Active unit: none
-- Last completed: Technical Plan and Implementation Slice Runtime Foundation
+- Last completed: Roadmap and Documentation Reconciliation
 - Next: Task Card Compiler Runtime Foundation
 
 ## Implemented
@@ -24,7 +24,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 
 ## Specified, Runtime Deferred
 
-- Constitution canonical storage; Task Card and context compiler/renderers
+- Constitution canonical storage; Task Card compiler and canonical-artifact Context Compiler v1
+- Code-aware context compilation, after Repository Parsing and Structural Intelligence
 - Prompt registries/optimization/evaluation, AI/provider repair, traces/experiments
 - Skill auditor/router/diagnostics; parsers/repository graph/structural execution
 - Divergence, review/convergence, agent control, persistence, UI, auth/providers
@@ -34,6 +35,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Canonical state alone is approved truth; graphs, prompts, traces, AI results, structural matches, and ideas are derived evidence/proposals.
 - Task meaning is separate from Prompt Programs/rendering; typed validation precedes trust.
 - Repository evidence is adapter-based and structural detection never grants rewrite permission.
+- Technical Plan Runtime and Implementation Slice Runtime stay separate implementation units.
+- Internal Product UI may begin after the core deterministic pipeline is stable; auth, billing, teams, and multiplayer are later SaaS scope.
 - Quality/safety/correctness/coverage/evidence outrank efficiency.
 - Never commit/push or expose secrets/generated review evidence without authorization.
 

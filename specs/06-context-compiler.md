@@ -4,6 +4,8 @@
 
 **Status:** Approved and specified; not implemented. The formal product name remains Token-Saving Context Compiler.
 
+Version 1 compiles canonical project artifacts only. Code-aware context compilation is explicitly later work and starts only after Repository Parsing and Structural Intelligence provide validated structural evidence.
+
 The Token-Saving Context Compiler must:
 
 > Generate the smallest sufficient, evidence-backed context package required for an agent to complete the approved task without reducing project quality.
@@ -31,7 +33,8 @@ All modes preserve the same mandatory-context, dependency, blocker, and security
 - Selected mode and optional custom token budget
 - Compiled Project Constitution version/fingerprint
 - Healthy specification, Technical Plan, implementation-slice, Task Card, and Execution Passport references when applicable
-- Temporal Project and task-relevant Repository Intelligence subgraphs with freshness
+- Temporal Project subgraph with freshness
+- Task-relevant Repository Intelligence subgraphs with freshness after Repository Parsing and Structural Intelligence are implemented
 
 ## Mandatory Context
 
@@ -82,7 +85,7 @@ This protection also covers relevant acceptance criteria, required tests, and pr
 3. Traverse direct dependency, blocker/conflict, accepted-decision, security, test, acceptance, and documentation relationships.
 4. Suppress generic high-degree hub expansion unless directly justified.
 5. Read raw files only when graph evidence, missing traceability, or execution requires them.
-   Repository selection prefers explicit file/symbol seeds, current parsed definitions, direct imports/calls/references, interfaces/types, tests, applicable structural rules, and recent relevant changes before whole files.
+   In v1, raw project artifacts come from canonical state and generated/authoritative project documentation. Repository selection later prefers explicit file/symbol seeds, current parsed definitions, direct imports/calls/references, interfaces/types, tests, applicable structural rules, and recent relevant changes before whole files.
 6. Record why any scope expansion occurred.
 7. Add interfaces, risks, and evidence needed to understand or verify the task.
 8. Deduplicate semantically identical versioned facts using deterministic identifiers.

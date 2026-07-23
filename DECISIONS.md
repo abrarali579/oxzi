@@ -648,3 +648,35 @@ The extractor uses fixed English, Bahasa Indonesia, Roman Urdu, and mixed-langua
 **Decision:** The initial deterministic planner derives one stable Implementation Slice for each included Specification requirement, orders Slices by explicit requirement dependencies and stable IDs, and carries exact Specification, Constitution, Governance Report, and Technical Plan fingerprints. An implementation constraint may become a foundation Slice only with explicit justification. Parallel grouping remains unset unless disjoint boundaries or an explicit merge contract prove safe independence.
 
 **Consequences:** Slice derivation is reproducible and cannot invent product scope, silently broaden a parent artifact, or infer unsafe parallelism. Approved or used Plan and Slice versions are immutable; changes create a new version with exact parent linkage. Readiness remains a recommendation requiring external approval, and future planners may refine grouping only through a versioned policy change with regression tests.
+
+## ADR-079 — Separate Technical Plan and Slice Runtime Units
+
+**Status:** Accepted — Roadmap reconciliation
+
+**Decision:** Technical Plan Runtime and Implementation Slice Runtime remain separate, independently testable implementation units. A Technical Plan owns implementation design; Implementation Slice Runtime owns bounded slice derivation, validation, traceability, readiness, and immutability.
+
+**Consequences:** Future work cannot merge these runtimes merely for convenience. Each runtime keeps its own fixtures, tests, health decisions, fingerprints, and reports, while retaining exact parent references across Specification, Constitution, Governance Report, Plan, and Slice versions.
+
+## ADR-080 — Canonical-first Context Compiler v1
+
+**Status:** Accepted — Roadmap reconciliation
+
+**Decision:** Context Compiler Runtime v1 compiles canonical project artifacts only. Code-aware context compilation is introduced later, after Repository Parsing and Structural Intelligence are implemented and can provide validated structural evidence.
+
+**Consequences:** The first Context Compiler cannot claim repository-aware selection, file/symbol intelligence, or AST-backed code context. It may reference existing authoritative documents and canonical project-derived artifacts, but code-aware selection waits for repository evidence contracts and tests.
+
+## ADR-081 — Product UI Before SaaS Expansion
+
+**Status:** Accepted — Roadmap reconciliation
+
+**Decision:** Internal Product UI may begin once the core deterministic pipeline is stable. Authentication, billing, teams, multiplayer collaboration, and broader SaaS administration remain deferred to a later SaaS phase.
+
+**Consequences:** Early UI work should focus on operating and inspecting deterministic OXZI workflows, basic persistence, and APIs. It must not pull forward commercial-account systems or real-time collaboration before the approved sequence reaches that phase.
+
+## ADR-082 — Deployment, Market, and Source Strategy
+
+**Status:** Accepted — Roadmap reconciliation
+
+**Decision:** OXZI targets Cloud SaaS first for vibe coders, AI-assisted developers, agencies, and startup engineering teams. Self-hosted Enterprise is a future product mode for customers that need source code and company data to remain inside their own infrastructure, with customer-controlled models/providers, compliance, auditability, approval workflows, and governance. Core OXZI SaaS and orchestration engine remain closed-source by default.
+
+**Consequences:** Enterprise deployment requirements inform governance architecture but are not immediate runtime scope. Selected SDKs, schemas, integrations, templates, CLI utilities, community tools, public documentation, and educational content may later be open-sourced without publishing the core product IP.

@@ -4,8 +4,8 @@ OXZI converts a plain-language idea, an existing brief, or a complete master pro
 
 ## Product Position
 
-- Product type: future SaaS
-- Primary users: founders, solo builders, agencies, product teams, and AI-assisted developers
+- Product type: future Cloud SaaS, with self-hosted Enterprise as a later product mode
+- Primary users: vibe coders, AI-assisted developers, agencies, and startup engineering teams
 - Primary output: six living project context files plus structured project data
 - AI support: cloud providers and local OpenAI-compatible models
 - Interaction style: frank, concise, helpful, and non-corporate
@@ -78,4 +78,4 @@ Full-project context remains available for cross-cutting work or when targeted r
 
 ## Current Build Boundary
 
-Phase 1 defines the original product contracts and Phase 2 established the application/tooling foundation. Phase 3 has implemented canonical, discovery, extraction, Knowledge Graph, Constitution resolution, and Specification Health foundations. Later phases add controlled planning/slicing and context outputs, certified agent workflow, product experience, SaaS infrastructure, and launch validation.
+Phase 1 defines the original product contracts and Phase 2 established the application/tooling foundation. Phase 3 has implemented canonical, discovery, extraction, Knowledge Graph, Constitution resolution, Specification Health, Technical Plan Runtime, and Implementation Slice Runtime foundations. Technical Plan Runtime and Implementation Slice Runtime remain separate implementation units. Next comes Task Card Compiler Runtime, then Context Compiler Runtime for canonical artifacts first. Code-aware context compilation waits until Repository Parsing and Structural Intelligence are implemented. Internal Product UI may begin once the core deterministic pipeline is stable; authentication, billing, teams, multiplayer, and self-hosted Enterprise remain later scope.

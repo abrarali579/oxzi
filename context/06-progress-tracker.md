@@ -1,5 +1,64 @@
 # OXZI — Progress Tracker
 
+## Roadmap and Documentation Reconciliation
+
+Completed on 2026-07-23.
+
+### Files Modified
+
+- `CURRENT.md`
+- `PROJECT.md`
+- `OXZI.md`
+- `DECISIONS.md`
+- `context/06-progress-tracker.md`
+- `specs/06-context-compiler.md`
+
+### Completed Work
+
+- Recorded that Technical Plan Runtime and Implementation Slice Runtime remain separate, independently testable implementation units.
+- Locked the v1 implementation sequence from Technical Plan Runtime through Evaluation Lab, Benchmarks, and Launch Hardening.
+- Clarified that Context Compiler Runtime v1 compiles canonical project artifacts first, while code-aware context compilation waits for Repository Parsing and Structural Intelligence.
+- Recorded that Internal Product UI may begin after the core deterministic pipeline is stable, while authentication, billing, teams, and multiplayer remain later SaaS scope.
+- Recorded post-v1 roadmap opportunities: multi-model orchestration, example optimization and fine-tuning workflows, Prompt Program / Skill marketplace, Plugin and MCP ecosystem, enterprise governance expansion, analytics, and cost optimization.
+- Recorded Cloud SaaS and future self-hosted Enterprise deployment modes, near-term target markets, and closed-source core with selectively open-source ecosystem assets.
+- Added ADR-079 through ADR-082 for the reconciled runtime separation, context compiler boundary, UI/SaaS sequencing, and deployment/source strategy.
+
+### Authoritative V1 Implementation Sequence
+
+1. Technical Plan Runtime
+2. Implementation Slice Runtime
+3. Task Card Compiler Runtime
+4. Context Compiler Runtime — canonical artifacts first
+5. Prompt Program Renderer
+6. Deterministic Prompt Evaluation / Certification
+7. Repository Parsing + Structural Intelligence
+8. Code-aware Context Compiler Integration
+9. Review + Spec-to-Code Convergence
+10. Agent Control Plane + Execution Passport
+11. Approval-gated Connected Agent Delivery
+12. Internal Product UI + Basic Persistence + APIs
+13. Authentication, Billing, Teams, and Multiplayer
+14. Evaluation Lab, Benchmarks, and Launch Hardening
+
+### Validation Results
+
+- `npm run format:check` — passed
+- `git diff --check` — passed
+
+### Conflicts Corrected
+
+- `PROJECT.md` previously grouped Technical Plan and Implementation Slice runtime as one Wave 2 statement; it now explicitly preserves them as separate runtime units.
+- `OXZI.md` previously described controlled planning/slicing as later work; it now reflects the implemented Technical Plan and Implementation Slice runtimes.
+- `specs/06-context-compiler.md` previously allowed Repository Intelligence as an input without distinguishing v1; it now marks repository-aware context as later than Repository Parsing and Structural Intelligence.
+
+### Remaining Limits
+
+- No runtime code, product UI, persistence, providers, auth, billing, teams, multiplayer, repository parsing, or context compiler implementation was added.
+
+### Next Smallest Unit
+
+Implement the Task Card Compiler Runtime Foundation over one healthy, approved, current Implementation Slice and its exact Plan/Specification/Constitution fingerprints. Keep context compilation, prompt rendering, Execution Passport certification, connected delivery, persistence, providers, and UI outside that unit.
+
 ## Unified Agentic Intelligence Architecture Lock and Foundation
 
 Completed on 2026-07-23.
