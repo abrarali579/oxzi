@@ -1,95 +1,13 @@
 import { NextResponse } from "next/server";
 import { getProject, updateProject } from "@/lib/db";
 import { createZipBuffer } from "@/lib/utils/zip";
-import {
-  oxzire3dWebsiteFixture,
-  parseCanonicalProject,
-} from "@/domain/project";
-import type { CanonicalProject } from "@/domain/project";
-import { evidenceIdSchema } from "@/domain/project/identifiers";
+import { buildCanonicalProjectFromBrief } from "@/domain/project/from-brief";
 import { analyzeDiscovery } from "@/domain/discovery";
-import { extractCanonicalUpdates } from "@/domain/extraction";
+import type { extractCanonicalUpdates } from "@/domain/extraction";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // ── Helpers ──────────────────────────────────────────────────
-
-function buildMinimalProject(title: string, brief: string): CanonicalProject {
-  const now = new Date().toISOString();
-  const clone = structuredClone(oxzire3dWebsiteFixture);
-
-  // Reset to draft / minimal state
-  clone.metadata.lifecycle = "draft";
-  clone.metadata.approvalStatus = "not_requested";
-  clone.metadata.lifecycleHistory = [clone.metadata.lifecycleHistory[0]!];
-  clone.metadata.version.approvalStatus = "not_requested";
-  delete clone.metadata.version.approvedAt;
-  delete clone.metadata.version.approvedBy;
-
-  const groups = [
-    clone.identity,
-    clone.business,
-    clone.scope,
-    clone.product,
-    clone.visual,
-    clone.technical,
-    clone.quality,
-    clone.execution,
-  ];
-
-  for (const group of groups) {
-    for (const field of Object.values(group) as Array<Record<string, unknown>>) {
-      if (field && typeof field === "object" && "value" in field) {
-        field.value = null;
-        field.status = "missing";
-        field.confidence = 0;
-        field.evidenceIds = [];
-        field.approval = { status: "not_requested" };
-        delete field.assumption;
-        delete field.conflict;
-      }
-    }
-  }
-
-  const evidenceId = evidenceIdSchema.parse("evidence_initial_prompt");
-
-  // Set identity fields from input
-  clone.identity.name.value = title;
-  clone.identity.name.status = "confirmed";
-  clone.identity.name.confidence = 100;
-  clone.identity.name.evidenceIds = [evidenceId];
-  clone.identity.name.timestamps = { createdAt: now, updatedAt: now };
-  clone.identity.name.approval = { status: "not_requested" };
-
-  clone.identity.oneLiner.value = brief;
-  clone.identity.oneLiner.status = "inferred";
-  clone.identity.oneLiner.confidence = 60;
-  clone.identity.oneLiner.evidenceIds = [evidenceId];
-  clone.identity.oneLiner.timestamps = { createdAt: now, updatedAt: now };
-  clone.identity.oneLiner.approval = { status: "not_requested" };
-
-  clone.meta.evidence = [
-    {
-      id: evidenceId,
-      sourceType: "prompt" as const,
-      sourceId: "source_initial_prompt",
-      interpretation: brief.slice(0, 500),
-      createdAt: now,
-    },
-  ];
-  clone.meta.assumptions = [];
-  clone.meta.decisions = [];
-  clone.meta.conflicts = [];
-  clone.meta.completeness = {
-    criticalCompleteness: 0,
-    overallCompleteness: 0,
-    contradictionCount: 0,
-    blockingQuestionCount: 12,
-    assumptionCount: 0,
-  };
-
-  return parseCanonicalProject(clone);
-}
 
 function generateFilesFromAnalysis(
   title: string,
@@ -310,29 +228,14 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   try {
-    // 1. Build a minimal CanonicalProject from the brief
-    const canonical = buildMinimalProject(project.title, project.brief);
+    // 1. Build a CanonicalProject from the brief, with extraction updates
+    //    already folded onto the matching fields
+    const { canonical, extraction } = buildCanonicalProjectFromBrief(project.title, project.brief);
 
-    // 2. Run discovery analysis
+    // 2. Run discovery analysis on the enriched canonical project
     const discovery = analyzeDiscovery(canonical);
 
-    // 3. Run extraction (if brief is non-empty)
-    let extraction: ReturnType<typeof extractCanonicalUpdates> | null = null;
-    if (project.brief.trim()) {
-      extraction = extractCanonicalUpdates({
-        sources: [
-          {
-            sourceId: "source_initial_prompt",
-            kind: "plain_text",
-            content: project.brief,
-            capturedAt: new Date().toISOString().replace("Z", "+00:00"),
-          },
-        ],
-        existingProject: canonical,
-      });
-    }
-
-    // 4. Generate dynamic files from the analysis
+    // 3. Generate dynamic files from the analysis
     const files = generateFilesFromAnalysis(project.title, project.brief, discovery, extraction);
 
     // 5. Save to project record
