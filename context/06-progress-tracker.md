@@ -1396,3 +1396,47 @@ Implement the Technical Plan and Independent Implementation Slice Runtime Founda
 ### Next Smallest Unit
 
 Implement the Task Card Compiler Runtime Foundation over one healthy, approved, current Implementation Slice and its exact Plan/Specification/Constitution fingerprints. Keep context compilation, prompt rendering, Execution Passport certification, connected delivery, persistence, providers, and UI outside that unit.
+
+## Core Intelligence Wave — Final Integration Tasks (Tasks 5–6)
+
+### Completed Work
+
+- Created API routes for divergence trigger (`POST /api/divergence`), project restore/version increment (`POST /api/projects/[id]/restore`), Task Card compilation (`POST /api/projects/[id]/taskcard`), and trace listing/retrieval (`GET /api/traces`, `GET /api/traces/[id]`)
+- Created trace detail page (`/traces/[id]`) with hierarchical span tree, duration/token displays, and status indicators
+- Rewrote project detail page (`/projects/[id]`) with divergence reasoning button/modal, history timeline slider with restore, visual map generate/refresh, loading skeleton, error banners, loading overlays, generate ZIP, and delete
+- Enhanced visual architecture diagram generation with legend and clickable nodes
+- **Task 5 — End-to-End Integration Tests**: Extended integration test coverage with 9 new tests in `src/__tests__/integration/new-features.test.ts` covering:
+  - Divergence report generation with full `runDivergence` flow (candidates, clusters, traps, scores)
+  - `activateDivergence` recommendation for well-budgeted requests
+  - Visual Mermaid diagram generation from parsed repositories
+  - History API version retrieval
+  - Trace capture via `withTrace` wrapper with span hierarchy
+  - Trace failure recording
+  - AST parser export and import extraction
+- **Task 6 — Polish**: Fixed production code mismatches between runtime implementations and Zod schemas in the capture, divergence, and observability modules (span fields, trap fields, cluster fields, cost calculation alignment, canonicalProjectVersionId pattern, specificationVersionRefs minimum)
+- Updated `CURRENT.md` with Core Intelligence Wave integration status
+
+### Files Created
+
+- `src/app/api/divergence/route.ts`
+- `src/app/api/projects/[id]/restore/route.ts`
+- `src/app/api/projects/[id]/taskcard/route.ts`
+- `src/app/api/traces/route.ts`
+- `src/app/api/traces/[id]/route.ts`
+- `src/app/traces/[id]/page.tsx`
+- `src/__tests__/integration/new-features.test.ts`
+
+### Files Modified
+
+- `src/app/projects/[id]/page.tsx` — major rewrite with divergence, history, visual map, loading/error states
+- `src/domain/divergence/runtime.ts` — fixed `detectCandidateTraps` and `clusterCandidates` to match current schemas; fixed cost total calculation to include `expectedBranchOutputTokens`
+- `src/domain/observability/capture.ts` — fixed `startSpan` to use `operationType` and current span schema; fixed `startTrace` `specificationVersionRefs` to have minimum 1 item; fixed `canonicalProjectVersionId` pattern
+- `src/domain/observability/schemas.ts` — extended `operationType` enum with common operation names
+- `CURRENT.md` — added Core Intelligence Wave and integration tests to implemented list
+
+### Validation Results
+
+- `npm run typecheck` — passed
+- `npm run lint` — pre-existing warnings only (6 `as any` in divergence route, 3 unused vars in project page, 1 unused in visual-architecture)
+- `npm run test` — **346 passed**, 31 test files, 0 failures
+- New integration tests — **9/9 passed**

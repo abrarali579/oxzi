@@ -11,6 +11,7 @@ import {
   divergenceReportSchema,
   divergenceActivationDecisionSchema,
   divergenceCostEstimateSchema,
+  frameSelectionSchema,
 } from "./schemas";
 
 type DivergenceRequest = z.infer<typeof divergenceRequestSchema>;
@@ -90,13 +91,13 @@ function detectCandidateTraps(candidates: CandidateIdea[]): TrapFinding[] {
       id: `trap_${contentFingerprint({ candidateId: c.id } as unknown as JsonValue)
         .replace("fp_f1_", "")
         .slice(0, 16)}` as any,
+      candidateId: c.id,
       category: "false_economy",
       severity: "low" as const,
-      description: `Candidate ${c.title} may underestimate complexity`,
       explanation: "Division of labor cannot reduce all sequential dependencies.",
       evidenceRefs: [],
-      confidence: 60,
-      mitigationSuggestion: "Review scope and dependencies before proceeding.",
+      mitigation: "Review scope and dependencies before proceeding.",
+      rejectCandidate: false,
     }),
   );
 }
@@ -108,11 +109,12 @@ function clusterCandidates(candidates: CandidateIdea[]): CandidateCluster[] {
           id: `cluster_${contentFingerprint({ count: candidates.length } as unknown as JsonValue)
             .replace("fp_f1_", "")
             .slice(0, 16)}` as any,
+          requestId: candidates[0]!.requestId,
+          label: `Cluster of ${candidates.length} candidates`,
+          underlyingApproach: candidates.map((c) => c.approach).join("; "),
           candidateIds: candidates.map((c) => c.id),
-          approach: candidates.map((c) => c.approach).join("; "),
-          convergenceScore: 65,
-          tradeOffSummary: "Review trade-offs between the proposed approaches.",
-          recommendedCandidateId: candidates[0]!.id,
+          evidenceRefs: [],
+          version: "1",
         }),
       ]
     : [];
@@ -139,13 +141,14 @@ export function activateDivergence(
   const sharedBase = 500;
   const perBranch = 300;
   const repeated = perBranch * branchCount;
+  const expectedBranchOutput = 200;
   const critic = 200;
   const clustering = 100;
   const deepening = 0;
   const deepeningTokens = 0;
   const orchestration = 150;
   const total =
-    sharedBase + repeated + critic + clustering + deepening * deepeningTokens + orchestration;
+    sharedBase + repeated + expectedBranchOutput * branchCount + critic + clustering + deepening * deepeningTokens + orchestration;
   const budgetOk = total <= parsedRequest.tokenBudget;
   const tokenOk = tokenLedger.totalNet + total <= parsedRequest.tokenBudget;
 
@@ -162,7 +165,7 @@ export function activateDivergence(
       contextPerBranchTokens: perBranch,
       branchCount,
       repeatedBranchContextTokens: repeated,
-      expectedBranchOutputTokens: 200,
+      expectedBranchOutputTokens: expectedBranchOutput,
       criticTokens: critic,
       clusteringTokens: clustering,
       deepeningCount: deepening,

@@ -5,22 +5,36 @@ import {
 
 /**
  * Generates a Mermaid flowchart diagram from a repository manifest's dependency edges.
- * Renders feature dependencies and architecture components.
+ * Includes a legend and clickable nodes (if clickBase is provided, nodes link to files).
  */
-export function generateMermaidDiagram(manifest: RepositoryManifest): string {
+export function generateMermaidDiagram(
+  manifest: RepositoryManifest,
+  clickBase?: string,
+): string {
   const parsed = repositoryManifestSchema.parse(manifest);
-
   const lines: string[] = ["flowchart LR"];
 
-  // Add file nodes
+  // ── Legend ────────────────────────────────────────────────
+  lines.push("");
+  lines.push("  subgraph Legend");
+  lines.push('    L1["📄 Source File"]');
+  lines.push('    L2["⬅️ Dependency"]');
+  lines.push("    L1 --> L2");
+  lines.push("  end");
+  lines.push("");
+
+  // ── File nodes ────────────────────────────────────────────
   for (const file of parsed.files) {
     const safeId = file.filePath.replace(/[^a-zA-Z0-9]/g, "_");
     if (!file.opaque) {
       lines.push(`  ${safeId}["${file.filePath}"]`);
+      if (clickBase) {
+        lines.push(`  click ${safeId} "${clickBase}${file.filePath}"`);
+      }
     }
   }
 
-  // Add dependency edges
+  // ── Dependency edges ──────────────────────────────────────
   for (const edge of parsed.edges) {
     if (edge.isExternal) continue;
     const sourceId = edge.sourcePath.replace(/[^a-zA-Z0-9]/g, "_");
@@ -32,22 +46,33 @@ export function generateMermaidDiagram(manifest: RepositoryManifest): string {
 }
 
 /**
- * Generates a simpler feature-level Mermaid diagram from exported symbols.
+ * Generates a feature-level Mermaid diagram with legend.
  */
-export function generateFeatureDiagram(manifest: RepositoryManifest): string {
+export function generateFeatureDiagram(
+  manifest: RepositoryManifest,
+  clickBase?: string,
+): string {
   const parsed = repositoryManifestSchema.parse(manifest);
   const lines: string[] = ["flowchart TB"];
 
-  const featureNodes = new Set<string>();
+  // ── Legend ────────────────────────────────────────────────
+  lines.push("");
+  lines.push("  subgraph Legend");
+  lines.push('    L1["🔧 Exported Symbol"]');
+  lines.push('    L2["⤵️ Re-export / Depends"]');
+  lines.push("    L1 -.-> L2");
+  lines.push("  end");
+  lines.push("");
 
+  // ── Feature nodes ─────────────────────────────────────────
   for (const file of parsed.files) {
     for (const exp of file.exports) {
       const safeId = exp.replace(/[^a-zA-Z0-9]/g, "_");
-      featureNodes.add(exp);
       lines.push(`  ${safeId}["${exp}"]`);
     }
   }
 
+  // ── Feature dependency edges ──────────────────────────────
   for (const edge of parsed.edges) {
     if (edge.isExternal) continue;
     const sourceFile = parsed.files.find((f) => f.filePath === edge.sourcePath);

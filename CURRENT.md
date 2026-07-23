@@ -34,6 +34,8 @@ Compact resume only. Route details through `context/00-context-map.md`.
 - Privacy-aware trace/dataset/experiment contracts
 - DAILY/LIBRARY skill evidence and self-diagnostic contracts
 - Parser/snapshot/file/symbol/query/rule/preview/update contracts and cache helpers
+- **Core Intelligence Wave** — AST parsing V2 (oxc-parser), Time Machine (version history API), Visual Architecture (Mermaid diagrams), Divergent Reasoning engine, Observability trace/span capture runtime
+- Integration tests for divergence, visual map, history, trace capture, and AST parser features
 
 ## Specified, Runtime Deferred
 

@@ -43,9 +43,9 @@ export function startTrace(input: {
     tags: input.tags ?? [],
     metadataRefs: [],
     versions: {
-      canonicalProjectVersionId: `ver_${input.projectId}` as any,
+      canonicalProjectVersionId: `version_${input.projectId}` as any,
       constitutionVersionRef: "constitution_v1",
-      specificationVersionRefs: [],
+      specificationVersionRefs: ["spec_v1"],
       technicalPlanVersionRefs: [],
       knowledgeGraphVersionRef: "kg_v1",
       repositoryGraphVersionRef: null,
@@ -84,22 +84,31 @@ export function endTrace(traceId: string, status: "completed" | "failed" | "bloc
   traces.set(traceId, { ...trace, status, endedAt: new Date().toISOString() });
 }
 
-export function startSpan(traceId: string, name: string, parentSpanId?: string): string {
-  const spanId = generateId("span", `${traceId}_${name}_${Date.now()}`);
+export function startSpan(traceId: string, operationType: string, parentSpanId?: string): string {
+  const spanId = generateId("span", `${traceId}_${operationType}_${Date.now()}`);
 
   const span = spanSchema.parse({
     id: spanId,
     traceId,
     parentSpanId: parentSpanId ?? null,
-    name,
-    kind: "internal",
+    operationType,
+    inputArtifactRef: null,
+    outputArtifactRef: null,
     startedAt: new Date().toISOString(),
     endedAt: null,
     status: "running",
     inputTokens: null,
     outputTokens: null,
-    metadata: {},
-    fingerprint: contentFingerprint({ spanId, traceId } as unknown as JsonValue),
+    cacheReadTokens: null,
+    cacheWriteTokens: null,
+    costAmount: null,
+    costCurrency: null,
+    errorRef: null,
+    providerProfileRef: null,
+    modelProfileRef: null,
+    agentProfileRef: null,
+    artifactRefs: [],
+    evaluationRefs: [],
   });
 
   spans.set(spanId, span);
