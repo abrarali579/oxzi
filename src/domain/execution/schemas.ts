@@ -276,9 +276,128 @@ export const tokenLedgerRecordSchema = z
       });
   });
 
+// ── Execution Report ────────────────────────────────────────────
+
+export const executionReportStatusSchema = z.enum([
+  "success",
+  "partial",
+  "failed",
+  "blocked",
+]);
+
+export const executionMetricsSchema = z
+  .object({
+    totalLatencyMs: z.number().int().nonnegative(),
+    inputTokens: z.number().int().nonnegative().nullable(),
+    outputTokens: z.number().int().nonnegative().nullable(),
+    costEstimate: z.number().nonnegative().nullable(),
+  })
+  .strict();
+
+const traceRefSchema = z
+  .string()
+  .regex(/^trace_[a-f0-9]{16}$/)
+  .describe("Observability trace reference");
+
+export const executionReportSchema = z
+  .object({
+    traceId: traceRefSchema,
+    passportId: z.string(),
+    executionId: executionIdSchema,
+    status: executionReportStatusSchema,
+    artifacts: z.array(artifactReferenceSchema),
+    rawOutputRef: z.string().nullable(),
+    error: z.string().nullable(),
+    metrics: executionMetricsSchema,
+    startedAt: timestampSchema,
+    endedAt: timestampSchema,
+    fingerprint: contentFingerprintSchema,
+  })
+  .strict();
+
+// ── Provider Adapter ───────────────────────────────────────────
+
+export const providerTypeSchema = z.enum([
+  "mock",
+  "openai",
+  "anthropic",
+  "local",
+  "custom",
+]);
+
+export const providerCapabilitySchema = z.enum([
+  "text_generation",
+  "structured_output",
+  "tool_use",
+  "streaming",
+  "vision",
+  "code_generation",
+]);
+
+export const providerAdapterConfigSchema = z
+  .object({
+    providerId: z.string().trim().min(1),
+    providerType: providerTypeSchema,
+    capabilities: z.array(providerCapabilitySchema).min(1),
+    supportsArtifacts: z.boolean(),
+    maxContextTokens: z.number().int().positive().nullable(),
+    defaultModel: z.string().trim().min(1),
+  })
+  .strict();
+
+export const providerResponseSchema = z
+  .object({
+    rawText: z.string(),
+    parsedContract: z.record(z.string(), z.unknown()).nullable(),
+    finishReason: z.string().nullable(),
+    inputTokens: z.number().int().nonnegative().nullable(),
+    outputTokens: z.number().int().nonnegative().nullable(),
+    latencyMs: z.number().int().nonnegative(),
+  })
+  .strict();
+
+// ── Agent Role ─────────────────────────────────────────────────
+
+export const agentRoleSchema = z.enum([
+  "architect",
+  "executor",
+  "reviewer",
+]);
+
+export const agentCapabilityMappingSchema = z
+  .object({
+    role: agentRoleSchema,
+    requiredCapabilities: z.array(z.string()),
+    forbiddenCapabilities: z.array(z.string()),
+  })
+  .strict();
+
+// ── Execution error types ──────────────────────────────────────
+
+export const executionErrorTypeSchema = z.enum([
+  "passport_invalid",
+  "passport_expired",
+  "capability_mismatch",
+  "provider_error",
+  "provider_timeout",
+  "structured_parse_failure",
+  "contract_violation",
+  "unknown",
+]);
+
 export type NormalizedTaskCard = z.infer<typeof normalizedTaskCardSchema>;
 export type ExecutionPassport = z.infer<typeof executionPassportSchema>;
 export type AgentCapabilityProfile = z.infer<typeof agentCapabilityProfileSchema>;
 export type ExecutionEvent = z.infer<typeof executionEventSchema>;
 export type ArtifactReference = z.infer<typeof artifactReferenceSchema>;
 export type TokenLedgerRecord = z.infer<typeof tokenLedgerRecordSchema>;
+export type ExecutionReport = z.infer<typeof executionReportSchema>;
+export type ExecutionReportStatus = z.infer<typeof executionReportStatusSchema>;
+export type ExecutionMetrics = z.infer<typeof executionMetricsSchema>;
+export type ProviderAdapterConfig = z.infer<typeof providerAdapterConfigSchema>;
+export type ProviderResponse = z.infer<typeof providerResponseSchema>;
+export type ProviderType = z.infer<typeof providerTypeSchema>;
+export type ProviderCapability = z.infer<typeof providerCapabilitySchema>;
+export type AgentRole = z.infer<typeof agentRoleSchema>;
+export type AgentCapabilityMapping = z.infer<typeof agentCapabilityMappingSchema>;
+export type ExecutionErrorType = z.infer<typeof executionErrorTypeSchema>;

@@ -721,3 +721,32 @@ Fixed by adding `buildCanonicalProjectFromBrief()` (`src/domain/project/from-bri
 - The UI gains an "Extraction Review" section with per-update approve/reject toggles.
 - Only `disposition: "proposed"` updates are eligible for approval. `blocked_conflict` and `blocked_approved` updates are shown but cannot be approved.
 - This workflow is a prerequisite for the full dynamic pipeline (Task 3) — Task Cards must be compiled from approved canonical state, not raw extraction output.
+
+## ADR-087 — Execution Runtime Isolation from Canonical State
+
+**Status:** Accepted — Connected Execution Runtime Foundation
+
+**Decision:** The connected execution runtime (`src/domain/execution/runtime.ts`) is strictly operational. It validates ExecutionPassports, matches agent capabilities, dispatches through provider-neutral adapters, captures structured output, and returns a typed `ExecutionReport`. It must **never** directly mutate `PROJECT.md`, canonical specifications, the Project Bible, or any canonical state. The ExecutionReport is a derived evidentiary artifact — it records what happened during execution but does not constitute approved truth.
+
+**Rationale:** The Controlled Living Specification (§13) and ADR-001 both establish that canonical state may only change through validated, approved mutations. Agent execution is inherently non-deterministic (provider variance, model drift, network conditions). Treating raw execution output as canonical truth would violate the source-of-truth priority (AGENTS.md §2). The execution runtime bridges the control plane and agent delivery without crossing the canonical-state boundary.
+
+**Consequences:**
+- `executePromptProgram()` returns an `ExecutionReport`, never a mutated project.
+- Execution artifacts (`ArtifactReference`) are traced and observable but do not update specs.
+- The `ProviderAdapter` interface decouples the runtime from specific AI provider SDKs (OpenAI, Anthropic, etc.).
+- The `MockProviderAdapter` enables deterministic testing without external API calls.
+- Agent capability profiles enforce role-based access (Architect/Executor/Reviewer) at the execution boundary.
+- Trace and span generation uses `src/domain/observability/` for evidence collection without state mutation.
+
+## ADR-088 — Domain Module Re-Export Avoids Circular Dependencies
+
+**Status:** Accepted — Connected Execution Runtime Foundation
+
+**Decision:** Domain index modules (`index.ts`) must not blindly re-export every sub-module. When a new sub-module imports from a domain that transitively depends on the current domain, re-exporting that sub-module creates a circular dependency that breaks Zod v4 schema resolution at module initialization time. Instead, consumers import the specific sub-module path directly (e.g., `import { executePromptProgram } from "@/domain/execution/runtime"`).
+
+**Rationale:** During implementation of the execution runtime, adding `export * from "./runtime"` to `src/domain/execution/index.ts` created a circular chain: `execution → control-plane → prompt-renderer → context-compiler → governance → execution`. This caused Zod v4 to resolve `compiledContextSchema` as `undefined` inside `z.object()` definitions, producing "expected a Zod schema" errors across all dependent tests. Removing the re-export and using direct imports resolved the issue without architectural restructuring.
+
+**Consequences:**
+- `src/domain/execution/index.ts` exports only `./schemas`; `./adapter` and `./runtime` are imported directly.
+- Any new domain sub-module that imports from domains higher in the dependency chain must be checked for circularity before adding to an index re-export.
+- The dependency chain for each domain is documented implicitly by its imports; tooling may be added later for automated circular-dependency detection.
