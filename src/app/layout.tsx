@@ -30,7 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               Personal
             </div>
             <div className="navbar-status">
-              <span className="badge-dot" style={{ background: "var(--accent)", width: "0.375rem", height: "0.375rem", boxShadow: "0 0 0 0.2rem var(--accent-glow)" }} />
+              <span className="navbar-status-dot" />
               All systems nominal
             </div>
           </div>
