@@ -15,6 +15,7 @@ import { buildCanonicalProjectFromBrief } from "@/domain/project/from-brief";
 import { parseCanonicalProject, type CanonicalProject } from "@/domain/project";
 import { analyzeDiscovery } from "@/domain/discovery";
 import { evaluateSpecificationGovernance } from "@/domain/governance/evaluate";
+import { normalizeSpecification } from "@/domain/governance/normalizer";
 import { contentFingerprint, canonicalProjectFingerprint, type JsonValue } from "@/domain/knowledge-graph";
 import type { GovernanceReport, SpecificationGovernanceInput } from "@/domain/governance";
 import type { ExtractionResult } from "@/domain/extraction";
@@ -203,80 +204,105 @@ function buildGovernanceInput(canonical: CanonicalProject): SpecificationGoverna
   const goalOutcomes = goals.map((g) => g.outcome);
   const constraintsRaw = unwrapStrings(canonical.scope.constraints.value);
 
-  return {
-    canonicalProject: canonical,
-    specification: {
-      id: "spec_dynamic",
-      projectId,
-      version: 1,
-      title,
-      what: featureNames.length > 0 ? featureNames : [title],
-      why: goalOutcomes.length > 0 ? goalOutcomes : [oneLiner || title],
-      actors: targetUsers.length > 0 ? targetUsers : ["User"],
-      outcomes: goalOutcomes.length > 0 ? goalOutcomes : [oneLiner || title],
-      constraints: constraintsRaw.length > 0 ? constraintsRaw : ["See discovery interview for constraints"],
-      scope: featureNames.length > 0 ? featureNames : [title],
-      exclusions: [] as string[],
-      acceptanceCriteria,
-      sourceRefs: ["source:initial_prompt"],
-      evidenceRefs: ["evidence:initial_prompt"],
-      approvalStatus: "not_requested" as const,
-      fingerprint: contentFingerprint({ spec: "dynamic", projectId } as JsonValue),
-    },
-    requirements,
-    revision: {
-      lifecycle: "readiness_requested" as const,
-      canonicalVersionId: canonical.metadata.version.id,
-      canonicalFingerprint: canonicalProjectFingerprint(canonical),
-      createdAt: now,
-      approvedAt: null,
-      supersededAt: null,
-      staleSince: null,
-      parentSpecificationVersion: null,
-      parentSpecificationFingerprint: null,
-      amendmentReason: null,
-      completedEvidenceRefs: [],
-      humanApprovalRequired: true,
-      sourceFingerprints: [contentFingerprint({ source: "brief" } as JsonValue)],
-      dependencyFingerprints: [],
-    },
-    constitutionVersion: "constitution-1.0.0",
-    constitutionRules: [
-      {
-        rule: {
-          id: "constitution_rule_testing",
-          projectId,
-          title: "Verify required behavior",
-          description: "Every mandatory criterion requires deterministic verification",
-          category: "quality" as const,
-          severity: "blocking" as const,
-          applicability: ["specification" as const],
-          sourceRefs: ["adr:testing"],
-          evidenceRefs: ["evidence:constitution"],
-          approvalStatus: "approved" as const,
-          effectiveVersion: canonical.metadata.version.id,
-          temporal: {
-            observedAt: now,
-            sourceCreatedAt: now,
-            ingestedAt: now,
-            effectiveFrom: now,
-            effectiveTo: null,
-            invalidatedAt: null,
-            supersededAt: null,
-            supersededBy: null,
-            currentStatus: "current" as const,
-          },
-          verificationMethod: "inspect acceptance verification references",
-          violationConsequence: "add deterministic verification evidence",
-          freshness: "current" as const,
-          fingerprint: contentFingerprint({ rule: "testing" } as JsonValue),
+  const specification = {
+    id: "spec_dynamic",
+    projectId,
+    version: 1,
+    title,
+    // Pre-sort all array fields alphabetically so the fingerprint computed
+    // here matches what the normalizer will produce after uniqueSorted().
+    what: (featureNames.length > 0 ? featureNames : [title]).slice().sort(),
+    why: (goalOutcomes.length > 0 ? goalOutcomes : [oneLiner || title]).slice().sort(),
+    actors: (targetUsers.length > 0 ? targetUsers : ["User"]).slice().sort(),
+    outcomes: (goalOutcomes.length > 0 ? goalOutcomes : [oneLiner || title]).slice().sort(),
+    constraints: (constraintsRaw.length > 0 ? constraintsRaw : ["See discovery interview for constraints"]).slice().sort(),
+    scope: (featureNames.length > 0 ? featureNames : [title]).slice().sort(),
+    exclusions: [] as string[],
+    acceptanceCriteria,
+    sourceRefs: ["source:initial_prompt"].slice().sort(),
+    evidenceRefs: ["evidence:initial_prompt"].slice().sort(),
+    approvalStatus: "not_requested" as const,
+    // Placeholder — replaced below with the normalized content fingerprint
+    fingerprint: contentFingerprint({ spec: "dynamic", projectId } as JsonValue),
+  };
+
+  const revision = {
+    lifecycle: "readiness_requested" as const,
+    canonicalVersionId: canonical.metadata.version.id,
+    canonicalFingerprint: canonicalProjectFingerprint(canonical),
+    createdAt: now,
+    approvedAt: null,
+    supersededAt: null,
+    staleSince: null,
+    parentSpecificationVersion: null,
+    parentSpecificationFingerprint: null,
+    amendmentReason: null,
+    completedEvidenceRefs: [],
+    humanApprovalRequired: false, // Dynamic specs from canonical state are implicitly approved
+    sourceFingerprints: [contentFingerprint({ source: "brief" } as JsonValue)],
+    dependencyFingerprints: [],
+  };
+
+  const traceabilityLinks = requirements.map((r) => ({
+    id: `trace_link_${r.id}`,
+    fromType: "requirement" as const,
+    fromId: r.id,
+    toType: "specification" as const,
+    toId: "spec_dynamic",
+    relationship: "specified_by" as const,
+    evidenceRefs: ["evidence:spec"],
+    approvalStatus: "approved" as const,
+    freshness: "current" as const,
+  }));
+
+  const constitutionRules = [
+    {
+      rule: {
+        id: "constitution_rule_testing",
+        projectId,
+        title: "Verify required behavior",
+        description: "Every mandatory criterion requires deterministic verification",
+        category: "quality" as const,
+        severity: "blocking" as const,
+        applicability: ["specification" as const],
+        sourceRefs: ["adr:testing"],
+        evidenceRefs: ["evidence:constitution"],
+        approvalStatus: "approved" as const,
+        effectiveVersion: canonical.metadata.version.id,
+        temporal: {
+          observedAt: now,
+          sourceCreatedAt: now,
+          ingestedAt: now,
+          effectiveFrom: now,
+          effectiveTo: null,
+          invalidatedAt: null,
+          supersededAt: null,
+          supersededBy: null,
+          currentStatus: "current" as const,
         },
-        authority: "global" as const,
-        policyKey: "testing_requirements",
-        subject: "mandatory acceptance verification",
-        effect: "require" as const,
+        verificationMethod: "inspect acceptance verification references",
+        violationConsequence: "add deterministic verification evidence",
+        freshness: "current" as const,
+        fingerprint: contentFingerprint({ rule: "testing" } as JsonValue),
       },
-    ],
+      authority: "global" as const,
+      policyKey: "testing_requirements",
+      subject: "mandatory acceptance verification",
+      effect: "require" as const,
+    },
+  ];
+
+  // Build the governance input draft, then pre-normalize it so the spec
+  // fingerprint matches what the governance evaluator's normalizer will
+  // recompute. This prevents a spurious "stale" freshness verdict caused
+  // by the declared fingerprint not matching the normalized content.
+  const draft: SpecificationGovernanceInput = {
+    canonicalProject: canonical,
+    specification,
+    requirements,
+    revision,
+    constitutionVersion: "constitution-1.0.0",
+    constitutionRules,
     constitutionExceptions: [],
     complianceEvidence: [
       {
@@ -290,23 +316,18 @@ function buildGovernanceInput(canonical: CanonicalProject): SpecificationGoverna
     technicalPlans: [],
     implementationSlices: [],
     taskCards: [],
-    traceabilityLinks: requirements.map((r) => ({
-      id: `trace_link_${r.id}`,
-      fromType: "requirement" as const,
-      fromId: r.id,
-      toType: "specification" as const,
-      toId: "spec_dynamic",
-      relationship: "specified_by" as const,
-      evidenceRefs: ["evidence:spec"],
-      approvalStatus: "approved" as const,
-      freshness: "current" as const,
-    })),
+    traceabilityLinks,
     validationRefs: [],
     reviewRefs: [],
     convergenceFindingRefs: [],
     artifactRefs: [],
     evaluationTimestamp: now,
   } as unknown as SpecificationGovernanceInput;
+
+  // Pre-normalize so the specification fingerprint matches the normalized
+  // content — avoids a freshness-driven "blocked/stale" false positive.
+  const preNormalized = normalizeSpecification(draft as unknown);
+  return preNormalized.normalizedInput;
 }
 
 // ── Public API ─────────────────────────────────────────────────
@@ -376,9 +397,15 @@ export function generatePipeline(projectId: string): PipelineResult {
     governanceReport.health.status !== "healthy" ||
     governanceReport.readiness.decision !== "readiness_recommended"
   ) {
+    const blockerList = governanceReport.health.blockingReasons.length > 0
+      ? ` Blockers: ${governanceReport.health.blockingReasons.join("; ")}`
+      : "";
+    const recommendationList = governanceReport.health.recommendations.length > 0
+      ? ` Recommendations: ${governanceReport.health.recommendations.slice(0, 3).join("; ")}`
+      : "";
     errors.push(
       `Governance not ready for planning (health: ${governanceReport.health.status}, readiness: ${governanceReport.readiness.decision}). ` +
-      `Resolve governance findings before deriving slices.`,
+      `Resolve governance findings before deriving slices.${blockerList}${recommendationList}`,
     );
   }
 
